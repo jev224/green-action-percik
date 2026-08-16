@@ -1,5 +1,5 @@
-@import 'tailwindcss';
-@import 'uniwind';
+@import "tailwindcss";
+@import "uniwind";
 /* ─── UniWind theme variants ─────────────────────────────────────
    Switched at runtime via Uniwind.setTheme('light' | 'dark' | 'adaptive').
    Variable values match the nativewind config.ts tokens so that the
@@ -12,86 +12,146 @@
      • Native: ProcessorBuilder recognises :where(.dark) → theme-scoped vars  */
 @layer theme {
   :where(.light, .light *) {
-    --primary: 23 23 23;
-    --primary-foreground: 250 250 250;
-    --card: 255 255 255;
-    --secondary: 245 245 245;
-    --secondary-foreground: 23 23 23;
-    --background: 255 255 255;
-    --popover: 255 255 255;
-    --popover-foreground: 10 10 10;
-    --muted: 245 245 245;
-    --muted-foreground: 115 115 115;
-    --destructive: 231 0 11;
-    --foreground: 10 10 10;
-    --border: 229 229 229;
-    --input: 229 229 229;
-    --ring: 212 212 212;
-    --accent: 247 247 247;
-    --accent-foreground: 52 52 52;
+    --primary: 24 116 71;
+    --primary-foreground: 255 255 255;
+    --secondary: 226 241 231;
+    --secondary-foreground: 25 91 57;
+    --accent: 218 238 223;
+    --accent-foreground: 24 116 71;
+    --success: 46 139 87;
+    --success-foreground: 255 255 255;
+    --info: 65 122 181;
+    --info-foreground: 255 255 255;
+    --warning: 214 157 48;
+    --warning-foreground: 255 255 255;
+    --destructive: 205 69 69;
+    --destructive-foreground: 255 255 255;
+    --organic: 74 145 82;
+    --organic-foreground: 255 255 255;
+    --inorganic: 72 118 166;
+    --inorganic-foreground: 255 255 255;
+    --compost: 139 119 58;
+    --compost-foreground: 255 255 255;
+    --garden: 57 142 82;
+    --garden-foreground: 255 255 255;
+    --card: 255 255 252;
+    --background: 249 250 246;
+    --popover: 255 255 252;
+    --popover-foreground: 29 45 36;
+    --muted: 238 242 236;
+    --muted-foreground: 101 113 104;
+    --foreground: 29 45 36;
+    --border: 218 225 218;
+    --input: 218 225 218;
+    --ring: 38 125 77;
   }
 
   @media (prefers-color-scheme: light) {
     :root:not(:where(.light, .light *, .dark, .dark *)) {
-      --primary: 23 23 23;
-      --primary-foreground: 250 250 250;
-      --card: 255 255 255;
-      --secondary: 245 245 245;
-      --secondary-foreground: 23 23 23;
-      --background: 255 255 255;
-      --popover: 255 255 255;
-      --popover-foreground: 10 10 10;
-      --muted: 245 245 245;
-      --muted-foreground: 115 115 115;
-      --destructive: 231 0 11;
-      --foreground: 10 10 10;
-      --border: 229 229 229;
-      --input: 229 229 229;
-      --ring: 212 212 212;
-      --accent: 247 247 247;
-      --accent-foreground: 52 52 52;
+      --primary: 24 116 71;
+      --primary-foreground: 255 255 255;
+      --secondary: 226 241 231;
+      --secondary-foreground: 25 91 57;
+      --accent: 218 238 223;
+      --accent-foreground: 24 116 71;
+      --success: 46 139 87;
+      --success-foreground: 255 255 255;
+      --info: 65 122 181;
+      --info-foreground: 255 255 255;
+      --warning: 214 157 48;
+      --warning-foreground: 255 255 255;
+      --destructive: 205 69 69;
+      --destructive-foreground: 255 255 255;
+      --organic: 74 145 82;
+      --organic-foreground: 255 255 255;
+      --inorganic: 72 118 166;
+      --inorganic-foreground: 255 255 255;
+      --compost: 139 119 58;
+      --compost-foreground: 255 255 255;
+      --garden: 57 142 82;
+      --garden-foreground: 255 255 255;
+      --card: 255 255 252;
+      --background: 249 250 246;
+      --popover: 255 255 252;
+      --popover-foreground: 29 45 36;
+      --muted: 238 242 236;
+      --muted-foreground: 101 113 104;
+      --foreground: 29 45 36;
+      --border: 218 225 218;
+      --input: 218 225 218;
+      --ring: 38 125 77;
     }
   }
 
   :where(.dark, .dark *) {
-    --primary: 255 245 245;
-    --primary-foreground: 23 23 23;
-    --card: 23 23 23;
-    --secondary: 38 38 38;
-    --secondary-foreground: 250 250 250;
-    --background: 10 10 10;
-    --popover: 23 23 23;
-    --popover-foreground: 250 250 250;
-    --muted: 38 38 38;
-    --muted-foreground: 161 161 161;
-    --destructive: 255 100 103;
-    --foreground: 250 250 250;
-    --border: 46 46 46;
-    --input: 46 46 46;
-    --accent: 38 38 38;
-    --accent-foreground: 250 250 250;
-    --ring: 115 115 115;
+    --primary: 62 166 101;
+    --primary-foreground: 12 42 25;
+    --secondary: 31 66 45;
+    --secondary-foreground: 177 224 191;
+    --accent: 37 78 51;
+    --accent-foreground: 128 205 153;
+    --success: 71 174 104;
+    --success-foreground: 10 40 23;
+    --info: 91 145 201;
+    --info-foreground: 12 28 48;
+    --warning: 224 173 67;
+    --warning-foreground: 52 37 10;
+    --destructive: 224 91 91;
+    --destructive-foreground: 54 15 15;
+    --organic: 93 172 99;
+    --organic-foreground: 13 40 21;
+    --inorganic: 93 145 194;
+    --inorganic-foreground: 14 31 47;
+    --compost: 177 153 76;
+    --compost-foreground: 43 35 13;
+    --garden: 76 169 101;
+    --garden-foreground: 11 40 20;
+    --card: 21 31 24;
+    --background: 14 22 17;
+    --popover: 23 34 27;
+    --popover-foreground: 232 241 234;
+    --muted: 31 42 34;
+    --muted-foreground: 157 171 161;
+    --foreground: 235 242 236;
+    --border: 48 62 52;
+    --input: 48 62 52;
+    --ring: 72 177 105;
   }
 
   @media (prefers-color-scheme: dark) {
     :root:not(:where(.light, .light *, .dark, .dark *)) {
-      --primary: 255 245 245;
-      --primary-foreground: 23 23 23;
-      --card: 23 23 23;
-      --secondary: 38 38 38;
-      --secondary-foreground: 250 250 250;
-      --background: 10 10 10;
-      --popover: 23 23 23;
-      --popover-foreground: 250 250 250;
-      --muted: 38 38 38;
-      --muted-foreground: 161 161 161;
-      --destructive: 255 100 103;
-      --foreground: 250 250 250;
-      --border: 46 46 46;
-      --input: 46 46 46;
-      --accent: 38 38 38;
-      --accent-foreground: 250 250 250;
-      --ring: 115 115 115;
+      --primary: 62 166 101;
+      --primary-foreground: 12 42 25;
+      --secondary: 31 66 45;
+      --secondary-foreground: 177 224 191;
+      --accent: 37 78 51;
+      --accent-foreground: 128 205 153;
+      --success: 71 174 104;
+      --success-foreground: 10 40 23;
+      --info: 91 145 201;
+      --info-foreground: 12 28 48;
+      --warning: 224 173 67;
+      --warning-foreground: 52 37 10;
+      --destructive: 224 91 91;
+      --destructive-foreground: 54 15 15;
+      --organic: 93 172 99;
+      --organic-foreground: 13 40 21;
+      --inorganic: 93 145 194;
+      --inorganic-foreground: 14 31 47;
+      --compost: 177 153 76;
+      --compost-foreground: 43 35 13;
+      --garden: 76 169 101;
+      --garden-foreground: 11 40 20;
+      --card: 21 31 24;
+      --background: 14 22 17;
+      --popover: 23 34 27;
+      --popover-foreground: 232 241 234;
+      --muted: 31 42 34;
+      --muted-foreground: 157 171 161;
+      --foreground: 235 242 236;
+      --border: 48 62 52;
+      --input: 48 62 52;
+      --ring: 72 177 105;
     }
   }
 }
@@ -102,19 +162,34 @@
 @theme inline {
   --color-primary: rgb(var(--primary));
   --color-primary-foreground: rgb(var(--primary-foreground));
-  --color-card: rgb(var(--card));
   --color-secondary: rgb(var(--secondary));
   --color-secondary-foreground: rgb(var(--secondary-foreground));
+  --color-accent: rgb(var(--accent));
+  --color-accent-foreground: rgb(var(--accent-foreground));
+  --color-success: rgb(var(--success));
+  --color-success-foreground: rgb(var(--success-foreground));
+  --color-info: rgb(var(--info));
+  --color-info-foreground: rgb(var(--info-foreground));
+  --color-warning: rgb(var(--warning));
+  --color-warning-foreground: rgb(var(--warning-foreground));
+  --color-destructive: rgb(var(--destructive));
+  --color-destructive-foreground: rgb(var(--destructive-foreground));
+  --color-organic: rgb(var(--organic));
+  --color-organic-foreground: rgb(var(--organic-foreground));
+  --color-inorganic: rgb(var(--inorganic));
+  --color-inorganic-foreground: rgb(var(--inorganic-foreground));
+  --color-compost: rgb(var(--compost));
+  --color-compost-foreground: rgb(var(--compost-foreground));
+  --color-garden: rgb(var(--garden));
+  --color-garden-foreground: rgb(var(--garden-foreground));
+  --color-card: rgb(var(--card));
   --color-background: rgb(var(--background));
   --color-popover: rgb(var(--popover));
   --color-popover-foreground: rgb(var(--popover-foreground));
   --color-muted: rgb(var(--muted));
   --color-muted-foreground: rgb(var(--muted-foreground));
-  --color-destructive: rgb(var(--destructive));
   --color-foreground: rgb(var(--foreground));
   --color-border: rgb(var(--border));
   --color-input: rgb(var(--input));
   --color-ring: rgb(var(--ring));
-  --color-accent: rgb(var(--accent));
-  --color-accent-foreground: rgb(var(--accent-foreground));
 }

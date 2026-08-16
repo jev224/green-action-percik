@@ -12,7 +12,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.starter-kit-expo-uniwind"
     },
     "android": {
       "edgeToEdgeEnabled": true
