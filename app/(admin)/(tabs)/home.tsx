@@ -29,35 +29,38 @@ export default function HomeScreen() {
           <Greeting name="Sharleen" info={`${"Guru RPL"} • Admin`} />
 
           <HStack space="md">
-            <StatCard title="Siswa" stats="29" className="flex-1" />
-            <StatCard title="Poin" stats="120" className="flex-1" />
+            <StatCard title="Siswa" stats="29" className="flex-1" size="md" />
+            <StatCard title="Poin" stats="120" className="flex-1" size="md" />
           </HStack>
 
-          <ListSection title="Statistik saat ini">
+          <ListSection title="Statistik saat ixni">
             <HStack space="md">
               <StatCard
                 title="Sampah"
                 stats="30 kg"
                 icon={Bubbles}
+                variant="outline"
                 className="flex-1"
               />
               <StatCard
                 title="Perawatan"
                 stats="5 kali"
                 icon={BrushCleaning}
+                variant="outline"
                 className="flex-1"
               />
               <StatCard
                 title="Kompos"
                 stats="Ikut"
                 icon={Apple}
+                variant="outline"
                 className="flex-1"
               />
             </HStack>
           </ListSection>
 
           <ListSection title="Aktivitas terbaru">
-            <VStack>
+            <VStack space="md">
               <ActionTile
                 title="Pengumpulan Sampah"
                 description="Kumpulkan dan catat sampah organik atau anorganik"

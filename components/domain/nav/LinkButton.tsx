@@ -1,9 +1,3 @@
-// components/domain/nav/LinkButton.tsx
-// Replaces buttons/RedirectButton.tsx and the "redirect" half of the old
-// ActionButton's action union. Lives in domain/ because it calls
-// useNavigation() — the one place in the app allowed to know about routes
-// by name. Everywhere else just takes onPress.
-
 import { ComponentProps } from "react";
 import { Href } from "expo-router";
 import { Button } from "@/components/primitives/Button/Button";

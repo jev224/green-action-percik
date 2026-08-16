@@ -27,7 +27,7 @@ export function IconButton({
       variant={variant}
       size="icon"
       icon={icon}
-      className={cn("p-2 rounded-sm", className)}
+      className={cn("p-2 aspect-square rounded-sm", className)}
       {...props}
     />
   );

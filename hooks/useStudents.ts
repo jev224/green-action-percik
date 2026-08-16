@@ -7,7 +7,10 @@ import { useMemo, useState } from "react";
 import { useFuzzySearch } from "@/hooks/useFuzzySearch";
 
 import type { StudentData } from "@/components/domain/student/types";
-import type { SortFieldOption, SortState } from "@/components/primitives/Input/SortSelect";
+import type {
+  SortFieldOption,
+  SortState,
+} from "@/components/primitives/Input/SortSelect";
 
 export type StudentSortField = "name" | "grade" | "point";
 

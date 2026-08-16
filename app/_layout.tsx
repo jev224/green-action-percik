@@ -1,15 +1,15 @@
-import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
-import '@/global.css';
-import { Slot } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
-import { SafeAreaListener } from 'react-native-safe-area-context';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { Uniwind } from 'uniwind';
-import { ThemeSwitcher } from '@/components/custom/ThemeSwitcher';
+import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
+import "@/global.css";
+import { Slot, Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { StatusBar } from "expo-status-bar";
+import { useEffect, useState } from "react";
+import { SafeAreaListener } from "react-native-safe-area-context";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Uniwind } from "uniwind";
+import { ThemeSwitcher } from "@/components/custom/ThemeSwitcher";
 
-export { ErrorBoundary } from 'expo-router';
+export { ErrorBoundary } from "expo-router";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -22,7 +22,7 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const [colorMode, setColorMode] = useState<'light' | 'dark'>('dark');
+  const [colorMode, setColorMode] = useState<"light" | "dark">("dark");
 
   return (
     <SafeAreaListener
@@ -32,8 +32,10 @@ function RootLayoutNav() {
     >
       <GestureHandlerRootView style={{ flex: 1 }}>
         <GluestackUIProvider mode={colorMode}>
-          <StatusBar style={colorMode === 'dark' ? 'light' : 'dark'} />
-          <Slot />
+          <StatusBar style={colorMode === "dark" ? "light" : "dark"} />
+          <Stack screenOptions={{ headerShown: false }}>
+            <Slot />
+          </Stack>
           <ThemeSwitcher />
         </GluestackUIProvider>
       </GestureHandlerRootView>

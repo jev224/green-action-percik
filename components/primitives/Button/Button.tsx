@@ -41,6 +41,8 @@ type ButtonProps = Omit<ComponentProps<typeof GSButton>, "children"> & {
   icon?: ComponentProps<typeof ButtonIcon>["as"];
   /** Use instead of label/icon when you need full control over contents. */
   children?: React.ReactNode;
+
+  fill?: boolean;
 };
 
 export function Button({
@@ -51,6 +53,7 @@ export function Button({
   label,
   icon,
   children,
+  fill,
   ...props
 }: ButtonProps) {
   const colors = useThemeColors();
@@ -62,6 +65,7 @@ export function Button({
     <EaseView
       animate={scaleAnimation}
       transition={{ transform: PRESS_SCALE_TRANSITION }}
+      style={{ flex: fill ? 1 : undefined }}
     >
       <GSButton
         className={cn("overflow-hidden", className)}

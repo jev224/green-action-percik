@@ -20,7 +20,10 @@ export function SearchField({
 }: SearchFieldProps) {
   return (
     <Input
-      className={cn("pl-5 py-3 border-2 rounded-lg shadow-none", className)}
+      className={cn(
+        "flex-1 pl-5 py-3 border-2 rounded-lg shadow-none",
+        className,
+      )}
     >
       <InputField
         placeholder={placeholder}

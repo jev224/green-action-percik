@@ -13,8 +13,6 @@
 import { ReactNode } from "react";
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
 import { Card } from "@/components/ui/card";
-import type { SemanticColor, SurfaceVariant } from "@/components/styles/tokens";
-import { cardColorStyles } from "@/components/styles/cardColorStyles";
 
 export interface SurfaceCardStyles {
   card: string;
@@ -24,15 +22,15 @@ export interface SurfaceCardStyles {
 }
 
 export function resolveSurfaceStyles(
-  color: SemanticColor,
-  variant: SurfaceVariant,
+  color: string,
+  variant: string,
 ): SurfaceCardStyles {
-  return cardColorStyles[color]?.[variant] ?? cardColorStyles.neutral.outline;
+  return { card: "", thumbnail: "", icon: "", text: "" };
 }
 
 interface SurfaceCardProps {
-  color?: SemanticColor;
-  variant?: SurfaceVariant;
+  color?: string;
+  variant?: string;
   className?: string;
   children: ReactNode | ((styles: SurfaceCardStyles) => ReactNode);
 }
@@ -47,7 +45,12 @@ export function SurfaceCard({
 
   return (
     <Card
-      className={cn("shadow-none overflow-hidden p-4", styles.card, className)}
+      className={cn(
+        "shadow-none overflow-hidden p-4",
+        styles.card,
+        className,
+        variant === "solid" && "bg-primary",
+      )}
     >
       {typeof children === "function" ? children(styles) : children}
     </Card>

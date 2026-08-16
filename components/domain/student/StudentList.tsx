@@ -1,18 +1,31 @@
-// components/domain/student/StudentList.tsx
-// Was lists/StudentList.tsx. Now a thin FlatList wrapper around
-// StudentListItem — no useStudentStore, no useNavigation. The screen
-// using this decides what onPress does. See the example screen for how
-// the old "save to store, navigate to detail" behavior is now the
-// screen's responsibility instead of the list's.
+import { FlashList } from "@shopify/flash-list";
 
-import { FlatList } from "@/components/ui/flat-list";
+import Animated, {
+  Easing,
+  FadeInDown,
+  FadeOutUp,
+  LinearTransition,
+} from "react-native-reanimated";
+
 import { StudentListItem } from "./StudentListItem";
 import type { StudentData } from "./types";
+import { FlatList } from "@/components/ui/flat-list";
 
 interface StudentListProps {
   data: StudentData[];
   onPressStudent?: (student: StudentData) => void;
 }
+
+const LIST_LAYOUT = LinearTransition.springify()
+  .damping(25)
+  .stiffness(280)
+  .mass(0.8);
+
+const ITEM_ENTER = FadeInDown.easing(Easing.out(Easing.ease))
+  .duration(260)
+  .delay(100);
+
+const ITEM_EXIT = FadeOutUp.easing(Easing.in(Easing.ease)).duration(220);
 
 export function StudentList({ data, onPressStudent }: StudentListProps) {
   return (
@@ -21,7 +34,13 @@ export function StudentList({ data, onPressStudent }: StudentListProps) {
       showsVerticalScrollIndicator={false}
       className="overflow-visible"
       renderItem={({ item }) => (
-        <StudentListItem student={item} onPress={onPressStudent} />
+        <Animated.View
+          layout={LIST_LAYOUT}
+          entering={ITEM_ENTER}
+          exiting={ITEM_EXIT}
+        >
+          <StudentListItem student={item} onPress={onPressStudent} />
+        </Animated.View>
       )}
       keyExtractor={(student) => student.id}
     />

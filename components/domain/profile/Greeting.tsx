@@ -1,9 +1,3 @@
-// components/domain/profile/Greeting.tsx
-// Was headers/UserAvatarHeading.tsx. Renamed — "Greeting" describes what
-// it does ("Halo, Name 👋"), where "UserAvatarHeading" was ambiguous
-// against the also-avatar-based ProfileHeader right next to it. Now built
-// on the same UserAvatar primitive ProfileHeader and StudentListItem use.
-
 import { ImageSourcePropType } from "react-native";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";

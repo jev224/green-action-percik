@@ -1,15 +1,15 @@
-// components/primitives/Input/FilterChips.tsx
-// Was inputs/FilterChips.tsx.
-//
-// BUG FIXED: the inactive chip's className had `bgmuted` (missing the
-// dash) instead of `bg-muted`. Because it's not a real Tailwind class,
-// NativeWind silently drops it — every inactive chip has been rendering
-// with no background at all. Fixed below.
-
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
 import { Pressable } from "@/components/ui/pressable";
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
+import Animated, {
+  FadeOut,
+  useAnimatedStyle,
+  withSpring,
+} from "react-native-reanimated";
+import { EaseView } from "react-native-ease";
+import { usePressFeedback } from "@/hooks/usePressFeedback";
+import { useThemeColors } from "@/hooks/useThemeColors";
 
 interface FilterChipsProps {
   options: string[];
@@ -33,6 +33,7 @@ export function FilterChips({
         isActive={selected === null}
         onPress={() => onSelect(null)}
       />
+
       {options.map((option) => (
         <Chip
           key={option}
@@ -54,21 +55,60 @@ function Chip({
   isActive: boolean;
   onPress: () => void;
 }) {
+  const colors = useThemeColors();
+  const { isPressing, bind } = usePressFeedback(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        scale: withSpring(isPressing ? 0.9 : 1, {
+          damping: 9,
+          stiffness: 500,
+          mass: 0.45,
+        }),
+      },
+    ],
+  }));
+
   return (
     <Pressable
       onPress={onPress}
-      className={cn(
-        "px-4 py-2 rounded-full border",
-        isActive ? "bg-primary/90 border-primary" : "bg-muted border-border",
-      )}
+      onPressIn={bind.onPressIn}
+      onPressOut={bind.onPressOut}
     >
-      <Text
-        className={
-          isActive ? "text-primary-foreground" : "text-muted-foreground"
-        }
+      <Animated.View
+        exiting={FadeOut.duration(120)}
+        style={animatedStyle}
+        className={cn(
+          "px-4 py-1.5 rounded-lg border overflow-hidden",
+          "bg-muted border-border",
+        )}
       >
-        {label}
-      </Text>
+        <EaseView
+          animate={{
+            opacity: isActive ? 1 : 0,
+          }}
+          transition={{
+            type: "timing",
+            duration: 120,
+          }}
+          style={{
+            backgroundColor: colors.primary,
+            position: "absolute",
+            inset: 0,
+          }}
+        />
+
+        <Text
+          className={
+            isActive
+              ? "text-primary-foreground font-bold"
+              : "text-muted-foreground"
+          }
+        >
+          {label}
+        </Text>
+      </Animated.View>
     </Pressable>
   );
 }

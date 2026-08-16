@@ -28,6 +28,7 @@ interface ScreenProps {
   isLoading?: boolean;
   isError?: boolean;
   overlayComponent?: ReactNode;
+  portalComponent?: ReactNode;
   headerComponent?: ReactNode;
   contentComponent: ReactNode;
   errorComponent?: ReactNode;
@@ -69,34 +70,36 @@ export function Screen({
     );
 
   return (
-    <Box className="flex-1 bg-background">
-      <SafeAreaView
-        style={{ flex: 1 }}
-        edges={["top", "bottom", "left", "right"]}
-      >
-        <Box className="flex-1 px-8" style={{ marginTop: TOP_MARGIN }}>
+    <>
+      <Box className="flex-1 bg-background">
+        <SafeAreaView
+          style={{ flex: 1 }}
+          edges={["top", "bottom", "left", "right"]}
+        >
+          <Box className="flex-1 px-8" style={{ marginTop: TOP_MARGIN }}>
+            {headerComponent && (
+              <Box className="z-10 mb-4">
+                <VStack className="mb-6 z-20" space={space}>
+                  {headerComponent}
+                </VStack>
+                <Box
+                  className="absolute -inset-8 bottom-0 bg-background"
+                  style={{ top: -(TOP_MARGIN + insets.top) }}
+                />
+              </Box>
+            )}
+
+            {canRenderContent && renderBody(contentComponent)}
+            {isLoading && renderBody(loadingComponent)}
+            {isError && <Center>{errorComponent}</Center>}
+            {footerComponent}
+          </Box>
+
           {overlayComponent && (
-            <Box className="absolute inset-0 px-8">{overlayComponent}</Box>
+            <Box className="absolute inset-0">{overlayComponent}</Box>
           )}
-
-          {headerComponent && (
-            <Box className="z-10 mb-4">
-              <VStack className="mb-6 z-20" space={space}>
-                {headerComponent}
-              </VStack>
-              <Box
-                className="absolute -inset-8 bottom-0 bg-background"
-                style={{ top: -(TOP_MARGIN + insets.top) }}
-              />
-            </Box>
-          )}
-
-          {canRenderContent && renderBody(contentComponent)}
-          {isLoading && renderBody(loadingComponent)}
-          {isError && <Center>{errorComponent}</Center>}
-          {footerComponent}
-        </Box>
-      </SafeAreaView>
-    </Box>
+        </SafeAreaView>
+      </Box>
+    </>
   );
 }

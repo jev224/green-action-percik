@@ -1,9 +1,3 @@
-// components/domain/profile/ProfileHeader.tsx
-// Was headers/ProfileHeader.tsx. Lives in domain/profile/ since the
-// student-vs-teacher subtitle logic is app-specific, not generic UI.
-// Now built on the shared UserAvatar primitive instead of its own
-// Avatar/AvatarFallbackText/AvatarImage markup.
-
 import { ImageSourcePropType } from "react-native";
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
 import { Box } from "@/components/ui/box";
@@ -45,7 +39,7 @@ export function ProfileHeader({
   return (
     <Box
       className={cn(
-        "items-center",
+        "items-center gap-2",
         layout === "centered" ? "justify-center p-7" : "flex-row py-4 gap-6",
       )}
     >

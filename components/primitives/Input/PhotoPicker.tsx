@@ -36,7 +36,7 @@ const MAX_FILE_SIZE_BYTES = 5 * 1024;
 const MAX_COMPRESSION_ATTEMPTS = 8;
 
 const photoPickerStyle = tva({
-  base: "h-70 rounded-2xl overflow-hidden border-2 border-dashed border-border bg-background-50",
+  base: "h-50 rounded-md overflow-hidden border-2 border-dashed border-border bg-background-50",
   variants: {
     hasPhoto: {
       true: "border-solid bg-background-0",

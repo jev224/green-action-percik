@@ -24,7 +24,11 @@ export { SegmentedControl } from "./Input/SegmentedControl";
 export type { SegmentedControlOption } from "./Input/SegmentedControl";
 export { FilterChips } from "./Input/FilterChips";
 export { SortSelect } from "./Input/SortSelect";
-export type { SortState, SortFieldOption, SortDirection } from "./Input/SortSelect";
+export type {
+  SortState,
+  SortFieldOption,
+  SortDirection,
+} from "./Input/SortSelect";
 export { PhotoPicker } from "./Input/PhotoPicker";
 
 export { ProgressBar } from "./Feedback/ProgressBar";
@@ -37,3 +41,4 @@ export { BottomSheet } from "./Layout/BottomSheet";
 export { List } from "./List/List";
 export type { ListItemData } from "./List/List";
 export { ListSection } from "./List/ListSection";
+export { BottomPanel } from "./Layout/BottomPanel";

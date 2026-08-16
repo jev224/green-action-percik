@@ -38,7 +38,16 @@ export function UserAvatar({
 }: UserAvatarProps) {
   return (
     <GSAvatar className={cn(SIZE_CLASSES[size], className)}>
-      <AvatarFallbackText>{name}</AvatarFallbackText>
+      <AvatarFallbackText
+        className={cn(
+          "leading-0! font-bold",
+          size === "sm" && "text-2xl",
+          size === "md" && "text-4xl",
+          size === "lg" && "text-6xl",
+        )}
+      >
+        {name}
+      </AvatarFallbackText>
       {imageSource && <AvatarImage source={imageSource} />}
     </GSAvatar>
   );

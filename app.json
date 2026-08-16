@@ -3,10 +3,9 @@
     "name": "starter-kit-expo-uniwind",
     "slug": "starter-kit-expo-uniwind",
     "version": "1.0.0",
+    "scheme": "green-action",
     "orientation": "portrait",
-    "scheme": "starterkitexpoUniwind",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "splash": {
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
@@ -16,7 +15,8 @@
       "bundleIdentifier": "com.anonymous.starter-kit-expo-uniwind"
     },
     "android": {
-      "edgeToEdgeEnabled": true
+      "package": "com.anonymous.starterkitexpouniwind",
+      "predictiveBackGestureEnabled": true
     },
     "web": {
       "bundler": "metro",

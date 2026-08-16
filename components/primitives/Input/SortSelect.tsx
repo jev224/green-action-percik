@@ -68,7 +68,7 @@ export function SortSelect<TField extends string>({
       onValueChange={(v) => onChange(valueToState<TField>(v))}
     >
       <SelectTrigger
-        className="self-start items-center justify-center aspect-square rounded-full"
+        className="flex-1 self-start items-center justify-center aspect-square rounded-lg border-2"
         variant="rounded"
         size="lg"
       >
