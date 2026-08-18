@@ -1,9 +1,7 @@
-// components/primitives/Input/SearchField.tsx
-// Was inputs/SearchInput.tsx. Renamed to *Field to match TextField/
-// SelectField/TextAreaField instead of standing out as the one "Input".
-
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
-import { Input, InputField } from "@/components/ui/input";
+import { Input, InputField, InputIcon, InputSlot } from "@/components/ui/input";
+import { Search } from "lucide-react-native";
+import { useThemeColors } from "@/hooks/useThemeColors";
 
 interface SearchFieldProps {
   value: string;
@@ -18,17 +16,25 @@ export function SearchField({
   placeholder = "Cari...",
   className,
 }: SearchFieldProps) {
+  const colors = useThemeColors();
+
   return (
     <Input
       className={cn(
-        "flex-1 pl-5 py-3 border-2 rounded-lg shadow-none",
+        "flex-1 pl-3 py-3 border-2 rounded-lg shadow-none",
         className,
       )}
     >
+      <InputSlot>
+        <InputIcon className="text-foreground/80 w-6 h-6 mr-1" as={Search} />
+      </InputSlot>
+
       <InputField
+        className="font-medium"
         placeholder={placeholder}
         value={value}
         onChangeText={onChangeText}
+        placeholderTextColor={colors.mutedForeground}
       />
     </Input>
   );

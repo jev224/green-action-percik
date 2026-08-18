@@ -1,28 +1,11 @@
-// components/primitives/Layout/Screen.tsx
-// Was layout/ScreenContainer.tsx. Renamed to `Screen` — every screen file
-// wraps its content in this, so "Screen" reads better at the call site
-// than "ScreenContainer" repeated everywhere. Logic unchanged, it was
-// already reasonable.
-//
-// DROPPED (dead props): the old file declared `canRefresh` and `onRefresh`
-// in its props type but never wired up a RefreshControl anywhere in the
-// JSX — they did nothing. Removed rather than carried forward as fake
-// functionality. Pull-to-refresh is a real ~10-line addition if you need
-// it (RefreshControl on the ScrollView) — ask and I'll wire it properly.
-
-import { ReactNode } from "react";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
-import { ScrollView } from "react-native";
+import { ReactNode, useState } from "react";
+import { LayoutChangeEvent, ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Box } from "@/components/ui/box";
 import { VStack } from "@/components/ui/vstack";
 import { Center } from "@/components/ui/center";
 import { useThemeColors } from "@/hooks/useThemeColors";
-
-const TOP_MARGIN = 24;
 
 interface ScreenProps {
   isLoading?: boolean;
@@ -50,56 +33,51 @@ export function Screen({
   footerComponent,
   scrollable,
 }: ScreenProps) {
-  const insets = useSafeAreaInsets();
-  useThemeColors(); // kept: forces re-render on theme change for consumers relying on it
+  useThemeColors();
 
   const canRenderContent = !isLoading && !isError;
 
-  const renderBody = (body: ReactNode) =>
-    scrollable ? (
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        className="overflow-visible"
-      >
-        <VStack space={space}>{body}</VStack>
-      </ScrollView>
-    ) : (
-      <VStack className="flex-1" space={space}>
-        {body}
+  const contentStyle = {
+    flex: scrollable ? undefined : 1,
+  };
+
+  const content = (
+    <SafeAreaView
+      edges={headerComponent ? ["left", "right", "bottom"] : undefined}
+      style={contentStyle}
+    >
+      <VStack className="px-8 py-6" style={contentStyle} space={space}>
+        {canRenderContent && contentComponent}
+        {isLoading && loadingComponent}
+        {isError && <Center>{errorComponent}</Center>}
+        {footerComponent}
       </VStack>
-    );
+    </SafeAreaView>
+  );
 
   return (
-    <>
-      <Box className="flex-1 bg-background">
-        <SafeAreaView
-          style={{ flex: 1 }}
-          edges={["top", "bottom", "left", "right"]}
-        >
-          <Box className="flex-1 px-8" style={{ marginTop: TOP_MARGIN }}>
-            {headerComponent && (
-              <Box className="z-10 mb-4">
-                <VStack className="mb-6 z-20" space={space}>
-                  {headerComponent}
-                </VStack>
-                <Box
-                  className="absolute -inset-8 bottom-0 bg-background"
-                  style={{ top: -(TOP_MARGIN + insets.top) }}
-                />
-              </Box>
-            )}
+    <Box className="flex-1 bg-background">
+      {headerComponent && (
+        <Box className="z-10 -mb-4 pb-4 pt-6">
+          <SafeAreaView edges={["top", "left", "right"]}>
+            <VStack className="px-8" space={space}>
+              {headerComponent}
+            </VStack>
+          </SafeAreaView>
 
-            {canRenderContent && renderBody(contentComponent)}
-            {isLoading && renderBody(loadingComponent)}
-            {isError && <Center>{errorComponent}</Center>}
-            {footerComponent}
-          </Box>
+          <Box className="absolute inset-0 bg-background -z-1" />
+        </Box>
+      )}
 
-          {overlayComponent && (
-            <Box className="absolute inset-0">{overlayComponent}</Box>
-          )}
-        </SafeAreaView>
-      </Box>
-    </>
+      {scrollable ? (
+        <ScrollView showsVerticalScrollIndicator={false}>{content}</ScrollView>
+      ) : (
+        content
+      )}
+
+      {overlayComponent && (
+        <Box className="absolute inset-0">{overlayComponent}</Box>
+      )}
+    </Box>
   );
 }

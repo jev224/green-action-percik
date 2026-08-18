@@ -1,16 +1,3 @@
-// components/primitives/Input/PhotoPicker.tsx
-// Was inputs/PhotoPicker.tsx. This one was already well-built — controlled/
-// uncontrolled state, single responsibility, no store/nav leakage. Moved
-// as-is other than fixing the relative "../ui/button" import to match the
-// "@/components/ui/..." convention every other file uses, and switching to
-// a named export.
-//
-// ⚠️ FLAGGING, NOT CHANGING: MAX_FILE_SIZE_BYTES below is 5KB, which
-// compresses down to roughly thumbnail quality — the original comment even
-// warns about this. I'm leaving the actual number alone since I don't know
-// your real target (avatar thumbnail vs. a photo students review), but you
-// should decide this on purpose rather than inherit whatever it was set to.
-
 import { File } from "expo-file-system";
 import * as ImageManipulator from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";

@@ -1,10 +1,3 @@
-// components/primitives/Avatar/UserAvatar.tsx
-//
-// The exact same 3-line Avatar/AvatarFallbackText/AvatarImage combo was
-// copy-pasted in ProfileHeader, UserAvatarHeading, and StudentList. One
-// place for it now — change the fallback/image behavior once, everywhere
-// updates.
-
 import { ImageSourcePropType } from "react-native";
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
 import {

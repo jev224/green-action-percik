@@ -18,6 +18,7 @@ import { Button, List, Screen } from "@/components/primitives";
 import { Download, KeyRound, LogIn, Settings } from "lucide-react-native";
 import { useState } from "react";
 import { router } from "expo-router";
+import { DialogPopIn, DialogPopOut } from "@/components/animation/presets";
 
 export default function ProfileScreen() {
   const [showModal, setShowModal] = useState(false);
@@ -77,7 +78,7 @@ export default function ProfileScreen() {
           >
             <ModalBackdrop />
 
-            <ModalContent>
+            <ModalContent entering={DialogPopIn} exiting={DialogPopOut}>
               <ModalHeader>
                 <Heading size="lg">Mau cabut dulu? 👋</Heading>
                 <ModalCloseButton>

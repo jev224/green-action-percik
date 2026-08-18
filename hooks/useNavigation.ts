@@ -5,7 +5,7 @@ export function useNavigation() {
   const isNavigatingRef = useRef(false);
 
   const goBack = (fallbackHref?: Href) => {
-    if (isNavigatingRef.current) return;
+    // if (isNavigatingRef.current) return;
 
     if (router.canGoBack()) {
       router.back();
@@ -17,7 +17,7 @@ export function useNavigation() {
   };
 
   const navigateTo = (href: Href) => {
-    if (isNavigatingRef.current) return;
+    // if (isNavigatingRef.current) return;
 
     isNavigatingRef.current = true;
     router.push(href);

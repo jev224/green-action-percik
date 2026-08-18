@@ -10,11 +10,11 @@ export { IconButton } from "./Button/IconButton";
 
 export { UserAvatar } from "./Avatar/UserAvatar";
 
-export { SurfaceCard, resolveSurfaceStyles } from "./Card/SurfaceCard";
-export type { SurfaceCardStyles } from "./Card/SurfaceCard";
+export { SurfaceCard } from "./Card/SurfaceCard";
 export { StatCard } from "./Card/StatCard";
 export { ActionTile } from "./Card/ActionTile";
 export { QuoteCard } from "./Card/QuoteCard";
+export { SortableCard } from "./Card/SortableCard";
 
 export { TextField } from "./Input/TextField";
 export { SearchField } from "./Input/SearchField";
@@ -36,9 +36,10 @@ export { EmptyState } from "./Feedback/EmptyState";
 
 export { Screen } from "./Layout/Screen";
 export { ScreenHeader } from "./Layout/ScreenHeader";
-export { BottomSheet } from "./Layout/BottomSheet";
+export { BottomPanel } from "./Layout/BottomPanel";
+export { Drawer } from "./Layout/Drawer";
+export { Spacer } from "./Layout/Spacer";
 
 export { List } from "./List/List";
 export type { ListItemData } from "./List/List";
 export { ListSection } from "./List/ListSection";
-export { BottomPanel } from "./Layout/BottomPanel";

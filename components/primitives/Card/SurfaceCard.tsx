@@ -1,57 +1,78 @@
-// components/primitives/Card/SurfaceCard.tsx
-//
-// Shared base for any card that needs semantic color theming
-// (solid/outline x primary/success/warning/...). StatCard and ActionTile
-// both sit on top of this instead of each re-declaring the same 12-color
-// x 2-variant matrix, which is what the old ActionCard/StatisticCard did
-// independently (~280 lines each, two different prop shapes for the same
-// idea).
-//
-// SurfaceCard itself has no opinion about layout — it just resolves
-// { color, variant } into real classNames and hands them to you.
+import { ComponentProps, ReactNode } from "react";
+import { tv } from "tailwind-variants";
 
-import { ReactNode } from "react";
-import { cn } from "@gluestack-ui/utils/nativewind-utils";
 import { Card } from "@/components/ui/card";
 
-export interface SurfaceCardStyles {
-  card: string;
-  thumbnail: string;
-  icon: string;
-  text: string;
-}
+import {
+  buildColorsCompoundVariants,
+  buildColorVariantOptions,
+  SemanticColor,
+  SurfaceVariant,
+} from "@/components/styles/buildColorsVariants";
 
-export function resolveSurfaceStyles(
-  color: string,
-  variant: string,
-): SurfaceCardStyles {
-  return { card: "", thumbnail: "", icon: "", text: "" };
-}
+const surfaceCardStyle = tv({
+  slots: {
+    card: "items-center shadow-none overflow-hidden p-4",
+    thumbnail: "items-center justify-center rounded-sm overflow-hidden",
+    icon: "",
+    text: "",
+  },
 
-interface SurfaceCardProps {
-  color?: string;
-  variant?: string;
+  variants: {
+    variant: {
+      solid: {},
+      outline: {},
+    },
+
+    color: buildColorVariantOptions(),
+  },
+
+  compoundVariants: [
+    ...buildColorsCompoundVariants((color, { outline, solid }) => [
+      {
+        color,
+        variant: "outline",
+        class: {
+          card: outline.surface,
+          thumbnail: outline.surfaceInner,
+          icon: outline.icon,
+          text: outline.text,
+        },
+      },
+      {
+        color,
+        variant: "solid",
+        class: {
+          card: solid.surface,
+          thumbnail: outline.surfaceInner,
+          icon: solid.icon,
+          text: solid.text,
+        },
+      },
+    ]),
+  ],
+});
+
+export type SurfaceCardSlots = ReturnType<typeof surfaceCardStyle>;
+
+type SurfaceCardProps = {
+  color?: SemanticColor;
+  variant?: SurfaceVariant;
   className?: string;
-  children: ReactNode | ((styles: SurfaceCardStyles) => ReactNode);
-}
+  children: ReactNode | ((styles: SurfaceCardSlots) => ReactNode);
+} & Omit<ComponentProps<typeof Card>, "children">;
 
 export function SurfaceCard({
   color = "neutral",
   variant = "outline",
   className,
   children,
+  ...props
 }: SurfaceCardProps) {
-  const styles = resolveSurfaceStyles(color, variant);
+  const styles = surfaceCardStyle({ color, variant });
 
   return (
-    <Card
-      className={cn(
-        "shadow-none overflow-hidden p-4",
-        styles.card,
-        className,
-        variant === "solid" && "bg-primary",
-      )}
-    >
+    <Card className={styles.card({ className })} {...props}>
       {typeof children === "function" ? children(styles) : children}
     </Card>
   );

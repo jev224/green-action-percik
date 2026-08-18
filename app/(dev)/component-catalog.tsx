@@ -189,14 +189,14 @@ export default function ComponentCatalogScreen() {
                   title="Active Students"
                   stats="28"
                   icon={GraduationCap}
-                  className="flex-1"
+                  fill
                 />
                 <StatCard
                   title="Average Points"
                   stats="86"
                   color="success"
                   variant="outline"
-                  className="flex-1"
+                  fill
                 />
               </HStack>
 
@@ -261,7 +261,7 @@ export default function ComponentCatalogScreen() {
                 onValueChange={setSelectValue}
                 placeholder="Select a class"
               />
-              <TextAreaField placeholder="Additional notes..." canGrow />
+              <TextAreaField placeholder="Additional notes..." />
             </VStack>
           </DemoSection>
 

@@ -20,7 +20,7 @@ export default function StudentOverviewScreen() {
       overlayComponent={
         <BottomPanel variant="ghost">
           <HStack space="md">
-            <Button label="Edit" fill />
+            <Button label="Edit" fill size="cta" />
           </HStack>
         </BottomPanel>
       }
@@ -44,21 +44,21 @@ export default function StudentOverviewScreen() {
                 stats="30 kg"
                 icon={Bubbles}
                 variant="outline"
-                className="flex-1"
+                fill
               />
               <StatCard
                 title="Perawatan"
                 stats="5 kali"
                 icon={BrushCleaning}
                 variant="outline"
-                className="flex-1"
+                fill
               />
               <StatCard
                 title="Kompos"
                 stats="Ikut"
                 icon={Apple}
                 variant="outline"
-                className="flex-1"
+                fill
               />
             </HStack>
           </ListSection>

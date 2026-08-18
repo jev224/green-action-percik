@@ -1,8 +1,3 @@
-// components/primitives/Input/SelectField.tsx
-// Was inputs/SelectField.tsx. Same as before, just using cn() for the
-// className merge instead of a template-string fallback, to match every
-// other field.
-
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
 import {
   Select,

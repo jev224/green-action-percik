@@ -12,6 +12,7 @@ import Animated, {
 import { usePressFeedback } from "@/hooks/usePressFeedback";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { EaseView } from "react-native-ease";
+import { AnimationConfig } from "@/components/animation/presets";
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
 
@@ -24,30 +25,24 @@ export function StudentListItem({ student, onPress }: StudentListItemProps) {
   const { name, grade, point, avatarUrl } = student;
 
   const colors = useThemeColors();
-  const { isPressing, bind } = usePressFeedback(1);
+  const { bind, scaleAnimation, isPressing } = usePressFeedback(0.96);
 
   const animatedStyle = useAnimatedStyle(() => {
-    const paddingVertical = interpolate(isPressing ? 1 : 0, [0, 1], [16, 12]);
+    const paddingVertical = interpolate(isPressing ? 1 : 0, [0, 1], [16, 24]);
     const paddingHorizontal = interpolate(isPressing ? 1 : 0, [0, 1], [0, 12]);
 
     return {
-      paddingVertical: withSpring(paddingVertical, {
-        damping: 18,
-        stiffness: 400,
-        mass: 0.5,
-      }),
-      paddingHorizontal: withSpring(paddingHorizontal, {
-        damping: 18,
-        stiffness: 400,
-        mass: 0.5,
-      }),
+      paddingVertical: withSpring(
+        paddingVertical,
+        AnimationConfig.spring.snappy,
+      ),
+
       transform: [
         {
-          scale: withSpring(isPressing ? 0.97 : 1, {
-            damping: 16,
-            stiffness: 450,
-            mass: 0.5,
-          }),
+          scale: withSpring(
+            isPressing ? 0.97 : 1,
+            AnimationConfig.spring.snappy,
+          ),
         },
       ],
     };
@@ -59,41 +54,47 @@ export function StudentListItem({ student, onPress }: StudentListItemProps) {
       onPress={() => onPress?.(student)}
       onPressIn={bind.onPressIn}
       onPressOut={bind.onPressOut}
+      delayHoverIn={0}
+      unstable_pressDelay={100}
     >
-      <AnimatedBox className="rounded-lg overflow-hidden" style={animatedStyle}>
-        <EaseView
-          animate={{
-            opacity: isPressing ? 0.2 : 0,
-          }}
-          transition={{
-            type: "timing",
-            duration: 100,
-          }}
-          style={{
-            backgroundColor: colors.foreground,
-            position: "absolute",
-            inset: 0,
-          }}
-        />
-
-        <Box className="flex-row items-center gap-4">
-          <UserAvatar
-            name={name}
-            size="sm"
-            imageSource={avatarUrl ? { uri: avatarUrl } : undefined}
+      <AnimatedBox style={animatedStyle}>
+        <Box className="absolute -right-4 -left-4 top-0 bottom-0 rounded-lg overflow-hidden">
+          <EaseView
+            animate={{
+              opacity: isPressing ? 0.2 : 0,
+            }}
+            transition={{
+              type: "timing",
+              duration: 100,
+            }}
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundColor: colors.foreground,
+            }}
           />
-
-          <Box className="flex-1">
-            <Heading numberOfLines={1}>{name}</Heading>
-            {grade && <Text>{grade}</Text>}
-          </Box>
-
-          {point != null && (
-            <Heading className="text-primary font-semibold" size="lg">
-              {point} Poin
-            </Heading>
-          )}
         </Box>
+
+        <EaseView animate={scaleAnimation}>
+          <Box className="flex-row items-center gap-4">
+            <UserAvatar
+              name={name}
+              size="sm"
+              imageSource={avatarUrl ? { uri: avatarUrl } : undefined}
+            />
+
+            <Box className="flex-1">
+              <Heading numberOfLines={1}>{name}</Heading>
+              {grade && <Text>{grade}</Text>}
+            </Box>
+
+            {point != null && (
+              <Heading className="text-primary font-semibold" size="lg">
+                {point} Poin
+              </Heading>
+            )}
+          </Box>
+        </EaseView>
       </AnimatedBox>
     </Pressable>
   );

@@ -1,6 +1,3 @@
-// components/primitives/List/ListSection.tsx
-// Was lists/ListSection.tsx. Already clean — moved as-is.
-
 import { ComponentProps, ReactNode } from "react";
 import { Heading } from "@/components/ui/heading";
 import { VStack } from "@/components/ui/vstack";

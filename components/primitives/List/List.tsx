@@ -1,21 +1,17 @@
-// components/primitives/List/List.tsx
-//
-// Was lists/MenuList.tsx — 230 lines: MenuList.Item/.Icon/.Text/.Chevron,
-// a style context, forwardRef on every sub-piece. Same pattern as the old
-// SegmentedControl: a compound JSX API for something that's really just
-// "here's a list of rows, each with an icon/label/optional trailing
-// element." This version takes that as data instead.
-//
-// If a row needs something totally custom (not icon+label+trailing), pass
-// a `render` function for that one item instead of fighting the shape —
-// that's a deliberate escape hatch, not a sign this needs to become a
-// compound component again.
-
 import { ComponentProps, Fragment, ReactNode } from "react";
 import { View, Pressable, Text } from "react-native";
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
 import { ChevronRight } from "lucide-react-native";
 import { Icon } from "@/components/ui/icon";
+import { EaseView } from "react-native-ease";
+import { usePressFeedback } from "@/hooks/usePressFeedback";
+import { useThemeColors } from "@/hooks/useThemeColors";
+import Animated, {
+  interpolate,
+  useAnimatedStyle,
+  withSpring,
+} from "react-native-reanimated";
+import { AnimationConfig } from "@/components/animation/presets";
 
 export interface ListItemData {
   key: string;
@@ -59,12 +55,36 @@ function ListRow({ item }: { item: ListItemData }) {
   const textColor = isDestructive ? "text-destructive" : "text-foreground";
   const iconColor = isDestructive ? "text-destructive" : "text-foreground/80";
 
+  const colors = useThemeColors();
+  const { bind, scaleAnimation, isPressing } = usePressFeedback(1.04);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    const paddingVertical = interpolate(isPressing ? 1 : 0, [0, 1], [20, 24]);
+
+    return {
+      paddingVertical: withSpring(
+        paddingVertical,
+        AnimationConfig.spring.snappy,
+      ),
+
+      transform: [
+        {
+          scale: withSpring(
+            isPressing ? 0.97 : 1,
+            AnimationConfig.spring.snappy,
+          ),
+        },
+      ],
+    };
+  });
+
   const content = (
-    <View
+    <Animated.View
       className={cn(
         "flex-row items-center gap-3 p-5",
         item.disabled && "opacity-40",
       )}
+      style={animatedStyle}
     >
       {item.icon && (
         <Icon as={item.icon} className={cn("h-5 w-5 shrink-0", iconColor)} />
@@ -76,14 +96,34 @@ function ListRow({ item }: { item: ListItemData }) {
         (item.onPress && (
           <Icon as={ChevronRight} className="h-4 w-4 text-foreground/40" />
         ))}
-    </View>
+    </Animated.View>
   );
 
   if (!item.onPress) return content;
 
   return (
-    <Pressable onPress={item.onPress} disabled={item.disabled}>
-      {content}
+    <Pressable
+      onPress={item.onPress}
+      onPressIn={bind.onPressIn}
+      onPressOut={bind.onPressOut}
+      disabled={item.disabled}
+    >
+      <EaseView
+        animate={{
+          opacity: isPressing ? 0.2 : 0,
+        }}
+        transition={{
+          type: "timing",
+          duration: 100,
+        }}
+        style={{
+          backgroundColor: colors.foreground,
+          position: "absolute",
+          inset: 0,
+        }}
+      />
+
+      <EaseView animate={scaleAnimation}>{content}</EaseView>
     </Pressable>
   );
 }

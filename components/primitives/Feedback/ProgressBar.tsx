@@ -1,6 +1,3 @@
-// components/primitives/Feedback/ProgressBar.tsx
-// Was display/ProgressBar.tsx. Already clean — moved as-is.
-
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { Progress, ProgressFilledTrack } from "@/components/ui/progress";

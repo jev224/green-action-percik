@@ -10,6 +10,8 @@ import Animated, {
 import { EaseView } from "react-native-ease";
 import { usePressFeedback } from "@/hooks/usePressFeedback";
 import { useThemeColors } from "@/hooks/useThemeColors";
+import { AnimationConfig } from "@/components/animation/presets";
+import { ScrollView } from "react-native-gesture-handler";
 
 interface FilterChipsProps {
   options: string[];
@@ -27,22 +29,24 @@ export function FilterChips({
   if (options.length === 0) return null;
 
   return (
-    <Box className="flex-row flex-wrap gap-2">
-      <Chip
-        label={allLabel}
-        isActive={selected === null}
-        onPress={() => onSelect(null)}
-      />
-
-      {options.map((option) => (
+    <ScrollView showsHorizontalScrollIndicator={false}>
+      <Box className="flex-row gap-2">
         <Chip
-          key={option}
-          label={option}
-          isActive={selected === option}
-          onPress={() => onSelect(option)}
+          label={allLabel}
+          isActive={selected === null}
+          onPress={() => onSelect(null)}
         />
-      ))}
-    </Box>
+
+        {options.map((option) => (
+          <Chip
+            key={option}
+            label={option}
+            isActive={selected === option}
+            onPress={() => onSelect(option)}
+          />
+        ))}
+      </Box>
+    </ScrollView>
   );
 }
 
@@ -61,11 +65,7 @@ function Chip({
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
       {
-        scale: withSpring(isPressing ? 0.9 : 1, {
-          damping: 9,
-          stiffness: 500,
-          mass: 0.45,
-        }),
+        scale: withSpring(isPressing ? 0.9 : 1, AnimationConfig.spring.bouncy),
       },
     ],
   }));
@@ -80,7 +80,7 @@ function Chip({
         exiting={FadeOut.duration(120)}
         style={animatedStyle}
         className={cn(
-          "px-4 py-1.5 rounded-lg border overflow-hidden",
+          "px-4 py-2.5 rounded-lg border overflow-hidden",
           "bg-muted border-border",
         )}
       >

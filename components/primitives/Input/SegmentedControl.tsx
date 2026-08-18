@@ -1,16 +1,3 @@
-// components/primitives/Input/SegmentedControl.tsx
-//
-// Was inputs/SegmentedControl.tsx — 327 lines: Root/Item/Icon/Image/Label
-// sub-components, 2 React contexts, generics on every piece. All of that
-// existed to support a JSX-children API nothing in this app actually
-// needs. Every real use case (student/teacher picker, module status
-// filter) is just "here are some options, tell me which one is picked."
-//
-// So: one component, one props object. If a future screen genuinely needs
-// something this can't express, that's a signal to design a new,
-// differently-named component — not to grow this one back into the old
-// compound-component shape.
-
 import { View, Pressable, Text as RNText } from "react-native";
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
 import { Icon } from "@/components/ui/icon";

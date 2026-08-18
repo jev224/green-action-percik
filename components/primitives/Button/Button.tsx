@@ -1,22 +1,3 @@
-// components/primitives/Button/Button.tsx
-//
-// The ONE button for the whole app. Every button — navigation, submit,
-// destructive, icon-only — starts here so press animation + haptics are
-// never something you have to remember to add.
-//
-// Replaces: buttons/ActionButton.tsx, buttons/AnimatedButton.tsx,
-// buttons/RedirectButton.tsx.
-//
-// What changed and why:
-// - Old ActionButton took an `action: { type: "click" | "redirect" } `
-//   union and called useNavigation() itself. That means every button had
-//   to know about routing. Now Button only ever takes `onPress`; if a
-//   screen wants to navigate, IT calls navigateTo() and passes the result
-//   in as onPress. Navigation is a screen concern, not a button concern.
-// - Old RedirectButton skipped AnimatedButton entirely, so redirect
-//   buttons didn't feel the same as action buttons. Now there's only one
-//   button, so that inconsistency can't happen again.
-
 import { ComponentProps } from "react";
 import { StyleSheet } from "react-native";
 import { EaseView } from "react-native-ease";
@@ -34,7 +15,10 @@ import {
   PRESS_OPACITY_TRANSITION,
 } from "@/hooks/usePressFeedback";
 
-type ButtonProps = Omit<ComponentProps<typeof GSButton>, "children"> & {
+type ButtonProps = Omit<
+  ComponentProps<typeof GSButton>,
+  "children" | "size"
+> & {
   /** Shorthand — skip writing <ButtonText> yourself. */
   label?: string;
   /** Shorthand — skip writing <ButtonIcon> yourself. */
@@ -43,6 +27,8 @@ type ButtonProps = Omit<ComponentProps<typeof GSButton>, "children"> & {
   children?: React.ReactNode;
 
   fill?: boolean;
+
+  size?: ComponentProps<typeof ButtonIcon>["size"] | "cta";
 };
 
 export function Button({
@@ -68,8 +54,8 @@ export function Button({
       style={{ flex: fill ? 1 : undefined }}
     >
       <GSButton
-        className={cn("overflow-hidden", className)}
-        size={size}
+        className={cn("overflow-hidden", size === "cta" && "py-3", className)}
+        size={size === "cta" ? "sm" : size}
         onPressIn={(event) => {
           bind.onPressIn();
           onPressIn?.(event);
@@ -87,7 +73,12 @@ export function Button({
         />
         {children ?? (
           <>
-            {icon && <ButtonIcon className="mr-2 w-6 h-6" as={icon} />}
+            {icon && (
+              <ButtonIcon
+                className={cn("w-6 h-6", size !== "icon" && "mr-2")}
+                as={icon}
+              />
+            )}
             {label && (
               <ButtonText className="text-lg font-semibold">{label}</ButtonText>
             )}

@@ -6,6 +6,8 @@ import {
   Backpack,
   BrushCleaning,
   Bubbles,
+  Coins,
+  GraduationCap,
   Recycle,
   Sprout,
   Trash2,
@@ -15,7 +17,6 @@ import { Greeting } from "@/components/domain";
 import {
   ActionTile,
   ListSection,
-  QuoteCard,
   Screen,
   StatCard,
 } from "@/components/primitives";
@@ -29,32 +30,54 @@ export default function HomeScreen() {
           <Greeting name="Sharleen" info={`${"Guru RPL"} • Admin`} />
 
           <HStack space="md">
-            <StatCard title="Siswa" stats="29" className="flex-1" size="md" />
-            <StatCard title="Poin" stats="120" className="flex-1" size="md" />
+            <StatCard
+              title="Siswa"
+              stats="29"
+              icon={GraduationCap}
+              thumbnailRotation={-12}
+              animation="fun"
+              fill
+              size="md"
+              color="info"
+              variant="outline"
+            />
+            <StatCard
+              title="Poin"
+              stats="120"
+              icon={Coins}
+              fill
+              animation="fun"
+              size="md"
+            />
           </HStack>
 
-          <ListSection title="Statistik saat ixni">
+          <ListSection title="Statistik saat ini">
             <HStack space="md">
               <StatCard
                 title="Sampah"
                 stats="30 kg"
                 icon={Bubbles}
                 variant="outline"
-                className="flex-1"
+                fill
+                animation="fun"
+                color="organic"
               />
               <StatCard
                 title="Perawatan"
                 stats="5 kali"
                 icon={BrushCleaning}
                 variant="outline"
-                className="flex-1"
+                fill
+                animation="fun"
               />
               <StatCard
                 title="Kompos"
                 stats="Ikut"
                 icon={Apple}
                 variant="outline"
-                className="flex-1"
+                fill
+                animation="fun"
+                color="inorganic"
               />
             </HStack>
           </ListSection>
@@ -65,8 +88,8 @@ export default function HomeScreen() {
                 title="Pengumpulan Sampah"
                 description="Kumpulkan dan catat sampah organik atau anorganik"
                 icon={Trash2}
-                color="primary"
-                variant="outline"
+                variant="solid"
+                thumbnailPosition="right"
                 onPress={() => {}}
               />
 
@@ -74,8 +97,8 @@ export default function HomeScreen() {
                 title="Perawatan Taman"
                 description="Catat kegiatan merawat tanaman dan taman sekolah"
                 icon={Sprout}
-                color="primary"
-                variant="outline"
+                variant="solid"
+                thumbnailPosition="right"
                 onPress={() => {}}
               />
 
@@ -83,8 +106,8 @@ export default function HomeScreen() {
                 title="Kegiatan Kompos"
                 description="Catat partisipasi kegiatan kompos bulanan kelas"
                 icon={Recycle}
-                color="primary"
-                variant="outline"
+                variant="solid"
+                thumbnailPosition="right"
                 onPress={() => {}}
               />
             </VStack>
