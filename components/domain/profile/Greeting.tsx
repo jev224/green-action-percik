@@ -27,6 +27,7 @@ import {
   ProfileMenuGlideIn,
   ProfileMenuGlideOut,
 } from "@/components/animation/presets";
+import { truncateText } from "@/utils";
 
 interface GreetingProps {
   name: string;
@@ -40,7 +41,7 @@ export function Greeting({ name, info, imageSource }: GreetingProps) {
   return (
     <HStack className="justify-between items-center">
       <VStack className="flex-1">
-        <Heading size="xl">Halo, {name} 🖐</Heading>
+        <Heading size="xl">Halo, {truncateText(name, 12)} 🖐</Heading>
         {info && <Text>{info}</Text>}
       </VStack>
 

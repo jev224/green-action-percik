@@ -1,9 +1,20 @@
+import { getStudentStats } from "@/services/teacher/students";
+
 import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
+import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
+
+import { Greeting } from "@/components/domain";
+
+import {
+  ActionTile,
+  ListSection,
+  Screen,
+  StatCard,
+} from "@/components/primitives";
 
 import {
   Apple,
-  Backpack,
   BrushCleaning,
   Bubbles,
   Coins,
@@ -12,27 +23,45 @@ import {
   Sprout,
   Trash2,
 } from "lucide-react-native";
-
-import { Greeting } from "@/components/domain";
-import {
-  ActionTile,
-  ListSection,
-  Screen,
-  StatCard,
-} from "@/components/primitives";
+import { useAsyncData } from "@/hooks/useAsyncData";
+import { getTeacherProfile } from "@/services/teacher/profile";
+import { parseProfileInfo } from "@/utils";
 
 export default function HomeScreen() {
+  const { data, isLoading, isError } = useAsyncData(
+    async () => ({
+      profile: await getTeacherProfile(),
+      stats: await getStudentStats(),
+    }),
+    [],
+  );
+
   return (
     <Screen
       scrollable
-      contentComponent={
+      isLoading={isLoading}
+      isError={isError}
+      data={data}
+      contentComponent={({
+        stats: {
+          studentCount,
+          studentPoinTotal,
+          wasteWeightTotal,
+          gardenActivityCount,
+          compostActivityCount,
+        },
+        profile: { name, major },
+      }) => (
         <>
-          <Greeting name="Sharleen" info={`${"Guru RPL"} • Admin`} />
+          <Greeting
+            name={name}
+            info={parseProfileInfo({ role: "teacher", major })}
+          />
 
           <HStack space="md">
             <StatCard
               title="Siswa"
-              stats="29"
+              stats={studentCount}
               icon={GraduationCap}
               thumbnailRotation={-12}
               animation="fun"
@@ -41,9 +70,10 @@ export default function HomeScreen() {
               color="info"
               variant="outline"
             />
+
             <StatCard
               title="Poin"
-              stats="120"
+              stats={studentPoinTotal}
               icon={Coins}
               fill
               animation="fun"
@@ -55,24 +85,26 @@ export default function HomeScreen() {
             <HStack space="md">
               <StatCard
                 title="Sampah"
-                stats="30 kg"
+                stats={`${wasteWeightTotal} kg`}
                 icon={Bubbles}
                 variant="outline"
                 fill
                 animation="fun"
                 color="organic"
               />
+
               <StatCard
                 title="Perawatan"
-                stats="5 kali"
+                stats={`${gardenActivityCount} Kali`}
                 icon={BrushCleaning}
                 variant="outline"
                 fill
                 animation="fun"
               />
+
               <StatCard
                 title="Kompos"
-                stats="Ikut"
+                stats={`${compostActivityCount} Kali`}
                 icon={Apple}
                 variant="outline"
                 fill
@@ -112,6 +144,37 @@ export default function HomeScreen() {
               />
             </VStack>
           </ListSection>
+        </>
+      )}
+      loadingComponent={
+        <>
+          <HStack className="w-full justify-between items-center">
+            <VStack space="sm">
+              <SkeletonText className="w-48 h-5" />
+              <SkeletonText className="w-32 h-5" />
+            </VStack>
+
+            <Skeleton className="aspect-square w-16 h-16 rounded-full" />
+          </HStack>
+
+          <HStack space="md" className="h-24">
+            <Skeleton className="flex-1" />
+            <Skeleton className="flex-1" />
+          </HStack>
+
+          <HStack space="md" className="h-32">
+            <Skeleton className="flex-1" />
+            <Skeleton className="flex-1" />
+            <Skeleton className="flex-1" />
+          </HStack>
+
+          <VStack space="md">
+            <Skeleton className="h-24" />
+            <Skeleton className="h-24" />
+            <Skeleton className="h-24" />
+            <Skeleton className="h-24" />
+            <Skeleton className="h-24" />
+          </VStack>
         </>
       }
     />

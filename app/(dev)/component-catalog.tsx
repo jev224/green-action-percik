@@ -218,10 +218,7 @@ export default function ComponentCatalogScreen() {
                 onPress={() => {}}
               />
 
-              <QuoteCard
-                quote="Education is the most powerful weapon which you can use to change the world."
-                author="Nelson Mandela"
-              />
+              <QuoteCard />
 
               {/* SurfaceCard itself, shown raw — this is what StatCard and
                   ActionTile are both built out of. You'd reach for this
@@ -229,7 +226,7 @@ export default function ComponentCatalogScreen() {
                   of those two shapes. */}
               <SurfaceCard color="warning" variant="outline">
                 {(styles) => (
-                  <Text className={styles.text}>
+                  <Text className={styles.text()}>
                     Raw SurfaceCard — build a new card shape on this instead of
                     inventing a new color system.
                   </Text>
@@ -376,10 +373,7 @@ export default function ComponentCatalogScreen() {
                 name="Ms. Yamamoto"
                 info="Homeroom Teacher, Class 10A"
               />
-              <ProfileHeader
-                name="Haruto Sato"
-                role={{ type: "student", grade: "10A", nis: "2024001" }}
-              />
+              <ProfileHeader name="Haruto Sato" role={{ type: "student" }} />
             </VStack>
           </DemoSection>
 

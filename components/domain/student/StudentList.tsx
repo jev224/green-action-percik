@@ -42,7 +42,7 @@ export function StudentList({ data, onPressStudent }: StudentListProps) {
           <StudentListItem student={item} onPress={onPressStudent} />
         </Animated.View>
       )}
-      keyExtractor={(student) => student.id}
+      keyExtractor={(student) => student.user_id}
     />
   );
 }

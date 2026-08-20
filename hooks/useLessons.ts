@@ -1,19 +1,19 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { useFuzzySearch } from "@/hooks/useFuzzySearch";
-import type { LucideIcon } from "lucide-react-native";
-
-import { Leaf, Recycle, Sprout, RefreshCw } from "lucide-react-native";
+import { useAsyncData } from "@/hooks/useAsyncData";
 
 import type {
   SortFieldOption,
   SortState,
 } from "@/components/primitives/Input/SortSelect";
+import { getAllLessons } from "@/services/teacher/lessons";
 
 export interface LessonData {
-  id: string;
+  id: number;
   title: string;
   description: string;
-  icon: LucideIcon;
+  photo?: string;
+  photoUrl: string | null;
 }
 
 export type LessonSortField = "title";
@@ -27,39 +27,26 @@ export const LESSON_SORT_OPTIONS: SortFieldOption<LessonSortField>[] = [
   },
 ];
 
-export const LESSONS: LessonData[] = [
-  {
-    id: "1",
-    title: "Mengenal Sampah Organik",
-    description: "Pelajari jenis sampah organik dan cara mengelolanya",
-    icon: Leaf,
-  },
-  {
-    id: "2",
-    title: "Mengenal Sampah Anorganik",
-    description: "Kenali sampah anorganik dan cara memilahnya dengan benar",
-    icon: Recycle,
-  },
-  {
-    id: "3",
-    title: "Perawatan Taman Sekolah",
-    description: "Pelajari cara merawat tanaman dan menjaga kebersihan taman",
-    icon: Sprout,
-  },
-  {
-    id: "4",
-    title: "Dasar Dasar Kompos",
-    description: "Kenali proses pengomposan dan manfaatnya bagi lingkungan",
-    icon: RefreshCw,
-  },
-];
+// getAllLessons returns numeric ids; normalize to string to match LessonData
+const fetchLessons = async (): Promise<LessonData[]> => {
+  const lessons = await getAllLessons();
+  return lessons;
+};
 
 export function useLessons() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sort, setSort] = useState<SortState<LessonSortField> | null>(null);
 
+  const {
+    data: lessons,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useAsyncData<LessonData[]>(fetchLessons, []);
+
   const searched = useFuzzySearch(
-    LESSONS,
+    lessons ?? [],
     ["title", "description"],
     searchQuery,
   );
@@ -81,5 +68,10 @@ export function useLessons() {
     setSort,
 
     results,
+
+    isLoading,
+    isError,
+    error,
+    refetch,
   };
 }

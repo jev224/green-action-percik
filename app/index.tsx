@@ -1,12 +1,36 @@
-import { Button, ButtonText } from "@/components/ui/button";
-import { Text } from "@/components/ui/text";
-import { Center } from "@/components/ui/center";
-import { VStack } from "@/components/ui/vstack";
-import React from "react";
-import { ScrollView } from "react-native";
-import { Redirect, Stack } from "expo-router";
+import { useEffect, useState } from "react";
+import { Redirect } from "expo-router";
+import { getRole } from "@/services/auth";
+import { View } from "react-native";
+
+type Role = "student" | "teacher" | null;
 
 export default function Index() {
-  return <Redirect href={"/(admin)/(tabs)/home"} />;
-  return <Redirect href={"/(dev)/component-catalog"} />;
+  const [role, setRole] = useState<Role>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadRole = async () => {
+      try {
+        const role = await getRole();
+        setRole(role);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadRole();
+  }, []);
+
+  if (loading) return <View className="bg-background" />;
+
+  if (!role) {
+    return <Redirect href="/(auth)/login" />;
+  }
+
+  if (role === "teacher") {
+    return <Redirect href="/(teacher)/(tabs)/home" />;
+  }
+
+  return <Redirect href="/(student)/(tabs)/home" />;
 }

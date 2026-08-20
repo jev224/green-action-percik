@@ -6,14 +6,18 @@ import { Box } from "@/components/ui/box";
 import { VStack } from "@/components/ui/vstack";
 import { Center } from "@/components/ui/center";
 import { useThemeColors } from "@/hooks/useThemeColors";
+import { Spinner } from "@/components/ui/spinner";
 
-interface ScreenProps {
+type ContentComponent<T> = ReactNode | ((data: NonNullable<T>) => ReactNode);
+
+interface ScreenProps<T = undefined> {
   isLoading?: boolean;
   isError?: boolean;
+  data?: T;
   overlayComponent?: ReactNode;
   portalComponent?: ReactNode;
   headerComponent?: ReactNode;
-  contentComponent: ReactNode;
+  contentComponent: ContentComponent<T>;
   errorComponent?: ReactNode;
   loadingComponent?: ReactNode;
   footerComponent?: ReactNode;
@@ -21,9 +25,10 @@ interface ScreenProps {
   scrollable?: boolean;
 }
 
-export function Screen({
+export function Screen<T = undefined>({
   isLoading,
   isError,
+  data,
   space = "2xl",
   headerComponent,
   overlayComponent,
@@ -32,13 +37,35 @@ export function Screen({
   loadingComponent,
   footerComponent,
   scrollable,
-}: ScreenProps) {
+}: ScreenProps<T>) {
   useThemeColors();
 
-  const canRenderContent = !isLoading && !isError;
+  const isContentFn = typeof contentComponent === "function";
+
+  // If contentComponent is a render-prop, treat missing data as loading.
+  const isDataMissing = isContentFn && (data === null || data === undefined);
+  const effectiveIsLoading = isLoading || isDataMissing;
+  const canRenderContent = !effectiveIsLoading && !isError;
+
+  const isUsingDefaultLoading = effectiveIsLoading && !loadingComponent;
+  const shouldScroll = scrollable && !isUsingDefaultLoading;
+
+  const renderedContent = canRenderContent
+    ? isContentFn
+      ? (contentComponent as (data: T) => ReactNode)(data as T)
+      : contentComponent
+    : null;
+
+  const renderedLoading = loadingComponent ? (
+    loadingComponent
+  ) : (
+    <Center className="flex-1">
+      <Spinner />
+    </Center>
+  );
 
   const contentStyle = {
-    flex: scrollable ? undefined : 1,
+    flex: shouldScroll ? undefined : 1,
   };
 
   const content = (
@@ -47,8 +74,8 @@ export function Screen({
       style={contentStyle}
     >
       <VStack className="px-8 py-6" style={contentStyle} space={space}>
-        {canRenderContent && contentComponent}
-        {isLoading && loadingComponent}
+        {canRenderContent && renderedContent}
+        {effectiveIsLoading && renderedLoading}
         {isError && <Center>{errorComponent}</Center>}
         {footerComponent}
       </VStack>
@@ -69,7 +96,7 @@ export function Screen({
         </Box>
       )}
 
-      {scrollable ? (
+      {scrollable && shouldScroll ? (
         <ScrollView showsVerticalScrollIndicator={false}>{content}</ScrollView>
       ) : (
         content

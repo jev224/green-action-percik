@@ -22,7 +22,7 @@ interface StudentListItemProps {
 }
 
 export function StudentListItem({ student, onPress }: StudentListItemProps) {
-  const { name, grade, point, avatarUrl } = student;
+  const { name, grade, point, photo_url } = student;
 
   const colors = useThemeColors();
   const { bind, scaleAnimation, isPressing } = usePressFeedback(0.96);
@@ -80,7 +80,7 @@ export function StudentListItem({ student, onPress }: StudentListItemProps) {
             <UserAvatar
               name={name}
               size="sm"
-              imageSource={avatarUrl ? { uri: avatarUrl } : undefined}
+              imageSource={photo_url ? { uri: photo_url } : undefined}
             />
 
             <Box className="flex-1">

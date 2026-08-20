@@ -7,6 +7,7 @@ interface ListSectionProps {
   children: ReactNode;
   className?: string;
   size?: ComponentProps<typeof Heading>["size"];
+  space?: ComponentProps<typeof VStack>["space"];
 }
 
 export function ListSection({
@@ -14,9 +15,10 @@ export function ListSection({
   children,
   className,
   size = "lg",
+  space = "lg",
 }: ListSectionProps) {
   return (
-    <VStack className={className} space="lg">
+    <VStack className={className} space={space}>
       <Heading size={size} numberOfLines={2}>
         {title}
       </Heading>

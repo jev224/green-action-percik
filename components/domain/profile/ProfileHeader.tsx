@@ -30,8 +30,8 @@ const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get("window");
 const PREVIEW_PX = 280; // the actual rendered pixel size of UserAvatar size="lg"
 
 type ProfileRole =
-  | { type: "student"; grade?: string; nis?: string }
-  | { type: "teacher"; subject?: string };
+  | { type: "student"; info?: string; nis?: number }
+  | { type: "teacher"; info?: string };
 
 interface ProfileHeaderProps {
   name: string;
@@ -121,21 +121,7 @@ export function ProfileHeader({
     );
   };
 
-  const subtitle =
-    role.type === "student"
-      ? role.grade
-        ? `${role.grade} ∙ Siswa`
-        : "Siswa"
-      : role.subject
-        ? `${role.subject} (Admin) ∙ Guru`
-        : "Admin ∙ Guru";
-
   const id = role.type === "student" ? role.nis : undefined;
-
-  const avatarClassName = cn(
-    size === "lg" && "w-32 h-32",
-    size === "md" && "w-28 h-28",
-  );
 
   return (
     <>
@@ -157,9 +143,22 @@ export function ProfileHeader({
         <VStack
           className={layout === "centered" ? "items-center mt-2" : undefined}
         >
-          <Heading size={size === "lg" ? "2xl" : "xl"}>{name}</Heading>
-          <Text size="lg">{subtitle}</Text>
-          {id && <Text>{id}</Text>}
+          <Heading
+            numberOfLines={layout === "centered" ? 1 : 2}
+            adjustsFontSizeToFit
+            minimumFontScale={0.7}
+            className={cn(
+              layout === "centered" && "text-center",
+              layout === "row" && "w-[70%]",
+            )}
+            size={size === "lg" ? "2xl" : "xl"}
+          >
+            {name}
+          </Heading>
+          <Text className="font-medium opacity-80" size="lg">
+            {role.info}
+          </Text>
+          {id && <Text className="opacity-60">{id}</Text>}
         </VStack>
       </Box>
 

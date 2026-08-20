@@ -82,7 +82,7 @@ type StatCardVariants = VariantProps<typeof statCardStyle>;
 export type StatCardSize = StatCardVariants["size"];
 interface StatCardProps {
   title: string;
-  stats: string;
+  stats: string | number;
   imageSource?: ImageSourcePropType;
   icon?: ComponentProps<typeof Icon>["as"];
   size?: StatCardSize;

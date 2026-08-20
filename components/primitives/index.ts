@@ -39,7 +39,10 @@ export { ScreenHeader } from "./Layout/ScreenHeader";
 export { BottomPanel } from "./Layout/BottomPanel";
 export { Drawer } from "./Layout/Drawer";
 export { Spacer } from "./Layout/Spacer";
+export { Modal } from "./Layout/Modal";
 
 export { List } from "./List/List";
 export type { ListItemData } from "./List/List";
 export { ListSection } from "./List/ListSection";
+
+export { GradientHeading } from "./Typography/AnimatedGradientHeading";

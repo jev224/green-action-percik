@@ -1,5 +1,6 @@
 import {
   Easing,
+  LinearTransition,
   withSequence,
   withSpring,
   withTiming,
@@ -136,6 +137,11 @@ export const ProfileMenuGlideIn = (values: EntryAnimationsValues) => {
     },
   };
 };
+
+const layoutEasing = Easing.bezier(0.39, 0.06, 0.07, 0.99);
+
+export const contentLayoutTransition =
+  LinearTransition.duration(350).easing(layoutEasing);
 
 export const ProfileMenuGlideOut = (values: ExitAnimationsValues) => {
   "worklet";

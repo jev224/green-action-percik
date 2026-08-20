@@ -5,7 +5,7 @@ import { Icon } from "@/components/ui/icon";
 import { VStack } from "@/components/ui/vstack";
 import { Heading } from "@/components/ui/heading";
 
-import { GripVertical } from "lucide-react-native";
+import { GripVertical, Trash, XIcon } from "lucide-react-native";
 import { Pressable } from "react-native";
 import { SurfaceCard } from "./SurfaceCard";
 
@@ -13,6 +13,7 @@ import {
   SemanticColor,
   SurfaceVariant,
 } from "@/components/styles/buildColorsVariants";
+import { IconButton } from "../Button/IconButton";
 
 interface SortableCardProps {
   title: string;
@@ -20,6 +21,7 @@ interface SortableCardProps {
   variant?: SurfaceVariant;
   description?: string;
   onPress?: () => void;
+  onDelete?: () => void;
 }
 
 export const SortableCard = ({
@@ -28,6 +30,7 @@ export const SortableCard = ({
   color,
   variant,
   onPress,
+  onDelete,
 }: SortableCardProps) => {
   return (
     <Pressable onPress={onPress}>
@@ -52,6 +55,14 @@ export const SortableCard = ({
                 </Text>
               )}
             </VStack>
+
+            <IconButton
+              icon={Trash}
+              size="sm"
+              variant="outline"
+              onPress={onDelete}
+              className="rounded-sm "
+            />
           </>
         )}
       </SurfaceCard>

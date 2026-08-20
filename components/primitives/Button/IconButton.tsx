@@ -8,12 +8,14 @@ type IconButtonProps = Omit<
   "label" | "icon" | "children" | "size"
 > & {
   icon: ComponentProps<typeof ButtonIcon>["as"];
+  size?: "md" | "sm";
 };
 
 export function IconButton({
   icon,
   className,
   variant = "outline",
+  size = "md",
   ...props
 }: IconButtonProps) {
   return (
@@ -21,7 +23,13 @@ export function IconButton({
       variant={variant}
       size="icon"
       icon={icon}
-      className={cn("p-2 aspect-square rounded-sm", className)}
+      iconClassName={cn(size === "sm" && "w-5 h-5")}
+      {...props}
+      className={cn(
+        "p-2 aspect-square rounded-sm",
+        size === "sm" && "p-1",
+        className,
+      )}
       {...props}
     />
   );

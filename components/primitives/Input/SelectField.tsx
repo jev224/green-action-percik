@@ -36,11 +36,11 @@ export function SelectField({
   return (
     <Select selectedValue={value} onValueChange={onValueChange}>
       <SelectTrigger
-        className={cn("rounded-md justify-between", className)}
+        className={cn("rounded-md justify-between py-4", className)}
         variant="outline"
         size="lg"
       >
-        <SelectInput className="ml-3" placeholder={placeholder} />
+        <SelectInput className="ml-3 font-medium" placeholder={placeholder} />
         <SelectIcon className="mr-3" as={ChevronDownIcon} />
       </SelectTrigger>
 

@@ -7,17 +7,14 @@
     "icon": "./assets/images/icon.png",
     "scheme": "starterkitexpo",
     "userInterfaceStyle": "automatic",
-
     "splash": {
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.starter-kit-expo-uniwind"
     },
-
     "android": {
       "package": "com.anonymous.starterkitexpouniwind",
       "predictiveBackGestureEnabled": true,
@@ -27,13 +24,11 @@
         "backgroundColor": "#ffffff"
       }
     },
-
     "web": {
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-
     "plugins": [
       "expo-router",
       "expo-font",
@@ -45,9 +40,9 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-sqlite"
     ],
-
     "experiments": {
       "typedRoutes": true
     }

@@ -5,12 +5,16 @@ import { useNavigation } from "@/hooks/useNavigation";
 
 interface BackButtonProps {
   fallbackHref?: Href;
+  onPress?: () => void;
 }
 
-export function BackButton({ fallbackHref }: BackButtonProps) {
+export function BackButton({ fallbackHref, onPress }: BackButtonProps) {
   const { goBack } = useNavigation();
 
   return (
-    <IconButton icon={ChevronLeftIcon} onPress={() => goBack(fallbackHref)} />
+    <IconButton
+      icon={ChevronLeftIcon}
+      onPress={onPress ? onPress : () => goBack(fallbackHref)}
+    />
   );
 }
