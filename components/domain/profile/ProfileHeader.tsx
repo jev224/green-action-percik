@@ -27,7 +27,7 @@ import { UserAvatar } from "@/components/primitives/Avatar/UserAvatar";
 import { AnimationConfig } from "@/components/animation/presets";
 
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get("window");
-const PREVIEW_PX = 280; // the actual rendered pixel size of UserAvatar size="lg"
+const PREVIEW_PX = SCREEN_W - 64; // the actual rendered pixel size of UserAvatar size="lg"
 
 type ProfileRole =
   | { type: "student"; info?: string; nis?: number }
@@ -164,7 +164,7 @@ export function ProfileHeader({
 
       <Modal visible={previewVisible} transparent onRequestClose={closePreview}>
         <Animated.View
-          className="absolute inset-0 bg-black/80"
+          className="absolute inset-0 bg-background/90"
           style={bgAnimatedStyle}
         />
         <Pressable className="flex-1" onPress={closePreview}>

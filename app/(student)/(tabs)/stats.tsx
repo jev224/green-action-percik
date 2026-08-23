@@ -1,58 +1,66 @@
-import { FlatList } from "react-native";
-
+import { Heading } from "@/components/ui/heading";
+import { Skeleton } from "@/components/ui/skeleton";
 import { HStack } from "@/components/ui/hstack";
-
-import { LessonData, useLessons } from "@/hooks/useLessons";
-
-import {
-  Apple,
-  BrushCleaning,
-  Bubbles,
-  Leaf,
-  LeafyGreen,
-  Medal,
-  Plus,
-  Sprout,
-  Trash2,
-} from "lucide-react-native";
+import { VStack } from "@/components/ui/vstack";
 
 import {
   ActionTile,
-  List,
   ListSection,
   ProgressBar,
   Screen,
   ScreenHeader,
   StatCard,
 } from "@/components/primitives";
-import { Heading } from "@/components/ui/heading";
-import { useAsyncData } from "@/hooks/useAsyncData";
-import { getHomeStatistics } from "@/services/student/statistics";
-import { calculatePercentage } from "@/utils";
-import { Skeleton } from "@/components/ui/skeleton";
-import { VStack } from "@/components/ui/vstack";
 
-const TARGETS = {
-  waste: 160,
-  compost: 1,
-  garden: 4,
-};
+import {
+  Apple,
+  BrushCleaning,
+  Bubbles,
+  Leaf,
+  Medal,
+  Sprout,
+  Trash2,
+} from "lucide-react-native";
+
+import {
+  getStudentStatistics,
+  getStudentTargets,
+} from "@/services/student/statistics";
+
+import { useAsyncData } from "@/hooks/useAsyncData";
+
+import { calculatePercentage } from "@/utils";
 
 export default function StatsiticScreen() {
-  const { data, isLoading, isError } = useAsyncData(getHomeStatistics, []);
+  const { data, isLoading, isError, refresh, isRefreshing } = useAsyncData(
+    async () => ({
+      stats: await getStudentStatistics(),
+      targets: await getStudentTargets(),
+    }),
+    [],
+  );
 
   return (
     <Screen
-      headerComponent={<ScreenHeader title="Statistik kamu" />}
       scrollable
+      data={data}
       isLoading={isLoading}
       isError={isError}
-      data={data}
+      onRefresh={refresh}
+      isRefreshing={isRefreshing}
+      headerComponent={<ScreenHeader title="Statistik kamu" />}
       contentComponent={({
-        wasteWeightTotal,
-        gardenActivityCount,
-        compostActivityCount,
-        studentPoints,
+        stats: {
+          wasteWeightTotal,
+          gardenActivityCount,
+          compostActivityCount,
+          studentPoints,
+        },
+        targets: {
+          wasteWeightTarget,
+          compostActivityTarget,
+          gardenActivityTarget,
+        },
       }) => (
         <>
           <StatCard
@@ -98,14 +106,17 @@ export default function StatsiticScreen() {
             <ActionTile
               title="Sampah"
               icon={Trash2}
-              variant="outline"
+              variant="ghost"
               headerRightComponent={
-                <Heading size="md">{TARGETS.waste} kg</Heading>
+                <Heading size="md">{wasteWeightTarget} kg</Heading>
               }
               bottomComponent={
                 <ProgressBar
-                  text={`${wasteWeightTotal} dari ${TARGETS.waste} kg terkumpul`}
-                  value={calculatePercentage(wasteWeightTotal, TARGETS.waste)}
+                  text={`${wasteWeightTotal} dari ${wasteWeightTarget} kg terkumpul`}
+                  value={calculatePercentage(
+                    wasteWeightTotal,
+                    wasteWeightTarget,
+                  )}
                 />
               }
             />
@@ -113,16 +124,16 @@ export default function StatsiticScreen() {
             <ActionTile
               title="Perawatan Taman"
               icon={Sprout}
-              variant="outline"
+              variant="ghost"
               headerRightComponent={
-                <Heading size="md">{TARGETS.garden}x</Heading>
+                <Heading size="md">{gardenActivityTarget}x</Heading>
               }
               bottomComponent={
                 <ProgressBar
-                  text={`${gardenActivityCount} dari ${TARGETS.garden} kegiatan`}
+                  text={`${gardenActivityCount} dari ${gardenActivityTarget} kegiatan`}
                   value={calculatePercentage(
                     gardenActivityCount,
-                    TARGETS.garden,
+                    gardenActivityTarget,
                   )}
                 />
               }
@@ -131,16 +142,16 @@ export default function StatsiticScreen() {
             <ActionTile
               title="Kompos"
               icon={Leaf}
-              variant="outline"
+              variant="ghost"
               headerRightComponent={
-                <Heading size="md">{TARGETS.compost}x</Heading>
+                <Heading size="md">{compostActivityTarget}x</Heading>
               }
               bottomComponent={
                 <ProgressBar
-                  text={`${compostActivityCount} dari ${TARGETS.compost} kegiatan`}
+                  text={`${compostActivityCount} dari ${compostActivityTarget} kegiatan`}
                   value={calculatePercentage(
                     compostActivityCount,
-                    TARGETS.compost,
+                    compostActivityTarget,
                   )}
                 />
               }

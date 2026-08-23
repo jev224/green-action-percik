@@ -1,8 +1,11 @@
-import { useStudents } from "@/hooks/useStudents";
+import { ScrollView } from "react-native-gesture-handler";
 
+import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
 import { HStack } from "@/components/ui/hstack";
+import { VStack } from "@/components/ui/vstack";
 
 import { StudentList } from "@/components/domain";
+
 import {
   EmptyState,
   FilterChips,
@@ -11,14 +14,16 @@ import {
   SearchField,
   SortSelect,
 } from "@/components/primitives";
-import { useNavigation } from "@/hooks/useNavigation";
-import { ScrollView } from "react-native-gesture-handler";
-import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
-import { VStack } from "@/components/ui/vstack";
+
 import { useStudentActionStore } from "@/stores/studentOverview";
 
+import { useNavigation } from "@/hooks/useNavigation";
+import { useStudents } from "@/hooks/useStudents";
+
 export default function StudentsScreen() {
+  const viewStudent = useStudentActionStore((state) => state.viewStudent);
   const { navigateTo } = useNavigation();
+
   const {
     searchQuery,
     setSearchQuery,
@@ -31,14 +36,16 @@ export default function StudentsScreen() {
     results,
     isError,
     isLoading,
+    refresh,
+    isRefreshing,
   } = useStudents();
-
-  const viewStudent = useStudentActionStore((state) => state.viewStudent);
 
   return (
     <Screen
       isLoading={isLoading}
       isError={isError}
+      onRefresh={refresh}
+      isRefreshing={isRefreshing}
       headerComponent={
         <>
           <ScreenHeader title="Kelola Siswa" />

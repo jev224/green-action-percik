@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { BackButton } from "@/components/domain";
 import {
   BottomPanel,
@@ -10,11 +12,8 @@ import {
   Spacer,
   TextField,
 } from "@/components/primitives";
-import { Leaf, Recycle } from "lucide-react-native";
-import { useState } from "react";
 
-const MIN_WEIGHT = 0;
-const MAX_WEIGHT = 1000;
+import { Leaf, Recycle } from "lucide-react-native";
 
 export default function WasteSubmissionScreen() {
   const [wasteType, setWasteType] = useState("organic");
@@ -30,7 +29,7 @@ export default function WasteSubmissionScreen() {
         />
       }
       overlayComponent={
-        <BottomPanel>
+        <BottomPanel variant="ghost">
           <Button size="cta" label="Kirim" />
         </BottomPanel>
       }

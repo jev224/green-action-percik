@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { BackButton } from "@/components/domain";
 import {
   BottomPanel,
@@ -9,8 +11,6 @@ import {
   SelectField,
   Spacer,
 } from "@/components/primitives";
-
-import { useState } from "react";
 
 export default function CompostSubmissionScreen() {
   const [activityType, setActivityType] = useState<string>("");
@@ -27,7 +27,7 @@ export default function CompostSubmissionScreen() {
         />
       }
       overlayComponent={
-        <BottomPanel>
+        <BottomPanel variant="ghost">
           <Button size="cta" label="Kirim" />
         </BottomPanel>
       }

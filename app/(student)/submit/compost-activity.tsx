@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { BackButton } from "@/components/domain";
 import {
   BottomPanel,
@@ -6,13 +8,9 @@ import {
   PhotoPicker,
   Screen,
   ScreenHeader,
-  SegmentedControl,
   SelectField,
   Spacer,
-  TextField,
 } from "@/components/primitives";
-import { Leaf, Recycle } from "lucide-react-native";
-import { useState } from "react";
 
 export default function CompostSubmissionScreen() {
   const [activityLocation, setActivityLocation] = useState<string>("");
@@ -25,7 +23,7 @@ export default function CompostSubmissionScreen() {
         <ScreenHeader title="Laporan Kompos" leftComponent={<BackButton />} />
       }
       overlayComponent={
-        <BottomPanel>
+        <BottomPanel variant="ghost">
           <Button size="cta" label="Kirim" />
         </BottomPanel>
       }

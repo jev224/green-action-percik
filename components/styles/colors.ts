@@ -2,7 +2,7 @@ export const COLORS = {
   primary: {
     solid: {
       surface: "bg-primary",
-      surfaceInner: "bg-primary-foreground/30",
+      surfaceInner: "bg-foreground/50",
       icon: "text-primary-foreground",
       text: "text-primary-foreground",
     },

@@ -2,7 +2,7 @@ import { supabase } from "@/lib/supabase";
 import { getCurrentMonthDateRange, sumReduceFn } from "@/utils";
 import { getPhotoUrl } from "../photoStorage";
 
-export const getStudentStats = async () => {
+export const getAllStudentStats = async () => {
   const { start, end } = getCurrentMonthDateRange();
 
   const { error: studentCountError, count: studentCount } = await supabase

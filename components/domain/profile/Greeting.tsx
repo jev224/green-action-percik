@@ -27,7 +27,7 @@ import {
   ProfileMenuGlideIn,
   ProfileMenuGlideOut,
 } from "@/components/animation/presets";
-import { truncateText } from "@/utils";
+import { randomBetween, truncateText } from "@/utils";
 
 interface GreetingProps {
   name: string;
@@ -60,7 +60,7 @@ export function Greeting({ name, info, imageSource }: GreetingProps) {
               <EaseView
                 animate={{
                   scale: isMenuOpen ? 1.1 : 1,
-                  rotate: isMenuOpen ? -30 : 0,
+                  rotate: isMenuOpen ? randomBetween(-40, 40) : 0,
                 }}
                 transition={{
                   type: "spring",

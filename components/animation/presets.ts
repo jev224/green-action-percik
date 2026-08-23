@@ -1,5 +1,7 @@
 import {
   Easing,
+  FadeInDown,
+  FadeOutUp,
   LinearTransition,
   withSequence,
   withSpring,
@@ -140,8 +142,18 @@ export const ProfileMenuGlideIn = (values: EntryAnimationsValues) => {
 
 const layoutEasing = Easing.bezier(0.39, 0.06, 0.07, 0.99);
 
-export const contentLayoutTransition =
-  LinearTransition.duration(350).easing(layoutEasing);
+export const contentLayoutTransition = LinearTransition.springify()
+  .damping(25)
+  .stiffness(280)
+  .mass(0.8);
+
+export const contentEnterTransition = FadeInDown.easing(Easing.out(Easing.ease))
+  .duration(260)
+  .delay(100);
+
+export const contentExitTransition = FadeOutUp.easing(
+  Easing.in(Easing.ease),
+).duration(220);
 
 export const ProfileMenuGlideOut = (values: ExitAnimationsValues) => {
   "worklet";

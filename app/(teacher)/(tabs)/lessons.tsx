@@ -1,7 +1,11 @@
-import { FlatList } from "react-native";
+import { FlatList, ScrollView } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { LessonData, useLessons } from "@/hooks/useLessons";
+import Animated from "react-native-reanimated";
 
+import { Fab, FabIcon, FabLabel } from "@/components/ui/fab";
+import { Skeleton } from "@/components/ui/skeleton";
+import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
 
 import {
@@ -14,34 +18,22 @@ import {
   SortSelect,
 } from "@/components/primitives";
 
-import Animated, {
-  Easing,
-  FadeInDown,
-  FadeOutUp,
-  LinearTransition,
-} from "react-native-reanimated";
+import {
+  contentEnterTransition,
+  contentExitTransition,
+  contentLayoutTransition,
+} from "@/components/animation/presets";
 
-import { LeafyGreen, Plus } from "lucide-react-native";
-import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
-import { VStack } from "@/components/ui/vstack";
-import { ScrollView } from "react-native-gesture-handler";
-import { Box } from "@/components/ui/box";
-import { Fab, FabIcon, FabLabel } from "@/components/ui/fab";
+import { BookImage, Plus } from "lucide-react-native";
+
 import { useLessonStore } from "@/stores/lessonAction";
+
+import { useLessons } from "@/hooks/useLessons";
 import { useNavigation } from "@/hooks/useNavigation";
 
-const LIST_LAYOUT = LinearTransition.springify()
-  .damping(25)
-  .stiffness(280)
-  .mass(0.8);
-
-const ITEM_ENTER = FadeInDown.easing(Easing.out(Easing.ease))
-  .duration(260)
-  .delay(100);
-
-const ITEM_EXIT = FadeOutUp.easing(Easing.in(Easing.ease)).duration(220);
-
 export default function LessonsScreen() {
+  const insets = useSafeAreaInsets();
+
   const { navigateTo } = useNavigation();
   const createLesson = useLessonStore((state) => state.createLesson);
   const editLesson = useLessonStore((state) => state.editLesson);
@@ -55,6 +47,8 @@ export default function LessonsScreen() {
     isLoading,
     isError,
     results,
+    refresh,
+    isRefreshing,
   } = useLessons();
 
   const handleEdit = (id: number) => {
@@ -71,6 +65,8 @@ export default function LessonsScreen() {
     <Screen
       isLoading={isLoading}
       isError={isError}
+      onRefresh={refresh}
+      isRefreshing={isRefreshing}
       headerComponent={
         <>
           <ScreenHeader title="Kelola Materi" />
@@ -81,7 +77,6 @@ export default function LessonsScreen() {
           </HStack>
         </>
       }
-      errorComponent={<></>}
       contentComponent={
         results.length > 0 ? (
           <FlatList
@@ -90,19 +85,20 @@ export default function LessonsScreen() {
             className="overflow-visible"
             renderItem={({ item }) => (
               <Animated.View
-                layout={LIST_LAYOUT}
-                entering={ITEM_ENTER}
-                exiting={ITEM_EXIT}
+                layout={contentLayoutTransition}
+                entering={contentEnterTransition}
+                exiting={contentExitTransition}
               >
                 <ActionTile
                   onPress={() => handleEdit(item.id)}
                   className="mb-4"
+                  size="md"
                   title={item.title}
                   description={item.description}
                   imageSource={
                     item.photoUrl ? { uri: item.photoUrl } : undefined
                   }
-                  icon={!item.photoUrl ? LeafyGreen : undefined}
+                  icon={!item.photoUrl ? BookImage : undefined}
                 />
               </Animated.View>
             )}
@@ -113,17 +109,19 @@ export default function LessonsScreen() {
         )
       }
       overlayComponent={
-        <Box className="flex-1">
-          <Fab
-            className="mb-24 py-4"
-            size="sm"
-            placement="bottom right"
+        <Fab
+          className="p-0 background-transparent"
+          style={{ marginBottom: insets.bottom }}
+          size="sm"
+          placement="bottom right"
+        >
+          <Button
+            label="Materi Baru"
+            icon={Plus}
+            className="px-5 py-4 gap-0 rounded-full"
             onPress={handleCreate}
-          >
-            <FabIcon as={Plus} />
-            <FabLabel className="font-medium">Tambahkan Materi</FabLabel>
-          </Fab>
-        </Box>
+          />
+        </Fab>
       }
       loadingComponent={
         <ScrollView
@@ -131,11 +129,11 @@ export default function LessonsScreen() {
           className="overflow-visible"
         >
           <VStack space="md">
-            <Skeleton className="h-28" />
-            <Skeleton className="h-28" />
-            <Skeleton className="h-28" />
-            <Skeleton className="h-28" />
-            <Skeleton className="h-28" />
+            <Skeleton className="h-32" />
+            <Skeleton className="h-32" />
+            <Skeleton className="h-32" />
+            <Skeleton className="h-32" />
+            <Skeleton className="h-32" />
           </VStack>
         </ScrollView>
       }

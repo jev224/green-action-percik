@@ -10,7 +10,7 @@ import { Icon } from "@/components/ui/icon";
 import { Image } from "@/components/ui/image";
 import { SurfaceCard } from "./SurfaceCard";
 
-import { tv, VariantProps } from "tailwind-variants";
+import { cn, cnBase, tv, VariantProps } from "tailwind-variants";
 
 import { usePressFeedback } from "@/hooks/usePressFeedback";
 
@@ -19,6 +19,7 @@ import type {
   SurfaceVariant,
 } from "@/components/styles/buildColorsVariants";
 import { AnimationConfig } from "@/components/animation/presets";
+import { config } from "@/components/animation/config";
 
 const actionTileStyle = tv({
   slots: {
@@ -32,7 +33,7 @@ const actionTileStyle = tv({
   variants: {
     size: {
       default: {
-        thumbnail: "size-18 rounded-sm",
+        thumbnail: "size-20 rounded-sm",
         icon: "w-8 h-8",
       },
       md: {
@@ -95,9 +96,10 @@ interface ActionTileProps {
   title: string;
   description?: string;
   imageSource?: ImageSourcePropType;
+  contentPosition?: "top" | "center";
   icon?: ComponentProps<typeof Icon>["as"];
   color?: SemanticColor;
-  variant?: SurfaceVariant;
+  variant?: SurfaceVariant | "ghost";
   onPress?: () => void;
   className?: string;
   size?: ActionTileStyleProps["size"];
@@ -117,6 +119,7 @@ export function ActionTile({
   onPress,
   className,
   thumbnailPosition,
+  contentPosition = "center",
   headerRightComponent,
   bottomComponent,
 }: ActionTileProps) {
@@ -129,8 +132,14 @@ export function ActionTile({
   const body = (
     <SurfaceCard
       color={color}
-      variant={variant}
-      className={styles.card({ className })}
+      variant={variant === "ghost" ? "outline" : variant}
+      className={styles.card({
+        className: cnBase(
+          className,
+          variant === "ghost" &&
+            "bg-transparent border-transparent p-1 overflow-visible",
+        ),
+      })}
     >
       {(baseStyles) => (
         <>
@@ -164,7 +173,12 @@ export function ActionTile({
           )}
 
           {/* Content */}
-          <VStack className={styles.content()} space="xs">
+          <VStack
+            className={styles.content({
+              className: cnBase(contentPosition === "top" && "self-start"),
+            })}
+            space="xs"
+          >
             <HStack className="justify-between items-center">
               <Heading
                 size="md"
@@ -181,7 +195,7 @@ export function ActionTile({
               <Text
                 className={baseStyles.text({ className: styles.description() })}
                 size="sm"
-                numberOfLines={size === "lg" ? 4 : 2}
+                numberOfLines={size === "lg" ? 3 : 2}
               >
                 {description}
               </Text>
@@ -204,6 +218,8 @@ export function ActionTile({
       }}
     >
       <Pressable
+        delayHoverIn={0}
+        unstable_pressDelay={config.pressableDelay}
         onPress={onPress}
         onPressIn={bind.onPressIn}
         onPressOut={bind.onPressOut}

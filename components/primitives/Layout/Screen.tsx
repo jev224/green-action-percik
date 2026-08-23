@@ -1,6 +1,9 @@
-import { ReactNode, useState } from "react";
-import { LayoutChangeEvent, ScrollView } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { ReactNode } from "react";
+import { Platform, RefreshControl, ScrollView } from "react-native";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 import { Box } from "@/components/ui/box";
 import { VStack } from "@/components/ui/vstack";
@@ -23,6 +26,8 @@ interface ScreenProps<T = undefined> {
   footerComponent?: ReactNode;
   space?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl";
   scrollable?: boolean;
+  isRefreshing?: boolean;
+  onRefresh?: () => void;
 }
 
 export function Screen<T = undefined>({
@@ -37,18 +42,24 @@ export function Screen<T = undefined>({
   loadingComponent,
   footerComponent,
   scrollable,
+  isRefreshing,
+  onRefresh,
 }: ScreenProps<T>) {
   useThemeColors();
 
+  const insets = useSafeAreaInsets();
   const isContentFn = typeof contentComponent === "function";
 
-  // If contentComponent is a render-prop, treat missing data as loading.
   const isDataMissing = isContentFn && (data === null || data === undefined);
   const effectiveIsLoading = isLoading || isDataMissing;
   const canRenderContent = !effectiveIsLoading && !isError;
 
   const isUsingDefaultLoading = effectiveIsLoading && !loadingComponent;
-  const shouldScroll = scrollable && !isUsingDefaultLoading;
+
+  // Pull-to-refresh needs a ScrollView regardless of the `scrollable` flag,
+  // since the gesture requires a scroll container to attach to.
+  const hasRefresh = !!onRefresh;
+  const shouldScroll = (scrollable || hasRefresh) && !isUsingDefaultLoading;
 
   const renderedContent = canRenderContent
     ? isContentFn
@@ -96,8 +107,31 @@ export function Screen<T = undefined>({
         </Box>
       )}
 
-      {scrollable && shouldScroll ? (
-        <ScrollView showsVerticalScrollIndicator={false}>{content}</ScrollView>
+      {shouldScroll ? (
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          // Only real "scrollable" screens should stretch/scroll content freely.
+          // Refresh-only screens (scrollable=false, hasRefresh=true) still need
+          // the container to grow to fill height so layout doesn't break.
+          contentContainerStyle={!scrollable ? { flexGrow: 1 } : undefined}
+          refreshControl={
+            hasRefresh ? (
+              <RefreshControl
+                refreshing={!!isRefreshing}
+                onRefresh={onRefresh}
+                progressViewOffset={
+                  Platform.OS === "android"
+                    ? headerComponent
+                      ? 24
+                      : insets.top + 8
+                    : 100
+                } // nudge below status bar on Android
+              />
+            ) : undefined
+          }
+        >
+          {content}
+        </ScrollView>
       ) : (
         content
       )}

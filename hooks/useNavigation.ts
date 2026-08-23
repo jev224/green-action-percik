@@ -1,15 +1,11 @@
+import { useRef } from "react";
 import { User } from "@supabase/supabase-js";
 import { Href, router, useNavigation as useExpoNavigation } from "expo-router";
-
-export type NavigationAction = Readonly<{
-  type: string;
-  payload?: object;
-  source?: string;
-  target?: string;
-}>;
+import { usePreventRemove } from "@react-navigation/native";
 
 export function useNavigation() {
   const navigation = useExpoNavigation();
+  const skipGuardRef = useRef(false);
 
   const goBack = (fallbackHref?: Href) => {
     if (router.canGoBack()) {
@@ -21,13 +17,6 @@ export function useNavigation() {
 
   const navigateTo = (href: Href) => {
     router.push(href);
-  };
-
-  const setupRemoveListener = (fn: (action: NavigationAction) => void) => {
-    return navigation.addListener("beforeRemove", (e) => {
-      e.preventDefault();
-      fn(e.data.action);
-    });
   };
 
   const resetTo = (href: Parameters<typeof router.replace>[0]) => {
@@ -46,12 +35,39 @@ export function useNavigation() {
     }
   };
 
+  // Guards screen removal (back gesture, hardware back, header back
+  // button — they all funnel through this one listener). When blocked,
+  // calls onBlocked with a `proceed` fn that resumes the exact action
+  // that was intercepted.
+  const useBackGuard = (
+    shouldPrevent: boolean,
+    onBlocked: (proceed: () => void) => void,
+  ) => {
+    usePreventRemove(shouldPrevent, ({ data }) => {
+      if (skipGuardRef.current) {
+        skipGuardRef.current = false;
+        navigation.dispatch(data.action);
+        return;
+      }
+      onBlocked(() => navigation.dispatch(data.action));
+    });
+  };
+
+  // Run a navigation action while skipping the guard for it — for
+  // programmatic navigation you trigger yourself (e.g. after a
+  // successful submit) where you already know it's safe to leave,
+  // even though shouldPrevent may still be true this render.
+  const bypassGuard = (fn: () => void) => {
+    skipGuardRef.current = true;
+    fn();
+  };
+
   return {
     goBack,
-    resetTo,
     navigateTo,
+    resetTo,
     navigateFromLogin,
-    setupRemoveListener,
-    dispatch: navigation.dispatch,
+    useBackGuard,
+    bypassGuard,
   };
 }

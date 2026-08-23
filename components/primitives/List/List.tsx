@@ -12,6 +12,7 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import { AnimationConfig } from "@/components/animation/presets";
+import { config } from "@/components/animation/config";
 
 export interface ListItemData {
   key: string;
@@ -103,6 +104,8 @@ function ListRow({ item }: { item: ListItemData }) {
 
   return (
     <Pressable
+      delayHoverIn={0}
+      unstable_pressDelay={config.pressableDelay}
       onPress={item.onPress}
       onPressIn={bind.onPressIn}
       onPressOut={bind.onPressOut}

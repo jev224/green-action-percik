@@ -59,6 +59,7 @@ export default function ChangePasswordScreen() {
             <Button
               label="Konfirmasi"
               fill
+              size="cta"
               onPress={handleSubmit}
               isDisabled={isLoading}
             />

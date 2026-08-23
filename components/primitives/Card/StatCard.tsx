@@ -26,6 +26,7 @@ import {
   SurfaceVariant,
 } from "@/components/styles/buildColorsVariants";
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
+import { config } from "@/components/animation/config";
 
 const statCardStyle = tv({
   slots: {
@@ -168,6 +169,8 @@ export function StatCard({
               whole card, even with animation="none". */}
           {isInteractive && (
             <Pressable
+              delayHoverIn={0}
+              unstable_pressDelay={config.pressableDelay}
               className="absolute inset-0 z-20"
               onPress={handlePress}
             />

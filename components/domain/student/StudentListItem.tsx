@@ -13,6 +13,7 @@ import { usePressFeedback } from "@/hooks/usePressFeedback";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { EaseView } from "react-native-ease";
 import { AnimationConfig } from "@/components/animation/presets";
+import { config } from "@/components/animation/config";
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
 
@@ -55,7 +56,7 @@ export function StudentListItem({ student, onPress }: StudentListItemProps) {
       onPressIn={bind.onPressIn}
       onPressOut={bind.onPressOut}
       delayHoverIn={0}
-      unstable_pressDelay={100}
+      unstable_pressDelay={config.pressableDelay}
     >
       <AnimatedBox style={animatedStyle}>
         <Box className="absolute -right-4 -left-4 top-0 bottom-0 rounded-lg overflow-hidden">

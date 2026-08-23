@@ -1,3 +1,5 @@
+import NetInfo from "@react-native-community/netinfo";
+
 export const sumReduceFn = (sum: number, curr: number) => sum + curr;
 
 export function getCurrentMonthDateRange() {
@@ -49,4 +51,16 @@ export const parseProfileInfo = (profile: ProfileInfo) => {
   }
 
   return `${profile.grade} ${profile.major}${profile.sub_major ? `-${profile.sub_major}` : ""} • SISWA`;
+};
+
+export async function checkConnection(): Promise<boolean> {
+  const state = await NetInfo.fetch();
+  // isInternetReachable can be null while it's still determining —
+  // treat that as "assume online" rather than a false negative
+
+  return state.isConnected === true && state.isInternetReachable !== false;
+}
+
+export const randomBetween = (min: number, max: number) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 };

@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import Animated from "react-native-reanimated";
+import { Stack } from "expo-router";
+
+import { Controller, useFieldArray, useForm } from "react-hook-form";
+
 import Sortable, { OrderChangeParams } from "react-native-sortables";
-import { Plus } from "lucide-react-native";
+import Animated from "react-native-reanimated";
 
 import { VStack } from "@/components/ui/vstack";
 import { CloseIcon } from "@/components/ui/icon";
@@ -25,261 +28,247 @@ import {
   TextField,
 } from "@/components/primitives";
 
-import { LessonContent } from "@/lib/supabase/database.types";
-import { useLessonStore } from "@/stores/lessonAction";
 import { contentLayoutTransition } from "@/components/animation/presets";
-import { useAsyncData } from "@/hooks/useAsyncData";
+
+import { Plus } from "lucide-react-native";
+
+import { useLessonStore } from "@/stores/lessonAction";
+
 import {
   createNewLesson,
   updateLesson,
   getLessonDetails,
   getChangedLessonFields,
   LessonFields,
+  LessonForm,
 } from "@/services/teacher/lessons";
-import { NavigationAction, useNavigation } from "@/hooks/useNavigation";
-import { Alert } from "react-native";
-import { Stack } from "expo-router";
 
-type LessonForm = LessonFields;
+import { useAsyncData } from "@/hooks/useAsyncData";
+import { useNavigation } from "@/hooks/useNavigation";
+import { useShowToast } from "@/hooks/useShowToast";
 
+import { LessonContent } from "@/lib/supabase/database.types";
+import { useToast } from "@/components/ui/toast";
+
+// Date.now() alone can collide if two blocks are added in the same
+// millisecond (e.g. double-tap); pad with a random suffix.
 const createEmptyBlock = (index: number): LessonContent => ({
-  // Date.now() alone can collide if two blocks are added in the same
-  // millisecond (e.g. double-tap); pad with a random suffix.
   id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
   title: `Konten Baru #${index}`,
   explanation: "",
 });
 
 export default function EditLessonScreen() {
-  const { goBack, setupRemoveListener, dispatch } = useNavigation();
+  const { useBackGuard, bypassGuard, goBack } = useNavigation();
+  const showToast = useShowToast();
 
   const [showUnsavedModal, setShowUnsavedModal] = useState(false);
 
-  // Lesson mode
+  // ─────────────────────────────────────────────────────────────
+  // MODE — this screen doubles as both "create lesson" and "edit
+  // lesson"; almost everything below branches on `isEdit`.
+  // ─────────────────────────────────────────────────────────────
   const lesson = useLessonStore((state) => state.lesson);
   const isEdit = lesson.mode === "edit";
 
-  // FORM STATE — generic form-field state, not tied to navigation
-  // or submit logic. Candidate to extract into a `useLessonFormState`
-  // hook if another screen ever needs the same shape; left inline
-  // for now since it's single-use.
-  const [form, setForm] = useState<LessonForm>({
-    title: "",
-    description: "",
-    contents: [],
-  });
-  const [photoUri, setPhotoUri] = useState<string | null | undefined>(
-    undefined,
-  );
+  // ─────────────────────────────────────────────────────────────
+  // FORM STATE — title/description/photoUri/contents all live in
+  // one RHF form. `defaultValues` is just the empty-shell starting
+  // point; real data (edit mode) is loaded in via `reset()` below.
+  // ─────────────────────────────────────────────────────────────
+  const { formState, control, watch, reset, handleSubmit } =
+    useForm<LessonForm>({
+      defaultValues: {
+        title: "",
+        description: "",
+        contents: [],
+        photoUri: undefined,
+      },
+    });
 
+  // `contents` is a dynamic array (add/remove/reorder), so it gets
+  // its own field-array binding instead of a plain Controller.
+  // keyName is renamed to "fieldId" so RHF's internal tracking key
+  // doesn't clobber LessonContent's own `id`.
+  const { fields, append, remove, update, replace } = useFieldArray({
+    control,
+    name: "contents",
+    keyName: "fieldId",
+  });
+
+  // ─────────────────────────────────────────────────────────────
+  // CONTENT BLOCK EDITING/DELETING — which block (if any) is open
+  // in the drawer / pending delete confirmation. Stored as an id,
+  // not an index, so it stays valid across reorders/deletes; the
+  // actual index is derived fresh every render.
+  // ─────────────────────────────────────────────────────────────
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const editingBlock =
-    form.contents.find((content) => content.id === editingId) ?? null;
+  const editingIndex = fields.findIndex((f) => f.id === editingId);
+  const editingBlock = editingIndex !== -1 ? fields[editingIndex] : null;
 
-  const deletingBlock =
-    form.contents.find((content) => content.id === deletingId) ?? null;
+  const deletingIndex = fields.findIndex((f) => f.id === deletingId);
+  const deletingBlock = deletingIndex !== -1 ? fields[deletingIndex] : null;
 
-  const updateForm = <K extends keyof LessonForm>(
-    key: K,
-    value: LessonForm[K],
-  ) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const updateField = (key: "title" | "description") => (value: string) => {
-    updateForm(key, value);
-  };
+  const clearEditingId = () => setEditingId(null);
+  const clearDeletingId = () => setDeletingId(null);
 
   const updateEditingBlock =
     (key: keyof Pick<LessonContent, "title" | "explanation">) =>
     (value: string) => {
-      if (!editingId) return;
-
-      setForm((prev) => ({
-        ...prev,
-        contents: prev.contents.map((content) =>
-          content.id === editingId ? { ...content, [key]: value } : content,
-        ),
-      }));
+      if (editingIndex === -1) return;
+      update(editingIndex, { ...fields[editingIndex], [key]: value });
     };
 
   const addContentBlock = () => {
-    const block = createEmptyBlock(form.contents.length + 1);
-
-    setForm((prev) => ({ ...prev, contents: [...prev.contents, block] }));
-    setEditingId(block.id);
+    const block = createEmptyBlock(fields.length + 1);
+    append(block);
+    setEditingId(block.id); // open the new block for editing immediately
   };
 
   const deleteContentBlock = () => {
     if (!deletingId) return;
+    remove(deletingIndex);
 
-    setForm((prev) => ({
-      ...prev,
-      contents: prev.contents.filter((content) => content.id !== deletingId),
-    }));
-
+    // If the block being deleted is also open in the editor drawer,
+    // close the drawer too — otherwise it'd be editing a block that
+    // no longer exists.
     if (editingId === deletingId) {
-      setEditingId(null);
+      clearEditingId();
     }
-
-    setDeletingId(null);
+    clearDeletingId();
   };
 
+  // `indexToKey[newIndex] = id` — already in the correct new order,
+  // so we just resolve each id back to its field and hand the whole
+  // array to `replace()`. (Do NOT use `keyToIndex` for this — its
+  // values are new positions, but reading it via `Object.values()`
+  // preserves *old* key order, which produces a wrongly-ordered
+  // array. `indexToKey` avoids that inversion entirely.)
   const reorderContents = ({ indexToKey }: OrderChangeParams) => {
-    setForm((prev) => {
-      const contentsById = new Map(
-        prev.contents.map((content) => [content.id, content]),
-      );
+    const fieldsById = new Map(fields.map((f) => [f.id, f]));
 
-      return {
-        ...prev,
-        contents: indexToKey
-          .map((id) => contentsById.get(id))
-          .filter((content): content is LessonContent => content !== undefined),
-      };
-    });
+    const reordered = indexToKey
+      .map((id) => fieldsById.get(id))
+      .filter((content) => content !== undefined);
+
+    replace(reordered);
   };
 
-  // DATA FETCH (edit mode only) — pure fetch + no screen-specific
-  // concerns. Extract to e.g. `useLessonDetails(id)` if reused.
+  // ─────────────────────────────────────────────────────────────
+  // DATA FETCH + HYDRATION (edit mode only) — fetch the existing
+  // lesson, then seed the form with it exactly once. `hasHydratedRef`
+  // guards against re-seeding (and wiping user edits) if the fetch
+  // result reference ever changes after the first successful load.
+  // ─────────────────────────────────────────────────────────────
+  const hasHydratedRef = useRef(false);
+
   const {
     data: fetchedLesson,
     isLoading: isLoadingLesson,
     isError: isLessonError,
-  } = useAsyncData(
-    () => (isEdit ? getLessonDetails(lesson.id) : Promise.resolve(null)),
-    [isEdit, isEdit ? lesson.id : null],
-  );
-
-  // HYDRATION — screen-specific glue: takes the fetch result and
-  // seeds both the editable form AND a frozen snapshot of the
-  // original values. The snapshot is what submit diffs against, so
-  // we only ever send the fields the user actually changed.
-  const originalRef = useRef<{
-    fields: LessonFields;
-    photoUrl: string | null;
-  } | null>(null);
-  const hasHydratedRef = useRef(false);
+  } = useAsyncData(async () => {
+    if (isEdit) {
+      return await getLessonDetails(lesson.id);
+    }
+  }, [isEdit, isEdit ? lesson.id : null]); // re-fetch if editing a different lesson
 
   useEffect(() => {
     if (!fetchedLesson || hasHydratedRef.current) return;
 
-    const fields: LessonFields = {
+    reset({
       title: fetchedLesson.title,
       description: fetchedLesson.description,
       contents: fetchedLesson.contents,
-    };
+      photoUri: fetchedLesson.photoUrl,
+    });
 
-    setForm(fields);
-    setPhotoUri(fetchedLesson.photoUrl);
-
-    originalRef.current = { fields, photoUrl: fetchedLesson.photoUrl };
     hasHydratedRef.current = true;
-  }, [fetchedLesson]);
+  }, [fetchedLesson, reset]);
 
-  // SUBMIT — screen-specific orchestration (diffing + navigation +
-  // submitting state). Not a good extraction candidate on its own
-  // since it's glueing several concerns together for this one screen.
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  // ─────────────────────────────────────────────────────────────
+  // DERIVED FORM STATUS
+  // ─────────────────────────────────────────────────────────────
+  const title = watch("title");
+  const description = watch("description");
 
-  const resolvePhotoUriForSubmit = (): string | null | undefined => {
-    if (!isEdit) return photoUri; // create mode: send whatever was picked
+  const isSaveDisabled =
+    !title ||
+    !description ||
+    fields.length === 0 ||
+    formState.isSubmitting ||
+    (isEdit && (isLoadingLesson || isLessonError));
 
-    const original = originalRef.current;
-    if (!original) return undefined; // baseline not loaded yet, don't touch
-    if (photoUri === original.photoUrl) return undefined; // unchanged
+  // RHF tracks dirtiness against the last `reset()` baseline, so this
+  // is true in create mode as soon as anything is typed, and in edit
+  // mode only once something differs from what was loaded.
+  const hasUnsavedChanges = formState.isDirty;
 
-    return photoUri; // new local uri, or null if removed
+  // ─────────────────────────────────────────────────────────────
+  // BACK NAVIGATION — intercepts hardware back / edge-swipe / header
+  // back button when there are unsaved changes, and shows a confirm
+  // modal. `proceed` resumes the exact action that was blocked.
+  // ─────────────────────────────────────────────────────────────
+  const proceedRef = useRef<(() => void) | null>(null);
+
+  useBackGuard(hasUnsavedChanges, (proceed) => {
+    proceedRef.current = proceed;
+    setShowUnsavedModal(true);
+  });
+
+  const onDiscard = () => {
+    setShowUnsavedModal(false);
+    showToast({ title: "Perubahan tidak disampan" });
+
+    const proceed = proceedRef.current;
+    proceedRef.current = null;
+
+    if (proceed) proceed();
+    else goBackToHome();
   };
 
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
+  // For navigation we trigger ourselves (successful submit, in-content
+  // back button) rather than an intercepted system gesture — skips the
+  // guard since we already know it's safe to leave.
+  const goBackToHome = () =>
+    bypassGuard(() => goBack("/(teacher)/(tabs)/home"));
 
+  const onGoBack = () => {
+    if (hasUnsavedChanges) {
+      setShowUnsavedModal(true);
+      return;
+    }
+    goBackToHome();
+  };
+
+  // ─────────────────────────────────────────────────────────────
+  // SUBMIT — create or update, diffing against the loaded baseline
+  // in edit mode so only changed fields are sent.
+  // ─────────────────────────────────────────────────────────────
+  const onSubmit = async (data: LessonForm) => {
     try {
       if (isEdit) {
-        const original = originalRef.current;
-        const changedFields = original
-          ? getChangedLessonFields(original.fields, form)
-          : form; // fallback: baseline somehow not ready, send everything
+        const original = formState.defaultValues as LessonFields;
+        const changedFields = formState.defaultValues
+          ? getChangedLessonFields(original, data)
+          : data;
 
-        await updateLesson({
-          id: lesson.id,
-          ...changedFields,
-          photoUri: resolvePhotoUriForSubmit(),
-        });
+        await updateLesson({ id: lesson.id, ...changedFields });
+        showToast({ title: "Materi berhasil diedit" });
       } else {
-        await createNewLesson({ ...form, photoUri });
+        await createNewLesson(data);
+        showToast({ title: "Materi berhasil dibuat" });
       }
 
-      // TODO: navigate back to the lesson list here (e.g. router.back()).
-      // Left unwired since I don't know which navigation lib this project uses.
-      goBack("/(teacher)/(tabs)/home");
+      goBackToHome();
     } catch (error) {
       console.error(error);
       // TODO: surface this to the user once there's a toast/snackbar
-      // primitive in the shared component kit — silently failing isn't great.
-    } finally {
-      setIsSubmitting(false);
+      // error variant — silently failing isn't great.
     }
   };
 
-  const isSaveDisabled =
-    !form.title ||
-    !form.description ||
-    form.contents.length === 0 ||
-    isSubmitting ||
-    (isEdit && (isLoadingLesson || isLessonError));
-
-  // ───────────────────────────────────────────────────────────────
-  // UNSAVED CHANGES GUARD — screen-specific: reuses the same diff
-  // utility the submit flow already uses, so "is there anything to
-  // lose" and "what do I send to the server" never disagree with
-  // each other.
-  //
-  // usePreventRemove intercepts ANY action that would remove this
-  // screen from the stack — Android hardware back, the Android/iOS
-  // edge-swipe gesture, and the header back button all funnel through
-  // the same navigation event, so one hook covers all three. It does
-  // NOT catch the user backgrounding/closing the whole app; that's a
-  // separate (and much rarer) case, usually solved by autosaving
-  // drafts rather than a dialog.
-  // ───────────────────────────────────────────────────────────────
-  const hasUnsavedChanges = isEdit
-    ? originalRef.current !== null &&
-      (Object.keys(getChangedLessonFields(originalRef.current.fields, form))
-        .length > 0 ||
-        resolvePhotoUriForSubmit() !== undefined)
-    : form.title !== "" || form.description !== "" || form.contents.length > 0;
-
-  const pendingActionRef = useRef<NavigationAction | null>(null);
-
-  useEffect(() => {
-    if (!hasUnsavedChanges) return; // nothing to lose, don't intercept back at all
-
-    return setupRemoveListener((action) => {
-      pendingActionRef.current = action;
-      setShowUnsavedModal(true);
-    });
-  }, [hasUnsavedChanges]);
-
-  const handleDiscard = () => {
-    setShowUnsavedModal(false);
-
-    if (pendingActionRef.current) {
-      // Resume the exact action that was blocked (swipe, hardware back,
-      // or the header back button — they all flow through the same
-      // beforeRemove listener now, see BackButton below). This does
-      // NOT re-trigger the listener; it completes the original action.
-      dispatch(pendingActionRef.current);
-      pendingActionRef.current = null;
-    }
-  };
-
-  // ───────────────────────────────────────────────────────────────
-  // RENDER — screen-specific JSX, stays here.
-  // ───────────────────────────────────────────────────────────────
   return (
     <Stack.Screen options={{ gestureEnabled: !hasUnsavedChanges }}>
       <Screen
@@ -288,50 +277,68 @@ export default function EditLessonScreen() {
         headerComponent={
           <ScreenHeader
             title={isEdit ? "Edit Materi" : "Buat Materi"}
-            leftComponent={<BackButton />}
+            leftComponent={<BackButton onPress={onGoBack} />}
           />
         }
         contentComponent={
           <>
-            <ListSection title="Judul" size="md">
-              <TextField
-                placeholder="Pengertian Sampah"
-                value={form.title}
-                onChangeText={updateField("title")}
-              />
-            </ListSection>
-
-            <ListSection title="Deskripsi" size="md">
-              <TextAreaField
-                placeholder="Deskripsi untuk materi ini..."
-                value={form.description}
-                onChangeText={updateField("description")}
-              />
-            </ListSection>
-
-            <ListSection title="Gambar sampul" size="md">
-              <PhotoPicker value={photoUri} onChange={setPhotoUri} />
-            </ListSection>
-
-            <ListSection title="Konten" size="md">
-              <Sortable.Grid
-                columns={1}
-                data={form.contents}
-                keyExtractor={(item) => item.id}
-                dropAnimationDuration={200}
-                activationAnimationDuration={140}
-                rowGap={10}
-                columnGap={10}
-                renderItem={({ item }) => (
-                  <SortableCard
-                    title={item.title}
-                    description={item.explanation || "Tidak ada deskripsi."}
-                    onPress={() => setEditingId(item.id)}
-                    onDelete={() => setDeletingId(item.id)}
+            <ListSection title="Judul" space="sm" size="md">
+              <Controller
+                control={control}
+                name="title"
+                render={({ field }) => (
+                  <TextField
+                    placeholder="Pengertian Sampah"
+                    value={field.value}
+                    onChangeText={field.onChange}
                   />
                 )}
+              />
+            </ListSection>
+
+            <ListSection title="Deskripsi" space="sm" size="md">
+              <Controller
+                control={control}
+                name="description"
+                render={({ field }) => (
+                  <TextAreaField
+                    placeholder="Deskripsi untuk materi ini..."
+                    value={field.value}
+                    onChangeText={field.onChange}
+                  />
+                )}
+              />
+            </ListSection>
+
+            <ListSection title="Gambar sampul" space="sm" size="md">
+              <Controller
+                control={control}
+                name="photoUri"
+                render={({ field }) => (
+                  <PhotoPicker value={field.value} onChange={field.onChange} />
+                )}
+              />
+            </ListSection>
+
+            <ListSection title="Konten" space="sm" size="md">
+              <Sortable.Grid
+                columns={1}
+                rowGap={10}
+                columnGap={10}
+                activationAnimationDuration={140}
+                dropAnimationDuration={200}
                 hapticsEnabled
                 onOrderChange={reorderContents}
+                data={fields}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item: { id, title, explanation } }) => (
+                  <SortableCard
+                    title={title}
+                    description={explanation || "Tidak ada penjelasan."}
+                    onPress={() => setEditingId(id)}
+                    onDelete={() => setDeletingId(id)}
+                  />
+                )}
               />
 
               <Animated.View layout={contentLayoutTransition}>
@@ -355,105 +362,34 @@ export default function EditLessonScreen() {
                   label="Simpan"
                   fill
                   size="cta"
-                  onPress={handleSubmit}
+                  onPress={handleSubmit(onSubmit)}
                   isDisabled={isSaveDisabled}
-                  isLoading={isSubmitting}
+                  isLoading={formState.isSubmitting}
                 />
               </HStack>
             </BottomPanel>
 
-            <Modal
+            <ContentEditorDrawer
+              isOpen={!!editingId}
+              onClose={clearEditingId}
+              onSave={clearEditingId}
+              currentTitle={editingBlock?.title ?? ""}
+              onTitleChanged={updateEditingBlock("title")}
+              currentExplanation={editingBlock?.explanation ?? ""}
+              onExplanationChanged={updateEditingBlock("explanation")}
+            />
+
+            <DeletingModal
+              content={deletingBlock}
+              isOpen={!!deletingId}
+              onCancel={clearDeletingId}
+              onContinue={deleteContentBlock}
+            />
+
+            <UnsavedChangesModal
               isOpen={showUnsavedModal}
-              onClose={() => setShowUnsavedModal(false)}
-              title="Buang perubahan?"
-              description="Perubahan yang belum disimpan akan hilang."
-              contentComponent={
-                <>
-                  <Button
-                    label="Batal"
-                    variant="outline"
-                    onPress={() => setShowUnsavedModal(false)}
-                  />
-
-                  <Button
-                    label="Buang"
-                    variant="destructive"
-                    onPress={handleDiscard}
-                  />
-                </>
-              }
-            />
-
-            <Modal
-              isOpen={deletingBlock !== null}
-              onClose={() => setDeletingId(null)}
-              title="Hapus konten?"
-              description={
-                deletingBlock
-                  ? `"${deletingBlock.title}" akan dihapus dari materi ini.`
-                  : "Konten ini akan dihapus dari materi ini."
-              }
-              contentComponent={
-                <>
-                  <Button
-                    label="Batal"
-                    variant="outline"
-                    onPress={() => setDeletingId(null)}
-                  />
-
-                  <Button
-                    label="Ya"
-                    variant="destructive"
-                    onPress={deleteContentBlock}
-                  />
-                </>
-              }
-            />
-
-            <Drawer
-              avoidKeyboard
-              isOpen={editingBlock !== null}
-              size="lg"
-              anchor="bottom"
-              onClose={() => setEditingId(null)}
-              headerComponenent={
-                <ScreenHeader
-                  title="Edit Konten"
-                  rightComponent={
-                    <IconButton
-                      icon={CloseIcon}
-                      onPress={() => setEditingId(null)}
-                    />
-                  }
-                />
-              }
-              contentComponent={
-                <VStack space="lg">
-                  <ListSection title="Judul" size="md">
-                    <TextField
-                      placeholder="Pengertian Sampah"
-                      value={editingBlock?.title ?? ""}
-                      onChangeText={updateEditingBlock("title")}
-                    />
-                  </ListSection>
-
-                  <ListSection title="Deskripsi" size="md">
-                    <TextAreaField
-                      placeholder="Deskripsi untuk materi ini..."
-                      value={editingBlock?.explanation ?? ""}
-                      onChangeText={updateEditingBlock("explanation")}
-                    />
-                  </ListSection>
-                </VStack>
-              }
-              footerComponent={
-                <Button
-                  isDisabled={editingBlock?.title === ""}
-                  size="cta"
-                  label="Simpan"
-                  onPress={() => setEditingId(null)}
-                />
-              }
+              onCancel={() => setShowUnsavedModal(false)}
+              onContinue={onDiscard}
             />
           </>
         }
@@ -461,3 +397,128 @@ export default function EditLessonScreen() {
     </Stack.Screen>
   );
 }
+
+// ───────────────────────────────────────────────────────────────
+// Sub-components below are presentational only — all state and
+// logic stays in the screen; these just receive props and render.
+// ───────────────────────────────────────────────────────────────
+
+const ContentEditorDrawer = ({
+  isOpen,
+  onClose,
+  onSave,
+  currentTitle,
+  onTitleChanged,
+  currentExplanation,
+  onExplanationChanged,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: () => void;
+  currentTitle: string;
+  onTitleChanged: (text: string) => void;
+  currentExplanation: string;
+  onExplanationChanged: (text: string) => void;
+}) => {
+  const isButtonDisabled = currentTitle === "";
+
+  return (
+    <Drawer
+      avoidKeyboard
+      isOpen={isOpen}
+      size="lg"
+      anchor="bottom"
+      onClose={onClose}
+      headerComponenent={
+        <ScreenHeader
+          title="Edit Konten"
+          rightComponent={<IconButton icon={CloseIcon} onPress={onClose} />}
+        />
+      }
+      contentComponent={
+        <VStack space="lg">
+          <ListSection title="Judul" size="md">
+            <TextField
+              placeholder="Pengertian Sampah"
+              value={currentTitle}
+              onChangeText={onTitleChanged}
+            />
+          </ListSection>
+
+          <ListSection title="Penjelasan" size="md">
+            <TextAreaField
+              placeholder="Penjelasan untuk materi ini..."
+              value={currentExplanation}
+              onChangeText={onExplanationChanged}
+            />
+          </ListSection>
+        </VStack>
+      }
+      footerComponent={
+        <Button
+          isDisabled={isButtonDisabled}
+          size="cta"
+          label="Simpan"
+          onPress={onSave}
+        />
+      }
+    />
+  );
+};
+
+const DeletingModal = ({
+  isOpen,
+  onCancel,
+  onContinue,
+  content,
+}: {
+  isOpen: boolean;
+  onCancel: () => void;
+  onContinue: () => void;
+  content?:
+    | (LessonContent &
+        Record<"fieldId", string> & {
+          disabled?: boolean;
+        })
+    | null;
+}) => (
+  <Modal
+    isOpen={isOpen}
+    onClose={onCancel}
+    title="Hapus konten?"
+    description={
+      content
+        ? `"${content.title}" akan dihapus dari materi ini.`
+        : "Konten ini akan dihapus dari materi ini."
+    }
+    contentComponent={
+      <>
+        <Button label="Batal" variant="outline" onPress={onCancel} />
+        <Button label="Ya" variant="destructive" onPress={onContinue} />
+      </>
+    }
+  />
+);
+
+const UnsavedChangesModal = ({
+  isOpen,
+  onCancel,
+  onContinue,
+}: {
+  isOpen: boolean;
+  onCancel: () => void;
+  onContinue: () => void;
+}) => (
+  <Modal
+    isOpen={isOpen}
+    onClose={onCancel}
+    title="Buang perubahan?"
+    description="Perubahan yang belum disimpan akan hilang."
+    contentComponent={
+      <>
+        <Button label="Batal" variant="outline" onPress={onCancel} />
+        <Button label="Buang" variant="destructive" onPress={onContinue} />
+      </>
+    }
+  />
+);

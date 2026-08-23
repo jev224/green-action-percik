@@ -16,6 +16,7 @@ import {
   PRESS_SCALE_TRANSITION,
   PRESS_OPACITY_TRANSITION,
 } from "@/hooks/usePressFeedback";
+import { config } from "@/components/animation/config";
 
 type ButtonProps = Omit<
   ComponentProps<typeof GSButton>,
@@ -69,6 +70,8 @@ export function Button({
       style={{ flex: fill ? 1 : undefined }}
     >
       <GSButton
+        delayHoverIn={0}
+        unstable_pressDelay={config.pressableDelay}
         className={cn(
           "overflow-hidden py-2.5 px-8",
           size !== "icon" && "min-w-24",

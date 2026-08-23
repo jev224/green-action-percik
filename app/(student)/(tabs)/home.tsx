@@ -1,7 +1,3 @@
-import { useEffect, useState } from "react";
-
-import { getStudentStats } from "@/services/teacher/students";
-
 import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
 import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
@@ -24,19 +20,22 @@ import {
   Sprout,
   Trash2,
 } from "lucide-react-native";
+
 import { useAsyncData } from "@/hooks/useAsyncData";
-import { getHomeStatistics } from "@/services/student/statistics";
 import { useNavigation } from "@/hooks/useNavigation";
+
+import { getStudentStatistics } from "@/services/student/statistics";
 import { getStudentProfile } from "@/services/student/profile";
+
 import { parseProfileInfo } from "@/utils";
 
 export default function HomeScreen() {
   const { navigateTo } = useNavigation();
 
-  const { data, isLoading, isError } = useAsyncData(
+  const { data, isLoading, isError, refresh, isRefreshing } = useAsyncData(
     async () => ({
       profile: await getStudentProfile(),
-      stats: await getHomeStatistics(),
+      stats: await getStudentStatistics(),
     }),
     [],
   );
@@ -44,9 +43,11 @@ export default function HomeScreen() {
   return (
     <Screen
       scrollable
+      data={data}
       isLoading={isLoading}
       isError={isError}
-      data={data}
+      onRefresh={refresh}
+      isRefreshing={isRefreshing}
       contentComponent={({
         stats: { wasteWeightTotal, gardenActivityCount, compostActivityCount },
         profile: { name, class: classData },

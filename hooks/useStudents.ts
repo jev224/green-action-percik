@@ -34,6 +34,8 @@ export function useStudents() {
     data: rawStudents,
     isLoading,
     isError,
+    isRefreshing,
+    refresh,
   } = useAsyncData(getAllStudents, []);
 
   const students: StudentData[] = useMemo(
@@ -96,5 +98,8 @@ export function useStudents() {
     setSort,
 
     results,
+
+    isRefreshing,
+    refresh,
   };
 }

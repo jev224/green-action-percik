@@ -6,6 +6,7 @@ import {
   ScreenHeader,
   TextField,
   Button,
+  Modal,
 } from "@/components/primitives";
 
 import { Heading } from "@/components/ui/heading";
@@ -29,6 +30,7 @@ import {
 import { AlertCircle, Check } from "lucide-react-native";
 import { authenticate } from "@/services/auth";
 import { useNavigation } from "@/hooks/useNavigation";
+import { checkConnection } from "@/utils";
 
 export default function LoginScreen() {
   const { navigateFromLogin } = useNavigation();
@@ -37,6 +39,8 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [networkDialogShown, setNetworkDialogShown] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
 
@@ -51,7 +55,10 @@ export default function LoginScreen() {
     try {
       setIsLoading(true);
 
-      const { error: authError, data } = await authenticate(username, password);
+      const { error: authError, data } = await authenticate(
+        username.trim(),
+        password.trim(),
+      );
 
       if (authError) {
         console.log("[Auth Error]:", authError);
@@ -62,6 +69,13 @@ export default function LoginScreen() {
       // login successful
       navigateFromLogin(data.user);
     } catch (err) {
+      const isOnline = await checkConnection();
+
+      if (!isOnline) {
+        setNetworkDialogShown(true);
+        return;
+      }
+
       console.log("[Auth Error]:", err);
       setError("Terjadi kendala, coba lagi");
     } finally {
@@ -78,11 +92,11 @@ export default function LoginScreen() {
         <>
           <VStack space="md" className="mt-6">
             <VStack space="sm">
-              <Heading size="xl" className="leading-0 tracking-tight">
+              <Heading size="xl" className="tracking-tight">
                 Selamat datang di
               </Heading>
 
-              <GradientHeading size="3xl" className="leading-0 tracking-tight">
+              <GradientHeading size="3xl" className="tracking-tight">
                 GREEN ACTION
               </GradientHeading>
             </VStack>
@@ -149,6 +163,17 @@ export default function LoginScreen() {
             onPress={handleLogin}
           />
         </>
+      }
+      overlayComponent={
+        <Modal
+          isOpen={networkDialogShown}
+          onClose={() => setNetworkDialogShown(false)}
+          title="Tidak Ada Koneksi Internet"
+          description="Periksa koneksi internet kamu lalu coba lagi"
+          contentComponent={
+            <Button label="Oke" onPress={() => setNetworkDialogShown(false)} />
+          }
+        />
       }
     />
   );

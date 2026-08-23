@@ -42,7 +42,8 @@ export function useLessons() {
     isLoading,
     isError,
     error,
-    refetch,
+    refresh,
+    isRefreshing,
   } = useAsyncData<LessonData[]>(fetchLessons, []);
 
   const searched = useFuzzySearch(
@@ -72,6 +73,8 @@ export function useLessons() {
     isLoading,
     isError,
     error,
-    refetch,
+
+    refresh,
+    isRefreshing,
   };
 }

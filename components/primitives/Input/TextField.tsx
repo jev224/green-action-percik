@@ -12,6 +12,12 @@ import { useKeyboardHeight } from "@/hooks/useKeyboardHeight";
 import { Check, Eye, EyeOff } from "lucide-react-native";
 import { IconButton } from "../Button/IconButton";
 import { Text } from "@/components/ui/text";
+import Animated from "react-native-reanimated";
+import {
+  contentEnterTransition,
+  contentExitTransition,
+  contentLayoutTransition,
+} from "@/components/animation/presets";
 
 type TextFieldProps = Omit<
   ComponentProps<typeof GSInputField>,
@@ -159,12 +165,14 @@ export function TextField({
       </Input>
 
       {showConfirmButton && (
-        <IconButton
-          icon={Check}
-          variant="default"
-          className="aspect-auto p-4"
-          onPress={handleConfirm}
-        />
+        <Animated.View className="aspect-square self-stretch">
+          <IconButton
+            icon={Check}
+            variant="default"
+            className="self-stretch"
+            onPress={handleConfirm}
+          />
+        </Animated.View>
       )}
     </View>
   );

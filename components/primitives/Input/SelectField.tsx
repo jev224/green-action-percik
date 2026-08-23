@@ -12,6 +12,8 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { ChevronDownIcon } from "@/components/ui/icon";
+import SmoothSelectPortal from "./SmoothSelectPortal";
+import { useState } from "react";
 
 interface SelectOption {
   label: string;
@@ -33,29 +35,34 @@ export function SelectField({
   placeholder = "Select option",
   className,
 }: SelectFieldProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <Select selectedValue={value} onValueChange={onValueChange}>
+    <Select
+      selectedValue={value}
+      onValueChange={onValueChange}
+      onClose={() => setIsOpen(false)}
+    >
       <SelectTrigger
         className={cn("rounded-md justify-between py-4", className)}
         variant="outline"
         size="lg"
+        onPress={() => setIsOpen(true)}
       >
         <SelectInput className="ml-3 font-medium" placeholder={placeholder} />
         <SelectIcon className="mr-3" as={ChevronDownIcon} />
       </SelectTrigger>
 
-      <SelectPortal>
-        <SelectBackdrop />
-        <SelectContent className="rounded-xl p-3">
-          <SelectDragIndicatorWrapper className="mb-2">
-            <SelectDragIndicator />
-          </SelectDragIndicatorWrapper>
-
-          {options.map((opt) => (
-            <SelectItem key={opt.value} label={opt.label} value={opt.value} />
-          ))}
-        </SelectContent>
-      </SelectPortal>
+      <SmoothSelectPortal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+        {options.map((opt) => (
+          <SelectItem
+            className="py-4"
+            key={opt.value}
+            label={opt.label}
+            value={opt.value}
+          />
+        ))}
+      </SmoothSelectPortal>
     </Select>
   );
 }

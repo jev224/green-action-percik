@@ -1,3 +1,12 @@
+import { Redirect } from "expo-router";
+
+import { Box } from "@/components/ui/box";
+import { Heading } from "@/components/ui/heading";
+import { HStack } from "@/components/ui/hstack";
+import { Image } from "@/components/ui/image";
+import { Text } from "@/components/ui/text";
+import { VStack } from "@/components/ui/vstack";
+
 import { BackButton } from "@/components/domain";
 import {
   BottomPanel,
@@ -6,23 +15,16 @@ import {
   Screen,
   ScreenHeader,
   Spacer,
+  SurfaceCard,
 } from "@/components/primitives";
-import { Box } from "@/components/ui/box";
-import { Center } from "@/components/ui/center";
-import { Heading } from "@/components/ui/heading";
-import { Icon } from "@/components/ui/icon";
-import { Image } from "@/components/ui/image";
 
-import { Text } from "@/components/ui/text";
-import { VStack } from "@/components/ui/vstack";
+import { useLessonStore } from "@/stores/lessonAction";
+
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useNavigation } from "@/hooks/useNavigation";
-import { getLessonDetails } from "@/services/teacher/lessons";
-import { useLessonStore } from "@/stores/lessonAction";
-import { formatDate } from "@/utils";
-import { Redirect } from "expo-router";
 
-import { Image as ImageIcon } from "lucide-react-native";
+import { getLessonDetails } from "@/services/teacher/lessons";
+import { formatDate } from "@/utils";
 
 export default function LessonOverviewScreen() {
   const { navigateTo } = useNavigation();
@@ -47,6 +49,7 @@ export default function LessonOverviewScreen() {
     setLessonContentData(data.title, data.contents);
     navigateTo("/(student)/learn/content");
   };
+
   return (
     <Screen
       scrollable
@@ -70,30 +73,30 @@ export default function LessonOverviewScreen() {
         title,
         description,
         author,
+        contents,
         photoUrl,
         created_at,
       }) => (
         <>
-          <Box className="w-full h-52 bg-accent-foreground/20 rounded-md">
-            {photoUrl ? (
-              <Image source={photoUrl} />
-            ) : (
-              <Center className="flex-1 gap-2 opacity-50">
-                <Icon as={ImageIcon} width={52} height={52} />
-                <Text>Tidak ada gambar</Text>
-              </Center>
-            )}
-          </Box>
+          {photoUrl && (
+            <Box className="w-full h-52 bg-accent-foreground/20 rounded-md overflow-hidden">
+              <Image
+                className="w-full h-full"
+                resizeMode="cover"
+                source={photoUrl}
+              />
+            </Box>
+          )}
 
-          <VStack>
-            <Heading size="xl">{title}</Heading>
+          <VStack space="xs">
+            <Heading size={photoUrl ? "xl" : "2xl"}>{title}</Heading>
 
             <Text size="sm" className="opacity-70">
-              Dibuat oleh{" "}
+              {"Dibuat oleh "}
               <Text className="font-bold" size="sm">
                 {author}
-              </Text>{" "}
-              · {formatDate(created_at)}
+              </Text>
+              {" · " + formatDate(created_at)}
             </Text>
           </VStack>
 
@@ -101,6 +104,24 @@ export default function LessonOverviewScreen() {
             <Text size="md" className="leading-6">
               {description}
             </Text>
+          </ListSection>
+
+          <ListSection size="md" space="sm" title="Konten:">
+            <VStack space="sm">
+              {contents.map(({ title }, index) => (
+                <SurfaceCard
+                  className="items-start px-6 rounded-md"
+                  key={index}
+                >
+                  {() => (
+                    <HStack className="items-center" space="xs">
+                      <Text className="font-medium">{index + 1}.</Text>
+                      <Text>{title}</Text>
+                    </HStack>
+                  )}
+                </SurfaceCard>
+              ))}
+            </VStack>
           </ListSection>
 
           <Spacer height={108} />

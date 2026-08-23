@@ -1,25 +1,23 @@
 import { supabase } from "@/lib/supabase";
+import { getMyId, getRole } from "@/services/auth";
 
 export const getStudentProfile = async () => {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const [user_id, role] = await Promise.all([getMyId(), getRole()]);
 
-  if (!user) {
+  if (!user_id) {
     throw new Error("Invalid credentials");
   }
 
-  if (user.app_metadata.user_role !== "student") {
+  if (role !== "student") {
     throw new Error("Invalid role");
   }
 
   const { data, error } = await supabase
     .from("students")
     .select("*, class:classes(id, grade, major, sub_major)")
-    .eq("user_id", user.id)
+    .eq("user_id", user_id)
     .single();
 
-  console.log(data?.class);
   if (error) {
     throw error;
   }

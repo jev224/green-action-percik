@@ -1,5 +1,3 @@
-import { getStudentStats } from "@/services/teacher/students";
-
 import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
 import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
@@ -23,15 +21,19 @@ import {
   Sprout,
   Trash2,
 } from "lucide-react-native";
-import { useAsyncData } from "@/hooks/useAsyncData";
+
+import { getAllStudentStats } from "@/services/teacher/students";
 import { getTeacherProfile } from "@/services/teacher/profile";
+
+import { useAsyncData } from "@/hooks/useAsyncData";
+
 import { parseProfileInfo } from "@/utils";
 
 export default function HomeScreen() {
-  const { data, isLoading, isError } = useAsyncData(
+  const { data, isLoading, isError, refresh, isRefreshing } = useAsyncData(
     async () => ({
       profile: await getTeacherProfile(),
-      stats: await getStudentStats(),
+      stats: await getAllStudentStats(),
     }),
     [],
   );
@@ -42,6 +44,8 @@ export default function HomeScreen() {
       isLoading={isLoading}
       isError={isError}
       data={data}
+      onRefresh={refresh}
+      isRefreshing={isRefreshing}
       contentComponent={({
         stats: {
           studentCount,

@@ -1,16 +1,25 @@
-import { ProfileHeader, ProfileList } from "@/components/domain";
-import { Screen } from "@/components/primitives";
-import { Box } from "@/components/ui/box";
 import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
 import { VStack } from "@/components/ui/vstack";
+import { Box } from "@/components/ui/box";
 
-import { useAsyncData } from "@/hooks/useAsyncData";
-import { getTeacherProfile } from "@/services/teacher/profile";
-import { parseProfileInfo } from "@/utils";
+import { ProfileHeader, ProfileList } from "@/components/domain";
+import { Screen } from "@/components/primitives";
+
 import { Download } from "lucide-react-native";
 
+import { getTeacherProfile } from "@/services/teacher/profile";
+
+import { useNavigation } from "@/hooks/useNavigation";
+import { useAsyncData } from "@/hooks/useAsyncData";
+
+import { parseProfileInfo } from "@/utils";
+
 export default function ProfileScreen() {
+  const { navigateTo } = useNavigation();
+
   const { data, isLoading, isError } = useAsyncData(getTeacherProfile, []);
+
+  const handleDownload = () => navigateTo("/(teacher)/download");
 
   return (
     <Screen
@@ -33,7 +42,7 @@ export default function ProfileScreen() {
                 key: "download",
                 label: "Download",
                 icon: Download,
-                onPress: () => {},
+                onPress: handleDownload,
               },
             ]}
           />
@@ -48,13 +57,14 @@ export default function ProfileScreen() {
               <SkeletonText className="w-32 h-4 opacity-60" />
             </VStack>
           </Box>
+
           <ProfileList
             items={[
               {
                 key: "download",
                 label: "Download",
                 icon: Download,
-                onPress: () => {},
+                onPress: handleDownload,
               },
             ]}
           />

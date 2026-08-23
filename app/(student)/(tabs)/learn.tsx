@@ -1,12 +1,13 @@
 import { FlatList } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
+import Animated from "react-native-reanimated";
 
-import { LessonData, useLessons } from "@/hooks/useLessons";
-
+import { Skeleton } from "@/components/ui/skeleton";
+import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
 
 import {
   ActionTile,
-  Button,
   EmptyState,
   Screen,
   ScreenHeader,
@@ -14,35 +15,22 @@ import {
   SortSelect,
 } from "@/components/primitives";
 
-import Animated, {
-  Easing,
-  FadeInDown,
-  FadeOutUp,
-  LinearTransition,
-} from "react-native-reanimated";
+import {
+  contentEnterTransition,
+  contentExitTransition,
+  contentLayoutTransition,
+} from "@/components/animation/presets";
 
-import { LeafyGreen, Plus } from "lucide-react-native";
-import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
-import { VStack } from "@/components/ui/vstack";
-import { ScrollView } from "react-native-gesture-handler";
-import { Box } from "@/components/ui/box";
-import { Fab, FabIcon, FabLabel } from "@/components/ui/fab";
 import { useLessonStore } from "@/stores/lessonAction";
+
 import { useNavigation } from "@/hooks/useNavigation";
+import { useLessons } from "@/hooks/useLessons";
 
-const LIST_LAYOUT = LinearTransition.springify()
-  .damping(25)
-  .stiffness(280)
-  .mass(0.8);
-
-const ITEM_ENTER = FadeInDown.easing(Easing.out(Easing.ease))
-  .duration(260)
-  .delay(100);
-
-const ITEM_EXIT = FadeOutUp.easing(Easing.in(Easing.ease)).duration(220);
+import { LeafyGreen } from "lucide-react-native";
 
 export default function LearningScreen() {
   const { navigateTo } = useNavigation();
+
   const viewLesson = useLessonStore((state) => state.viewLesson);
 
   const {
@@ -54,6 +42,8 @@ export default function LearningScreen() {
     isLoading,
     isError,
     results,
+    refresh,
+    isRefreshing,
   } = useLessons();
 
   const handleView = (id: number) => {
@@ -65,6 +55,8 @@ export default function LearningScreen() {
     <Screen
       isLoading={isLoading}
       isError={isError}
+      onRefresh={refresh}
+      isRefreshing={isRefreshing}
       headerComponent={
         <>
           <ScreenHeader title="Belajar" />
@@ -75,7 +67,6 @@ export default function LearningScreen() {
           </HStack>
         </>
       }
-      errorComponent={<></>}
       contentComponent={
         results.length > 0 ? (
           <FlatList
@@ -84,15 +75,17 @@ export default function LearningScreen() {
             className="overflow-visible"
             renderItem={({ item }) => (
               <Animated.View
-                layout={LIST_LAYOUT}
-                entering={ITEM_ENTER}
-                exiting={ITEM_EXIT}
+                layout={contentLayoutTransition}
+                entering={contentEnterTransition}
+                exiting={contentExitTransition}
               >
                 <ActionTile
                   onPress={() => handleView(item.id)}
                   className="mb-4"
+                  size="md"
                   title={item.title}
                   description={item.description}
+                  contentPosition="top"
                   imageSource={
                     item.photoUrl ? { uri: item.photoUrl } : undefined
                   }
@@ -103,7 +96,7 @@ export default function LearningScreen() {
             keyExtractor={(lesson) => String(lesson.id)}
           />
         ) : (
-          <EmptyState message="Belum ada materi pembalajaran." />
+          <EmptyState message="Tidak ada materi pembalajaran." />
         )
       }
       loadingComponent={
@@ -112,11 +105,11 @@ export default function LearningScreen() {
           className="overflow-visible"
         >
           <VStack space="md">
-            <Skeleton className="h-28" />
-            <Skeleton className="h-28" />
-            <Skeleton className="h-28" />
-            <Skeleton className="h-28" />
-            <Skeleton className="h-28" />
+            <Skeleton className="h-32" />
+            <Skeleton className="h-32" />
+            <Skeleton className="h-32" />
+            <Skeleton className="h-32" />
+            <Skeleton className="h-32" />
           </VStack>
         </ScrollView>
       }

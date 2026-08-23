@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { LayoutChangeEvent, View } from "react-native";
-import MaskedView from "@react-native-masked-view/masked-view";
+import { LayoutChangeEvent, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { EaseView } from "react-native-ease";
+import MaskedView from "@react-native-masked-view/masked-view";
 
 import { Heading } from "@/components/ui/heading";
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
@@ -62,18 +62,25 @@ export function GradientHeading({
     <View>
       {/* Fallback, shown for one frame until we've measured the real heading size */}
       {!dims && (
-        <Heading size={size} className={className} onLayout={onLayout}>
+        <Text
+          style={{ fontSize: 42, fontWeight: "bold", color: "black" }}
+          className={className}
+          onLayout={onLayout}
+        >
           {children}
-        </Heading>
+        </Text>
       )}
 
       {dims && (
         <MaskedView
           style={{ width: dims.width, height: dims.height }}
           maskElement={
-            <Heading size={size} className={cn("bg-transparent", className)}>
+            <Text
+              style={{ fontSize: 42, fontWeight: "bold", color: "black" }}
+              className={className}
+            >
               {children}
-            </Heading>
+            </Text>
           }
         >
           {/* Clips the oversized, moving gradient to the heading's exact bounds

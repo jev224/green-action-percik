@@ -13,6 +13,8 @@ export type LessonFields = {
   contents: LessonContent[];
 };
 
+export type LessonForm = LessonFields & { photoUri: string | null | undefined };
+
 export type LessonPayload = LessonFields & {
   photoUri?: string | null;
 };
@@ -60,10 +62,10 @@ const updateLessonRow = async (
 };
 
 export const getChangedLessonFields = (
-  original: LessonFields,
-  current: LessonFields,
-): Partial<LessonFields> => {
-  const changed: Partial<LessonFields> = {};
+  original: Partial<LessonForm>,
+  current: LessonForm,
+): Partial<LessonForm> => {
+  const changed: Partial<LessonForm> = {};
 
   if (original.title !== current.title) {
     changed.title = current.title;
@@ -71,6 +73,10 @@ export const getChangedLessonFields = (
 
   if (original.description !== current.description) {
     changed.description = current.description;
+  }
+
+  if (original.photoUri !== current.photoUri) {
+    changed.photoUri = current.photoUri;
   }
 
   // Content blocks are always edited/reordered as a whole, so a JSON

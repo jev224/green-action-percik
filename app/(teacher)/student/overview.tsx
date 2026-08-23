@@ -1,21 +1,26 @@
+import { Redirect } from "expo-router";
+
+import { HStack } from "@/components/ui/hstack";
+
 import { BackButton, ProfileHeader } from "@/components/domain";
+
 import {
-  Button,
   ListSection,
   Screen,
   ScreenHeader,
   StatCard,
-  BottomPanel,
 } from "@/components/primitives";
 
-import { HStack } from "@/components/ui/hstack";
-import { useAsyncData } from "@/hooks/useAsyncData";
-import { getStudentStatistics } from "@/services/student/statistics";
-import { getStudentDetails } from "@/services/teacher/students";
-import { useStudentActionStore } from "@/stores/studentOverview";
-import { parseProfileInfo } from "@/utils";
-import { Redirect } from "expo-router";
 import { Apple, BrushCleaning, Bubbles, Medal } from "lucide-react-native";
+
+import { useStudentActionStore } from "@/stores/studentOverview";
+
+import { getStudentStatisticsById } from "@/services/student/statistics";
+import { getStudentDetails } from "@/services/teacher/students";
+
+import { useAsyncData } from "@/hooks/useAsyncData";
+
+import { parseProfileInfo } from "@/utils";
 
 export default function StudentOverviewScreen() {
   const studentData = useStudentActionStore((state) => state.studentData);
@@ -27,7 +32,7 @@ export default function StudentOverviewScreen() {
   const { data, isLoading, isError } = useAsyncData(
     async () => ({
       details: await getStudentDetails(studentData.userId),
-      stats: await getStudentStatistics(studentData.userId),
+      stats: await getStudentStatisticsById(studentData.userId),
     }),
     [],
   );
@@ -41,6 +46,7 @@ export default function StudentOverviewScreen() {
       headerComponent={
         <ScreenHeader title="Detail Siswa" leftComponent={<BackButton />} />
       }
+      // Tambahin nanti fuh twin
       // overlayComponent={
       //   <BottomPanel variant="ghost">
       //     <HStack space="md">
@@ -69,6 +75,17 @@ export default function StudentOverviewScreen() {
             }}
           />
 
+          <ListSection title="Poin Siswa">
+            <StatCard
+              title="Poin"
+              stats={studentPoints}
+              color="warning"
+              size="lg"
+              icon={Medal}
+              // variant="outline"
+            />
+          </ListSection>
+
           <ListSection title="Statistik siswa">
             <HStack space="md">
               <StatCard
@@ -93,17 +110,6 @@ export default function StudentOverviewScreen() {
                 fill
               />
             </HStack>
-          </ListSection>
-
-          <ListSection title="Poin Siswa">
-            <StatCard
-              title="Poin"
-              stats={studentPoints}
-              color="warning"
-              size="lg"
-              icon={Medal}
-              variant="outline"
-            />
           </ListSection>
         </>
       )}

@@ -14,6 +14,7 @@ import {
   SurfaceVariant,
 } from "@/components/styles/buildColorsVariants";
 import { IconButton } from "../Button/IconButton";
+import { config } from "@/components/animation/config";
 
 interface SortableCardProps {
   title: string;
@@ -33,7 +34,11 @@ export const SortableCard = ({
   onDelete,
 }: SortableCardProps) => {
   return (
-    <Pressable onPress={onPress}>
+    <Pressable
+      onPress={onPress}
+      delayHoverIn={0}
+      unstable_pressDelay={config.pressableDelay}
+    >
       <SurfaceCard
         color={color}
         variant={variant}

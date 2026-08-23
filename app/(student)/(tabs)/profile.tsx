@@ -1,11 +1,11 @@
 import { ProfileHeader, ProfileList } from "@/components/domain";
 import { Screen } from "@/components/primitives";
 import { Box } from "@/components/ui/box";
-import { Center } from "@/components/ui/center";
 import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
 import { VStack } from "@/components/ui/vstack";
 
 import { useAsyncData } from "@/hooks/useAsyncData";
+
 import { getStudentProfile } from "@/services/student/profile";
 import { parseProfileInfo } from "@/utils";
 
@@ -40,6 +40,7 @@ export default function ProfileScreen() {
               <SkeletonText className="w-32 h-4 opacity-60" />
             </VStack>
           </Box>
+
           <ProfileList />
         </>
       }
