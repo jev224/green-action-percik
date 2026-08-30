@@ -8,6 +8,7 @@ import {
   SHADOW_CONFIG,
   LeafPattern,
 } from "./leafArrangements";
+import React from "react";
 
 interface LeafDecorationProps {
   /** cluster = several overlapping leaves, accent = single leaf */
@@ -21,7 +22,7 @@ interface LeafDecorationProps {
   shadow?: keyof typeof SHADOW_CONFIG;
 }
 
-export function LeafDecoration({
+export const LeafDecoration = React.memo(function LeafDecoration({
   variant = "cluster",
   pattern = "1",
   color = "primary",
@@ -51,4 +52,4 @@ export function LeafDecoration({
       )}
     </>
   );
-}
+});

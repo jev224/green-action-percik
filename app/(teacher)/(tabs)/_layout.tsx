@@ -30,6 +30,8 @@ export default function TabsLayout() {
       rippleColor={colors.ring}
       badgeBackgroundColor={colors.destructive}
       badgeTextColor={colors.destructiveForeground}
+      backBehavior="initialRoute"
+      sidebarAdaptable
     >
       <NativeTabs.Trigger name="home">
         <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>

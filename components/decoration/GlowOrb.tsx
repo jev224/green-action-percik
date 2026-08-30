@@ -1,14 +1,5 @@
-import { useEffect } from "react";
 import { ColorValue, View } from "react-native";
 import { EaseView } from "react-native-ease";
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withDelay,
-  withRepeat,
-  withTiming,
-} from "react-native-reanimated";
 import Svg, { Circle, Defs, RadialGradient, Stop } from "react-native-svg";
 
 type GlowOrbProps = {
@@ -36,6 +27,10 @@ export function GlowOrb({
   minScale = 0.92,
   maxScale = 1,
 }: GlowOrbProps) {
+  // Disabled: sustained ~90-107% CPU / device heat even after react-native-ease swap.
+  // Revisit before re-enabling — see notes.
+  return null;
+
   return (
     <View
       className="absolute -inset-8 -z-10"

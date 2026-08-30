@@ -1,6 +1,13 @@
-import { View, ColorValue, useColorScheme } from "react-native";
+import React from "react";
+import { View, ColorValue } from "react-native";
 
-import Svg, { Circle, Defs, RadialGradient, Stop } from "react-native-svg";
+import Svg, {
+  Circle,
+  Defs,
+  RadialGradient,
+  Rect,
+  Stop,
+} from "react-native-svg";
 
 import { useThemeColors } from "@/hooks/useThemeColors";
 
@@ -17,7 +24,7 @@ interface GlowDecorationProps {
   className?: string;
 }
 
-export function GlowDecoration({
+export const GlowDecoration = React.memo(function GlowDecoration({
   variant = "corner",
   color,
   colorForeground,
@@ -31,12 +38,26 @@ export function GlowDecoration({
       colors.primary,
       colors.accent,
     ];
+
     return (
       <View
         className={className ?? "absolute inset-0 rounded-xl overflow-hidden"}
+        pointerEvents="none"
       >
-        <EdgeGlow side="left" color={leftColor} />
-        <EdgeGlow side="right" color={rightColor} />
+        <Svg width="100%" height="100%">
+          <Defs>
+            <RadialGradient id="edgeLeft" cx="0%" cy="50%" r="75%">
+              <Stop offset="0" stopColor={leftColor} stopOpacity={0.2} />
+              <Stop offset="1" stopColor={leftColor} stopOpacity={0} />
+            </RadialGradient>
+            <RadialGradient id="edgeRight" cx="100%" cy="50%" r="75%">
+              <Stop offset="0" stopColor={rightColor} stopOpacity={0.2} />
+              <Stop offset="1" stopColor={rightColor} stopOpacity={0} />
+            </RadialGradient>
+          </Defs>
+          <Rect width="100%" height="100%" fill="url(#edgeLeft)" />
+          <Rect width="100%" height="100%" fill="url(#edgeRight)" />
+        </Svg>
       </View>
     );
   }
@@ -49,6 +70,7 @@ export function GlowDecoration({
       className={
         className ?? "absolute -top-[15%] -right-[20%] w-[175%] aspect-square"
       }
+      pointerEvents="none"
     >
       <Svg width="100%" height="100%">
         <Defs>
@@ -62,33 +84,4 @@ export function GlowDecoration({
       </Svg>
     </View>
   );
-}
-
-function EdgeGlow({
-  side,
-  color,
-}: {
-  side: "left" | "right";
-  color: ColorValue;
-}) {
-  const isDark = useColorScheme() === "dark";
-
-  const positionClass = side === "left" ? "-left-full" : "-right-full";
-  return (
-    <View className={`absolute top-0 bottom-0 ${positionClass} w-[200%]`}>
-      <Svg width="100%" height="100%">
-        <Defs>
-          <RadialGradient id={`edgeGlow-${side}`}>
-            <Stop
-              offset="1"
-              stopColor={isDark ? "black" : "white"}
-              stopOpacity={0}
-            />
-            <Stop offset="0" stopColor={color} stopOpacity={0.2} />
-          </RadialGradient>
-        </Defs>
-        <Circle cx="50%" cy="50%" r="50%" fill={`url(#edgeGlow-${side})`} />
-      </Svg>
-    </View>
-  );
-}
+});

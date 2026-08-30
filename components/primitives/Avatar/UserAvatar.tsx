@@ -4,6 +4,7 @@ import {
   Avatar as GSAvatar,
   AvatarFallbackText,
   AvatarImage,
+  AvatarGroup,
 } from "@/components/ui/avatar";
 
 type AvatarSize = "sm" | "md" | "lg";
@@ -33,7 +34,7 @@ export function UserAvatar({
     <GSAvatar className={cn(SIZE_CLASSES[size], className)}>
       <AvatarFallbackText
         className={cn(
-          "leading-0! font-bold",
+          "font-bold",
           size === "sm" && "text-2xl",
           size === "md" && "text-4xl",
           size === "lg" && "text-6xl",
@@ -41,6 +42,7 @@ export function UserAvatar({
       >
         {name}
       </AvatarFallbackText>
+
       {imageSource && <AvatarImage source={imageSource} />}
     </GSAvatar>
   );
