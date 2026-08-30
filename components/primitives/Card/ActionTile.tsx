@@ -10,7 +10,7 @@ import { Icon } from "@/components/ui/icon";
 import { Image } from "@/components/ui/image";
 import { SurfaceCard } from "./SurfaceCard";
 
-import { cn, cnBase, tv, VariantProps } from "tailwind-variants";
+import { cnBase, tv, VariantProps } from "tailwind-variants";
 
 import { usePressFeedback } from "@/hooks/usePressFeedback";
 
@@ -106,6 +106,8 @@ interface ActionTileProps {
   thumbnailPosition?: ActionTileStyleProps["thumbnailPosition"];
   headerRightComponent?: ReactNode;
   bottomComponent?: ReactNode;
+  innerDecoration?: ReactNode;
+  outerDecoration?: ReactNode;
 }
 
 export function ActionTile({
@@ -122,6 +124,8 @@ export function ActionTile({
   contentPosition = "center",
   headerRightComponent,
   bottomComponent,
+  innerDecoration,
+  outerDecoration,
 }: ActionTileProps) {
   const { bind, scaleAnimation, isPressing } = usePressFeedback(0.97);
 
@@ -143,11 +147,15 @@ export function ActionTile({
     >
       {(baseStyles) => (
         <>
+          {innerDecoration && (
+            <Box className="absolute inset-0">{innerDecoration}</Box>
+          )}
+
           {/* Thumbnail — only rendered when there's actually something to show */}
           {hasThumbnail && (
             <Box
               className={baseStyles.thumbnail({
-                className: styles.thumbnail(),
+                class: styles.thumbnail(),
               })}
             >
               <EaseView
@@ -208,8 +216,6 @@ export function ActionTile({
     </SurfaceCard>
   );
 
-  if (!onPress) return body;
-
   return (
     <EaseView
       animate={scaleAnimation}
@@ -217,15 +223,24 @@ export function ActionTile({
         transform: { type: "spring", ...AnimationConfig.spring.bouncy },
       }}
     >
-      <Pressable
-        delayHoverIn={0}
-        unstable_pressDelay={config.pressableDelay}
-        onPress={onPress}
-        onPressIn={bind.onPressIn}
-        onPressOut={bind.onPressOut}
-      >
-        {body}
-      </Pressable>
+      {outerDecoration && (
+        <Box className="absolute inset-0">{outerDecoration}</Box>
+      )}
+
+      {onPress && (
+        <Pressable
+          className="absolute inset-0 z-10"
+          accessibilityRole="button"
+          accessibilityLabel={title}
+          delayHoverIn={0}
+          unstable_pressDelay={config.pressableDelay}
+          onPress={onPress}
+          onPressIn={bind.onPressIn}
+          onPressOut={bind.onPressOut}
+        />
+      )}
+
+      {body}
     </EaseView>
   );
 }

@@ -9,10 +9,11 @@ import {
   SemanticColor,
   SurfaceVariant,
 } from "@/components/styles/buildColorsVariants";
+import { View } from "react-native";
 
 const surfaceCardStyle = tv({
   slots: {
-    card: "items-center shadow-none overflow-hidden p-4",
+    card: "items-center shadow-none p-4",
     thumbnail: "items-center justify-center rounded-sm overflow-hidden",
     icon: "",
     text: "",
@@ -44,7 +45,7 @@ const surfaceCardStyle = tv({
         variant: "solid",
         class: {
           card: solid.surface,
-          thumbnail: outline.surfaceInner,
+          thumbnail: solid.surfaceInner,
           icon: solid.icon,
           text: solid.text,
         },

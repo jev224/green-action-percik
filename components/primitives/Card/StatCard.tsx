@@ -1,5 +1,5 @@
-import { ComponentProps } from "react";
-import { ImageSourcePropType, Pressable } from "react-native";
+import { ComponentProps, ReactNode } from "react";
+import { ImageSourcePropType, Pressable, View } from "react-native";
 
 import {
   interpolate,
@@ -93,6 +93,8 @@ interface StatCardProps {
   thumbnailRotation?: number;
   animation?: "fun" | "none";
   fill?: boolean;
+  innerDecoration?: ReactNode;
+  outerDecoration?: ReactNode;
 }
 
 export function StatCard({
@@ -107,6 +109,8 @@ export function StatCard({
   animation = "none",
   fill,
   className,
+  innerDecoration,
+  outerDecoration,
 }: StatCardProps) {
   // "variant" is now actually forwarded, so the compoundVariants above apply.
   const styles = statCardStyle({ size });
@@ -156,64 +160,74 @@ export function StatCard({
   };
 
   return (
-    <AnimatedSurfaceCard
-      color={color}
-      variant={variant}
-      className={cn(styles.card({ className }), fill && "flex-1")}
-      style={cardAnimatedStyle}
-    >
-      {(baseStyles) => (
-        <>
-          {/* Only mounts (and only captures touches) when there's actually
+    <View className={cn(fill && "flex-1")}>
+      {outerDecoration && (
+        <View className="absolute inset-0">{outerDecoration}</View>
+      )}
+
+      <AnimatedSurfaceCard
+        color={color}
+        variant={variant}
+        className={styles.card({ className })}
+        style={cardAnimatedStyle}
+      >
+        {(baseStyles) => (
+          <>
+            {innerDecoration && (
+              <View className="absolute inset-0">{innerDecoration}</View>
+            )}
+
+            {/* Only mounts (and only captures touches) when there's actually
               something to animate — previously this always sat over the
               whole card, even with animation="none". */}
-          {isInteractive && (
-            <Pressable
-              delayHoverIn={0}
-              unstable_pressDelay={config.pressableDelay}
-              className="absolute inset-0 z-20"
-              onPress={handlePress}
-            />
-          )}
+            {isInteractive && (
+              <Pressable
+                delayHoverIn={0}
+                unstable_pressDelay={config.pressableDelay}
+                className="absolute inset-0 z-20"
+                onPress={handlePress}
+              />
+            )}
 
-          {hasThumbnail && (
-            <AnimatedBox
-              className={styles.thumbnail()}
-              style={thumbnailAnimatedStyle}
-            >
-              {imageSource ? (
-                <Image className="w-full h-full" source={imageSource} />
-              ) : (
-                <Icon
-                  as={icon}
-                  className={baseStyles.icon({
-                    className: styles.icon(),
-                  })}
-                />
-              )}
-            </AnimatedBox>
-          )}
+            {hasThumbnail && (
+              <AnimatedBox
+                className={styles.thumbnail()}
+                style={thumbnailAnimatedStyle}
+              >
+                {imageSource ? (
+                  <Image className="w-full h-full" source={imageSource} />
+                ) : (
+                  <Icon
+                    as={icon}
+                    className={baseStyles.icon({
+                      className: styles.icon(),
+                    })}
+                  />
+                )}
+              </AnimatedBox>
+            )}
 
-          <VStack className={styles.content()}>
-            <Heading
-              className={baseStyles.text({
-                className: styles.title(),
-              })}
-              numberOfLines={1}
-            >
-              {title}
-            </Heading>
-            <Heading
-              className={baseStyles.text({
-                className: styles.stats(),
-              })}
-              numberOfLines={1}
-            >
-              {stats}
-            </Heading>
-          </VStack>
-        </>
-      )}
-    </AnimatedSurfaceCard>
+            <VStack className={styles.content()}>
+              <Heading
+                className={baseStyles.text({
+                  className: styles.title(),
+                })}
+                numberOfLines={1}
+              >
+                {title}
+              </Heading>
+              <Heading
+                className={baseStyles.text({
+                  className: styles.stats(),
+                })}
+                numberOfLines={1}
+              >
+                {stats}
+              </Heading>
+            </VStack>
+          </>
+        )}
+      </AnimatedSurfaceCard>
+    </View>
   );
 }
