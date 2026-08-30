@@ -15,18 +15,21 @@ import {
   SortSelect,
 } from "@/components/primitives";
 
+import { GlowDecoration } from "@/components/decoration";
+
 import {
   contentEnterTransition,
   contentExitTransition,
   contentLayoutTransition,
 } from "@/components/animation/presets";
 
+import { LeafyGreen } from "lucide-react-native";
+
 import { useLessonStore } from "@/stores/lessonAction";
 
 import { useNavigation } from "@/hooks/useNavigation";
 import { useLessons } from "@/hooks/useLessons";
-
-import { LeafyGreen } from "lucide-react-native";
+import { useThemeColors } from "@/hooks/useThemeColors";
 
 export default function LearningScreen() {
   const { navigateTo } = useNavigation();
@@ -50,6 +53,8 @@ export default function LearningScreen() {
     viewLesson(id);
     navigateTo("/learn/overview");
   };
+
+  const colors = useThemeColors();
 
   return (
     <Screen
@@ -83,11 +88,18 @@ export default function LearningScreen() {
                   onPress={() => handleView(item.id)}
                   className="mb-4"
                   size="md"
+                  variant="solid"
                   title={item.title}
                   description={item.description}
                   contentPosition="top"
                   imageSource={
                     item.photoUrl ? { uri: item.photoUrl } : undefined
+                  }
+                  innerDecoration={
+                    <GlowDecoration
+                      variant="edges"
+                      edgeColors={[colors.primary, colors.accent]}
+                    />
                   }
                   icon={!item.photoUrl ? LeafyGreen : undefined}
                 />

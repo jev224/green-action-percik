@@ -93,6 +93,7 @@ export default function LessonsScreen() {
                   onPress={() => handleEdit(item.id)}
                   className="mb-4"
                   size="md"
+                  variant="solid"
                   title={item.title}
                   description={item.description}
                   imageSource={

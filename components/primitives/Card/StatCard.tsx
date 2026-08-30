@@ -30,7 +30,7 @@ import { config } from "@/components/animation/config";
 
 const statCardStyle = tv({
   slots: {
-    card: "flex-row items-center shadow-none overflow-hidden",
+    card: "flex-row items-center overflow-hidden shadow-md",
     thumbnail: "rounded-sm overflow-hidden",
     icon: "w-full h-full",
     title: "opacity-80",
@@ -40,7 +40,7 @@ const statCardStyle = tv({
   variants: {
     size: {
       default: {
-        card: "flex-col gap-3 shadow-none px-1",
+        card: "flex-col gap-3 px-1",
         title: "text-md font-medium opacity-80",
         stats: "text-xl",
         thumbnail: "size-8 overflow-visible",
@@ -55,7 +55,7 @@ const statCardStyle = tv({
         content: "flex-1",
       },
       lg: {
-        card: "min-h-38 p-6 pl-8",
+        card: "min-h-38 p-6 pl-8 shadow-lg",
         title: "text-xl font-bold w-[70%]",
         stats: "text-6xl w-[70%]",
         icon: "w-24 h-24 opacity-90 dark:opacity-100",
@@ -161,10 +161,6 @@ export function StatCard({
 
   return (
     <View className={cn(fill && "flex-1")}>
-      {outerDecoration && (
-        <View className="absolute inset-0">{outerDecoration}</View>
-      )}
-
       <AnimatedSurfaceCard
         color={color}
         variant={variant}
@@ -228,6 +224,8 @@ export function StatCard({
           </>
         )}
       </AnimatedSurfaceCard>
+
+      {outerDecoration}
     </View>
   );
 }

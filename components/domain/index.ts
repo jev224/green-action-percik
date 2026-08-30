@@ -1,7 +1,3 @@
-// components/domain/index.ts
-// One import line for screens: `import { StudentList, ProfileHeader, ... }
-// from "@/components/domain"`.
-
 export { BackButton } from "./nav/BackButton";
 export { LinkButton } from "./nav/LinkButton";
 

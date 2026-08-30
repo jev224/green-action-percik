@@ -9,7 +9,6 @@ import {
   SemanticColor,
   SurfaceVariant,
 } from "@/components/styles/buildColorsVariants";
-import { View } from "react-native";
 
 const surfaceCardStyle = tv({
   slots: {

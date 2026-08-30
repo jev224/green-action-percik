@@ -23,7 +23,7 @@ import { config } from "@/components/animation/config";
 
 const actionTileStyle = tv({
   slots: {
-    card: "",
+    card: "shadow-md",
     thumbnail: "size-18",
     icon: "w-12 h-12",
     content: "flex-1",
@@ -141,7 +141,7 @@ export function ActionTile({
         className: cnBase(
           className,
           variant === "ghost" &&
-            "bg-transparent border-transparent p-1 overflow-visible",
+            "bg-transparent border-transparent p-1 overflow-visible shadow-none",
         ),
       })}
     >
@@ -223,10 +223,6 @@ export function ActionTile({
         transform: { type: "spring", ...AnimationConfig.spring.bouncy },
       }}
     >
-      {outerDecoration && (
-        <Box className="absolute inset-0">{outerDecoration}</Box>
-      )}
-
       {onPress && (
         <Pressable
           className="absolute inset-0 z-10"
@@ -241,6 +237,8 @@ export function ActionTile({
       )}
 
       {body}
+
+      {outerDecoration}
     </EaseView>
   );
 }

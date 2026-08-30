@@ -2,7 +2,7 @@ export const COLORS = {
   primary: {
     solid: {
       surface: "bg-primary",
-      surfaceInner: "bg-foreground/50",
+      surfaceInner: "bg-primary-foreground/30",
       icon: "text-primary-foreground",
       text: "text-primary-foreground",
     },
@@ -48,21 +48,21 @@ export const COLORS = {
   neutral: {
     solid: {
       surface: "bg-card border-card",
-      surfaceInner: "bg-foreground/20",
-      icon: "text-foreground",
+      surfaceInner: "bg-primary",
+      icon: "text-primary-foreground",
       text: "text-foreground",
     },
     outline: {
       surface: "bg-muted/50 border-foreground/20",
-      surfaceInner: "bg-accent/70",
-      icon: "text-accent-foreground/80",
+      surfaceInner: "bg-primary/20",
+      icon: "text-primary",
       text: "text-foreground",
     },
   },
 
   success: {
     solid: {
-      surface: "bg-success",
+      surface: "bg-success border-success",
       surfaceInner: "bg-success-foreground/30",
       icon: "text-success-foreground",
       text: "text-success-foreground",
@@ -77,7 +77,7 @@ export const COLORS = {
 
   info: {
     solid: {
-      surface: "bg-info",
+      surface: "bg-info border-info",
       surfaceInner: "bg-info-foreground/30",
       icon: "text-info-foreground",
       text: "text-info-foreground",

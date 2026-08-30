@@ -103,10 +103,6 @@ export function QuoteCard({
 
   return (
     <View>
-      {outerDecoration && (
-        <View className="absolute inset-0">{outerDecoration}</View>
-      )}
-
       <SurfaceCard
         color={color}
         variant={isDarkmode ? "outline" : "solid"}
@@ -211,6 +207,8 @@ export function QuoteCard({
           </>
         )}
       </SurfaceCard>
+
+      {outerDecoration}
     </View>
   );
 }

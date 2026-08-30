@@ -6,7 +6,7 @@
 
 const rawPalette = {
   light: {
-    primary: "15 87 51",
+    primary: "34 168 108",
     primaryForeground: "250 250 245",
     card: "249 254 245",
     secondary: "222 231 214",
@@ -76,7 +76,7 @@ const rawPalette = {
 } as const;
 
 type ColorMode = keyof typeof rawPalette;
-type ColorToken = keyof typeof rawPalette.light;
+export type ColorToken = keyof typeof rawPalette.light;
 
 // derive rgb() strings for direct use in LinearGradient, BlurView, etc.
 const deriveColors = (mode: ColorMode) =>

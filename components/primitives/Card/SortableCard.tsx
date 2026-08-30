@@ -5,7 +5,7 @@ import { Icon } from "@/components/ui/icon";
 import { VStack } from "@/components/ui/vstack";
 import { Heading } from "@/components/ui/heading";
 
-import { GripVertical, Trash, XIcon } from "lucide-react-native";
+import { GripVertical, Trash } from "lucide-react-native";
 import { Pressable } from "react-native";
 import { SurfaceCard } from "./SurfaceCard";
 

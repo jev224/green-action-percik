@@ -1,3 +1,5 @@
+import { useColorScheme } from "react-native";
+
 import { Heading } from "@/components/ui/heading";
 import { Skeleton } from "@/components/ui/skeleton";
 import { HStack } from "@/components/ui/hstack";
@@ -11,6 +13,12 @@ import {
   ScreenHeader,
   StatCard,
 } from "@/components/primitives";
+
+import {
+  GlowDecoration,
+  LeafDecoration,
+  GlowOrb,
+} from "@/components/decoration";
 
 import {
   Apple,
@@ -28,6 +36,7 @@ import {
 } from "@/services/student/statistics";
 
 import { useAsyncData } from "@/hooks/useAsyncData";
+import { useThemeColors } from "@/hooks/useThemeColors";
 
 import { calculatePercentage } from "@/utils";
 
@@ -40,6 +49,9 @@ export default function StatsiticScreen() {
     [],
   );
 
+  const colors = useThemeColors();
+  const isDark = useColorScheme() === "dark";
+
   return (
     <Screen
       scrollable
@@ -48,7 +60,6 @@ export default function StatsiticScreen() {
       isError={isError}
       onRefresh={refresh}
       isRefreshing={isRefreshing}
-      headerComponent={<ScreenHeader title="Statistik kamu" />}
       contentComponent={({
         stats: {
           wasteWeightTotal,
@@ -63,12 +74,25 @@ export default function StatsiticScreen() {
         },
       }) => (
         <>
+          <ScreenHeader title="Statistik kamu" />
+
           <StatCard
             stats={studentPoints}
             title={"Poin"}
             size="lg"
             color="warning"
             icon={Medal}
+            outerDecoration={
+              !isDark && (
+                <GlowOrb color={colors.warning} minScale={1.5} maxScale={2} />
+              )
+            }
+            innerDecoration={
+              <GlowDecoration
+                variant="edges"
+                edgeColors={[colors.destructive, colors.warningForeground]}
+              />
+            }
           />
 
           <HStack space="md">
@@ -80,6 +104,13 @@ export default function StatsiticScreen() {
               fill
               animation="fun"
               color="organic"
+              innerDecoration={
+                <LeafDecoration
+                  variant="cluster"
+                  pattern="1"
+                  color={colors.organic}
+                />
+              }
             />
 
             <StatCard
@@ -89,6 +120,13 @@ export default function StatsiticScreen() {
               variant="outline"
               fill
               animation="fun"
+              innerDecoration={
+                <LeafDecoration
+                  variant="cluster"
+                  pattern="2"
+                  color={colors.primary}
+                />
+              }
             />
 
             <StatCard
@@ -99,6 +137,13 @@ export default function StatsiticScreen() {
               fill
               animation="fun"
               color="inorganic"
+              innerDecoration={
+                <LeafDecoration
+                  variant="cluster"
+                  pattern="3"
+                  color={colors.inorganic}
+                />
+              }
             />
           </HStack>
 

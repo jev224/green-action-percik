@@ -1,5 +1,8 @@
+import { useColorScheme } from "react-native";
+
 import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
+import { Image } from "@/components/ui/image";
 import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
 
 import { Greeting } from "@/components/domain";
@@ -13,6 +16,12 @@ import {
 } from "@/components/primitives";
 
 import {
+  LeafDecoration,
+  GlowDecoration,
+  GlowOrb,
+} from "@/components/decoration";
+
+import {
   Apple,
   BrushCleaning,
   Bubbles,
@@ -21,8 +30,11 @@ import {
   Trash2,
 } from "lucide-react-native";
 
+import { images } from "@/constants/Images";
+
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useNavigation } from "@/hooks/useNavigation";
+import { useThemeColors } from "@/hooks/useThemeColors";
 
 import { getStudentStatistics } from "@/services/student/statistics";
 import { getStudentProfile } from "@/services/student/profile";
@@ -39,6 +51,9 @@ export default function HomeScreen() {
     }),
     [],
   );
+
+  const colors = useThemeColors();
+  const isDark = useColorScheme() === "dark";
 
   return (
     <Screen
@@ -58,9 +73,27 @@ export default function HomeScreen() {
             info={parseProfileInfo({ role: "student", ...classData })}
           />
 
-          <QuoteCard />
+          <QuoteCard
+            outerDecoration={
+              <>
+                {!isDark && (
+                  <GlowOrb color={colors.success} minScale={1.5} maxScale={2} />
+                )}
+                <LeafDecoration variant="accent" pattern="2" shadow="lg" />
+              </>
+            }
+            innerDecoration={
+              <Image
+                source={images.bannerDecorationLight}
+                className="size-full"
+              />
+            }
+          />
 
-          <ListSection title="Statistik saat ini">
+          <ListSection
+            title="Statistik saat ini"
+            decoration={<LeafDecoration pattern="3" variant="accent" />}
+          >
             <HStack space="md">
               <StatCard
                 title="Sampah"
@@ -70,6 +103,23 @@ export default function HomeScreen() {
                 fill
                 animation="fun"
                 color="organic"
+                innerDecoration={
+                  <>
+                    <GlowDecoration
+                      color={colors.organic}
+                      colorForeground={colors.organicForeground}
+                    />
+
+                    <LeafDecoration
+                      variant="cluster"
+                      pattern="1"
+                      color={colors.organic}
+                    />
+                  </>
+                }
+                outerDecoration={
+                  <LeafDecoration variant="accent" pattern="6" shadow="md" />
+                }
               />
 
               <StatCard
@@ -79,6 +129,22 @@ export default function HomeScreen() {
                 variant="outline"
                 fill
                 animation="fun"
+                innerDecoration={
+                  <>
+                    <GlowDecoration
+                      color={colors.primary}
+                      colorForeground={colors.primaryForeground}
+                    />
+                    <LeafDecoration
+                      variant="cluster"
+                      pattern="2"
+                      color={colors.primary}
+                    />
+                  </>
+                }
+                outerDecoration={
+                  <LeafDecoration variant="accent" pattern="5" shadow="md" />
+                }
               />
 
               <StatCard
@@ -89,11 +155,30 @@ export default function HomeScreen() {
                 fill
                 animation="fun"
                 color="inorganic"
+                innerDecoration={
+                  <>
+                    <GlowDecoration
+                      color={colors.inorganic}
+                      colorForeground={colors.inorganicForeground}
+                    />
+                    <LeafDecoration
+                      variant="cluster"
+                      pattern="3"
+                      color={colors.inorganic}
+                    />
+                  </>
+                }
+                outerDecoration={
+                  <LeafDecoration variant="accent" pattern="4" shadow="md" />
+                }
               />
             </HStack>
           </ListSection>
 
-          <ListSection title="Aksi Cepat">
+          <ListSection
+            title="Aksi Cepat"
+            decoration={<LeafDecoration pattern="3" variant="accent" />}
+          >
             <VStack space="md">
               <ActionTile
                 title="Pengumpulan Sampah"
@@ -101,6 +186,15 @@ export default function HomeScreen() {
                 icon={Trash2}
                 variant="solid"
                 onPress={() => navigateTo("/(student)/submit/waste-bank")}
+                innerDecoration={
+                  <GlowDecoration
+                    variant="edges"
+                    edgeColors={[colors.primary, colors.accent]}
+                  />
+                }
+                outerDecoration={
+                  <LeafDecoration variant="accent" pattern="1" />
+                }
               />
 
               <ActionTile
@@ -109,6 +203,15 @@ export default function HomeScreen() {
                 icon={Sprout}
                 variant="solid"
                 onPress={() => navigateTo("/(student)/submit/garden-activity")}
+                innerDecoration={
+                  <GlowDecoration
+                    variant="edges"
+                    edgeColors={[colors.primary, colors.accent]}
+                  />
+                }
+                outerDecoration={
+                  <LeafDecoration variant="accent" pattern="1" />
+                }
               />
 
               <ActionTile
@@ -117,6 +220,15 @@ export default function HomeScreen() {
                 icon={Recycle}
                 variant="solid"
                 onPress={() => navigateTo("/(student)/submit/compost-activity")}
+                innerDecoration={
+                  <GlowDecoration
+                    variant="edges"
+                    edgeColors={[colors.primary, colors.accent]}
+                  />
+                }
+                outerDecoration={
+                  <LeafDecoration variant="accent" pattern="1" />
+                }
               />
             </VStack>
           </ListSection>
