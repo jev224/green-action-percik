@@ -48,7 +48,6 @@ import { useNavigation } from "@/hooks/useNavigation";
 import { useShowToast } from "@/hooks/useShowToast";
 
 import { LessonContent } from "@/lib/supabase/database.types";
-import { useToast } from "@/components/ui/toast";
 
 // Date.now() alone can collide if two blocks are added in the same
 // millisecond (e.g. double-tap); pad with a random suffix.
@@ -264,8 +263,7 @@ export default function EditLessonScreen() {
       goBackToHome();
     } catch (error) {
       console.error(error);
-      // TODO: surface this to the user once there's a toast/snackbar
-      // error variant — silently failing isn't great.
+      showToast({ title: "Terjadi kesalahan, coba lagi" });
     }
   };
 

@@ -33,9 +33,7 @@ function RootLayoutNav() {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <GluestackUIProvider mode={colorMode}>
           <StatusBar style={colorMode === "dark" ? "light" : "dark"} />
-          <Stack screenOptions={{ headerShown: false }}>
-            <Slot />
-          </Stack>
+          <Stack screenOptions={{ headerShown: false }} />
           <ThemeSwitcher />
         </GluestackUIProvider>
       </GestureHandlerRootView>

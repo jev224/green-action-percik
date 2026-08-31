@@ -44,13 +44,15 @@ import { parseProfileInfo } from "@/utils";
 export default function HomeScreen() {
   const { navigateTo } = useNavigation();
 
-  const { data, isLoading, isError, refresh, isRefreshing } = useAsyncData(
-    async () => ({
-      profile: await getStudentProfile(),
-      stats: await getStudentStatistics(),
-    }),
-    [],
-  );
+  const { data, isLoading, isError, refresh, isRefreshing } =
+    useAsyncData(async () => {
+      const [profile, stats] = await Promise.all([
+        getStudentProfile(),
+        getStudentStatistics(),
+      ]);
+
+      return { profile, stats };
+    }, []);
 
   const colors = useThemeColors();
   const isDark = useColorScheme() === "dark";

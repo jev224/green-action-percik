@@ -1,3 +1,4 @@
+import { memo, useCallback } from "react";
 import { FlatList } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
@@ -49,12 +50,22 @@ export default function LearningScreen() {
     isRefreshing,
   } = useLessons();
 
-  const handleView = (id: number) => {
-    viewLesson(id);
-    navigateTo("/learn/overview");
-  };
+  const handleView = useCallback(
+    (id: number) => {
+      viewLesson(id);
+      navigateTo("/learn/overview");
+    },
+    [viewLesson, navigateTo],
+  );
 
   const colors = useThemeColors();
+
+  const renderItem = useCallback(
+    ({ item }: { item: (typeof results)[number] }) => (
+      <LessonListItem item={item} onPress={handleView} colors={colors} />
+    ),
+    [handleView, colors],
+  );
 
   return (
     <Screen
@@ -78,33 +89,7 @@ export default function LearningScreen() {
             data={results}
             showsVerticalScrollIndicator={false}
             className="overflow-visible"
-            renderItem={({ item }) => (
-              <Animated.View
-                layout={contentLayoutTransition}
-                entering={contentEnterTransition}
-                exiting={contentExitTransition}
-              >
-                <ActionTile
-                  onPress={() => handleView(item.id)}
-                  className="mb-4"
-                  size="md"
-                  variant="solid"
-                  title={item.title}
-                  description={item.description}
-                  contentPosition="top"
-                  imageSource={
-                    item.photoUrl ? { uri: item.photoUrl } : undefined
-                  }
-                  innerDecoration={
-                    <GlowDecoration
-                      variant="edges"
-                      edgeColors={[colors.primary, colors.accent]}
-                    />
-                  }
-                  icon={!item.photoUrl ? LeafyGreen : undefined}
-                />
-              </Animated.View>
-            )}
+            renderItem={renderItem}
             keyExtractor={(lesson) => String(lesson.id)}
           />
         ) : (
@@ -128,3 +113,41 @@ export default function LearningScreen() {
     />
   );
 }
+
+const LessonListItem = memo(function LessonListItem({
+  item,
+  onPress,
+  colors,
+}: {
+  item: ReturnType<typeof useLessons>["results"][number];
+  onPress: (id: number) => void;
+  colors: ReturnType<typeof useThemeColors>;
+}) {
+  const handlePress = useCallback(() => onPress(item.id), [onPress, item.id]);
+
+  return (
+    <Animated.View
+      layout={contentLayoutTransition}
+      entering={contentEnterTransition}
+      exiting={contentExitTransition}
+    >
+      <ActionTile
+        onPress={handlePress}
+        className="mb-4"
+        size="md"
+        variant="solid"
+        title={item.title}
+        description={item.description}
+        contentPosition="top"
+        imageSource={item.photoUrl ? { uri: item.photoUrl } : undefined}
+        innerDecoration={
+          <GlowDecoration
+            variant="edges"
+            edgeColors={[colors.primary, colors.accent]}
+          />
+        }
+        icon={!item.photoUrl ? LeafyGreen : undefined}
+      />
+    </Animated.View>
+  );
+});

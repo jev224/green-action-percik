@@ -22,26 +22,36 @@ import { useLessonStore } from "@/stores/lessonAction";
 
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useNavigation } from "@/hooks/useNavigation";
+import { useShowToast } from "@/hooks/useShowToast";
 
 import { getLessonDetails } from "@/services/teacher/lessons";
 import { formatDate } from "@/utils";
+import { useEffect } from "react";
 
 export default function LessonOverviewScreen() {
   const { navigateTo } = useNavigation();
+  const showToast = useShowToast();
 
   const lesson = useLessonStore((state) => state.lesson);
+
   const setLessonContentData = useLessonStore(
     (state) => state.setLessonContentData,
   );
 
-  if (lesson.mode !== "view") {
-    return <Redirect href={"/(student)/(tabs)/home"} />;
-  }
+  const { data, isLoading, isError } = useAsyncData(async () => {
+    if (lesson.mode !== "view") return null;
+    return await getLessonDetails(lesson.id);
+  }, [lesson.mode]);
 
-  const { data, isLoading, isError } = useAsyncData(
-    () => getLessonDetails(lesson.id),
-    [],
-  );
+  useEffect(() => {
+    if (!isLoading && !data) {
+      showToast({ title: "Data materi tidak ditemukan" });
+    }
+  }, [isLoading, data]);
+
+  if (!isLoading && !data) {
+    return <Redirect href={"/(teacher)/(tabs)/students"} />;
+  }
 
   const handleReadLesson = () => {
     if (!data) return;

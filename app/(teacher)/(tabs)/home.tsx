@@ -30,13 +30,15 @@ import { useAsyncData } from "@/hooks/useAsyncData";
 import { parseProfileInfo } from "@/utils";
 
 export default function HomeScreen() {
-  const { data, isLoading, isError, refresh, isRefreshing } = useAsyncData(
-    async () => ({
-      profile: await getTeacherProfile(),
-      stats: await getAllStudentStats(),
-    }),
-    [],
-  );
+  const { data, isLoading, isError, refresh, isRefreshing } =
+    useAsyncData(async () => {
+      const [profile, stats] = await Promise.all([
+        getTeacherProfile(),
+        getAllStudentStats(),
+      ]);
+
+      return { profile, stats };
+    }, []);
 
   return (
     <Screen

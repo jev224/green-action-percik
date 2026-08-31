@@ -1,10 +1,11 @@
+import { useCallback } from "react";
 import { ScrollView } from "react-native-gesture-handler";
 
 import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
 import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
 
-import { StudentList } from "@/components/domain";
+import { StudentData, StudentList } from "@/components/domain";
 
 import {
   EmptyState,
@@ -40,6 +41,14 @@ export default function StudentsScreen() {
     isRefreshing,
   } = useStudents();
 
+  const handlePressStudent = useCallback(
+    (student: StudentData) => {
+      viewStudent(student.user_id);
+      navigateTo("/(teacher)/student/overview");
+    },
+    [viewStudent, navigateTo],
+  );
+
   return (
     <Screen
       isLoading={isLoading}
@@ -64,13 +73,7 @@ export default function StudentsScreen() {
       }
       contentComponent={
         results.length > 0 ? (
-          <StudentList
-            data={results}
-            onPressStudent={(student) => {
-              viewStudent(student.user_id);
-              navigateTo("/(teacher)/student/overview");
-            }}
-          />
+          <StudentList data={results} onPressStudent={handlePressStudent} />
         ) : (
           <EmptyState message="Tidak ada siswa" />
         )

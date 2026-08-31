@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useWindowDimensions, View } from "react-native";
 import { Redirect } from "expo-router";
 
@@ -12,6 +12,7 @@ import { ScrollView } from "react-native-gesture-handler";
 
 import Animated, {
   interpolate,
+  SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -41,6 +42,47 @@ import { useShowToast } from "@/hooks/useShowToast";
 import { useNavigation } from "@/hooks/useNavigation";
 
 import { calculatePercentage } from "@/utils";
+
+// Extracted so swiping doesn't depend on `currentIndex` React state at all —
+// each card reads the shared carouselProgress value directly on the UI
+// thread to decide its own zIndex, so a swipe never has to re-render the
+// screen (and re-create this renderItem) just to flip which card is on top.
+const CarouselCard = memo(function CarouselCard({
+  title,
+  explanation,
+  index,
+  carouselProgress,
+}: {
+  title: string;
+  explanation: string;
+  index: number;
+  carouselProgress: SharedValue<number>;
+}) {
+  const cardStyle = useAnimatedStyle(() => ({
+    zIndex: Math.round(carouselProgress.value) === index ? 10 : 0,
+  }));
+
+  return (
+    <Animated.View style={cardStyle}>
+      <SurfaceCard className="p-0 gap-2 items-start min-h-[70%]">
+        {(styles) => (
+          <>
+            <View className="inset-0 absolute bg-background -z-1" />
+
+            <ScrollView contentContainerClassName="p-6 pr-9 gap-2">
+              <Heading className={styles.text()} size="xl">
+                {title}
+              </Heading>
+              <Text className={styles.text({ className: "opacity-90" })}>
+                {explanation}
+              </Text>
+            </ScrollView>
+          </>
+        )}
+      </SurfaceCard>
+    </Animated.View>
+  );
+});
 
 export default function LessonContentScreen() {
   const { navigateTo } = useNavigation();
@@ -131,6 +173,18 @@ export default function LessonContentScreen() {
     carouselRef.current?.prev();
   }, [isFirst]);
 
+  const renderItem = useCallback(
+    ({ item, index }: { item: (typeof contents)[number]; index: number }) => (
+      <CarouselCard
+        title={item.title}
+        explanation={item.explanation}
+        index={index}
+        carouselProgress={carouselProgress}
+      />
+    ),
+    [carouselProgress],
+  );
+
   if (!lessonContentData || total === 0) {
     return <Redirect href={"/(student)/learn/overview"} />;
   }
@@ -187,29 +241,7 @@ export default function LessonContentScreen() {
               flexGrow: 1,
             }}
             onSnapToItem={setCurrentIndex}
-            renderItem={({ item, index }) => (
-              <SurfaceCard
-                className="p-0 gap-2 items-start min-h-[70%]"
-                style={{ zIndex: currentIndex === index ? 10 : 0 }}
-              >
-                {(styles) => (
-                  <>
-                    <View className="inset-0 absolute bg-background -z-1" />
-
-                    <ScrollView contentContainerClassName="p-6 pr-9 gap-2">
-                      <Heading className={styles.text()} size="xl">
-                        {item.title}
-                      </Heading>
-                      <Text
-                        className={styles.text({ className: "opacity-90" })}
-                      >
-                        {item.explanation}
-                      </Text>
-                    </ScrollView>
-                  </>
-                )}
-              </SurfaceCard>
-            )}
+            renderItem={renderItem}
           />
         </View>
       }

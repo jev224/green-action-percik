@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
 import { VStack } from "@/components/ui/vstack";
 import { Box } from "@/components/ui/box";
@@ -19,7 +21,17 @@ export default function ProfileScreen() {
 
   const { data, isLoading, isError } = useAsyncData(getTeacherProfile, []);
 
-  const handleDownload = () => navigateTo("/(teacher)/download");
+  const profileItems = useMemo(
+    () => [
+      {
+        key: "download",
+        label: "Download",
+        icon: Download,
+        onPress: () => navigateTo("/(teacher)/download"),
+      },
+    ],
+    [navigateTo],
+  );
 
   return (
     <Screen
@@ -36,16 +48,7 @@ export default function ProfileScreen() {
             }}
           />
 
-          <ProfileList
-            items={[
-              {
-                key: "download",
-                label: "Download",
-                icon: Download,
-                onPress: handleDownload,
-              },
-            ]}
-          />
+          <ProfileList items={profileItems} />
         </>
       )}
       loadingComponent={
@@ -58,16 +61,7 @@ export default function ProfileScreen() {
             </VStack>
           </Box>
 
-          <ProfileList
-            items={[
-              {
-                key: "download",
-                label: "Download",
-                icon: Download,
-                onPress: handleDownload,
-              },
-            ]}
-          />
+          <ProfileList items={profileItems} />
         </>
       }
     />

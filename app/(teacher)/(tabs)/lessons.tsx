@@ -1,3 +1,4 @@
+import { memo, useCallback } from "react";
 import { FlatList, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -51,15 +52,25 @@ export default function LessonsScreen() {
     isRefreshing,
   } = useLessons();
 
-  const handleEdit = (id: number) => {
-    editLesson(id);
-    navigateTo("/lesson/manage-lesson");
-  };
+  const handleEdit = useCallback(
+    (id: number) => {
+      editLesson(id);
+      navigateTo("/lesson/manage-lesson");
+    },
+    [editLesson, navigateTo],
+  );
 
   const handleCreate = () => {
     createLesson();
     navigateTo("/lesson/manage-lesson");
   };
+
+  const renderItem = useCallback(
+    ({ item }: { item: (typeof results)[number] }) => (
+      <LessonListItem item={item} onPress={handleEdit} />
+    ),
+    [handleEdit],
+  );
 
   return (
     <Screen
@@ -83,26 +94,7 @@ export default function LessonsScreen() {
             data={results}
             showsVerticalScrollIndicator={false}
             className="overflow-visible"
-            renderItem={({ item }) => (
-              <Animated.View
-                layout={contentLayoutTransition}
-                entering={contentEnterTransition}
-                exiting={contentExitTransition}
-              >
-                <ActionTile
-                  onPress={() => handleEdit(item.id)}
-                  className="mb-4"
-                  size="md"
-                  variant="solid"
-                  title={item.title}
-                  description={item.description}
-                  imageSource={
-                    item.photoUrl ? { uri: item.photoUrl } : undefined
-                  }
-                  icon={!item.photoUrl ? BookImage : undefined}
-                />
-              </Animated.View>
-            )}
+            renderItem={renderItem}
             keyExtractor={(lesson) => String(lesson.id)}
           />
         ) : (
@@ -141,3 +133,32 @@ export default function LessonsScreen() {
     />
   );
 }
+
+const LessonListItem = memo(function LessonListItem({
+  item,
+  onPress,
+}: {
+  item: ReturnType<typeof useLessons>["results"][number];
+  onPress: (id: number) => void;
+}) {
+  const handlePress = useCallback(() => onPress(item.id), [onPress, item.id]);
+
+  return (
+    <Animated.View
+      layout={contentLayoutTransition}
+      entering={contentEnterTransition}
+      exiting={contentExitTransition}
+    >
+      <ActionTile
+        onPress={handlePress}
+        className="mb-4"
+        size="md"
+        variant="solid"
+        title={item.title}
+        description={item.description}
+        imageSource={item.photoUrl ? { uri: item.photoUrl } : undefined}
+        icon={!item.photoUrl ? BookImage : undefined}
+      />
+    </Animated.View>
+  );
+});

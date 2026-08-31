@@ -41,13 +41,15 @@ import { useThemeColors } from "@/hooks/useThemeColors";
 import { calculatePercentage } from "@/utils";
 
 export default function StatsiticScreen() {
-  const { data, isLoading, isError, refresh, isRefreshing } = useAsyncData(
-    async () => ({
-      stats: await getStudentStatistics(),
-      targets: await getStudentTargets(),
-    }),
-    [],
-  );
+  const { data, isLoading, isError, refresh, isRefreshing } =
+    useAsyncData(async () => {
+      const [stats, targets] = await Promise.all([
+        getStudentStatistics(),
+        getStudentTargets(),
+      ]);
+
+      return { stats, targets };
+    }, []);
 
   const colors = useThemeColors();
   const isDark = useColorScheme() === "dark";

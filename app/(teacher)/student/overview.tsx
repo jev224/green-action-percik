@@ -21,21 +21,34 @@ import { getStudentDetails } from "@/services/teacher/students";
 import { useAsyncData } from "@/hooks/useAsyncData";
 
 import { parseProfileInfo } from "@/utils";
+import { useShowToast } from "@/hooks/useShowToast";
+import { useEffect } from "react";
 
 export default function StudentOverviewScreen() {
+  const showToast = useShowToast();
+
   const studentData = useStudentActionStore((state) => state.studentData);
 
-  if (!studentData) {
+  const { data, isLoading, isError } = useAsyncData(async () => {
+    if (!studentData) return null;
+
+    const [details, stats] = await Promise.all([
+      getStudentDetails(studentData.userId),
+      getStudentStatisticsById(studentData.userId),
+    ]);
+
+    return { details, stats };
+  }, [studentData?.userId]);
+
+  useEffect(() => {
+    if (!isLoading && !data) {
+      showToast({ title: "Data siswa tidak ditemukan" });
+    }
+  }, [isLoading, data]);
+
+  if (!isLoading && !data) {
     return <Redirect href={"/(teacher)/(tabs)/students"} />;
   }
-
-  const { data, isLoading, isError } = useAsyncData(
-    async () => ({
-      details: await getStudentDetails(studentData.userId),
-      stats: await getStudentStatisticsById(studentData.userId),
-    }),
-    [],
-  );
 
   return (
     <Screen

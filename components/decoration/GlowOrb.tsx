@@ -29,7 +29,7 @@ export function GlowOrb({
 }: GlowOrbProps) {
   // Disabled: sustained ~90-107% CPU / device heat even after react-native-ease swap.
   // Revisit before re-enabling — see notes.
-  return null;
+  // return null;
 
   return (
     <View
