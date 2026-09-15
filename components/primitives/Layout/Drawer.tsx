@@ -1,75 +1,73 @@
-import { ComponentProps, ReactNode, useEffect } from "react";
+import { type ComponentProps, type ReactNode, useEffect } from "react";
+import { Keyboard } from "react-native";
 import { useAnimatedStyle, withTiming } from "react-native-reanimated";
-
-import {
-  Drawer as GSDrawer,
-  DrawerBackdrop,
-  DrawerContent,
-  DrawerHeader,
-  DrawerBody,
-  DrawerFooter,
-} from "@/components/ui/drawer";
 import { DrawerIn, DrawerOut } from "@/components/animation/presets";
 import { Box } from "@/components/ui/box";
-
+import {
+	DrawerBackdrop,
+	DrawerBody,
+	DrawerContent,
+	DrawerFooter,
+	DrawerHeader,
+	Drawer as GSDrawer,
+} from "@/components/ui/drawer";
 import { useKeyboardHeight } from "@/hooks/useKeyboardHeight";
-import { Keyboard } from "react-native";
 
 type DrawerProps = {
-  headerComponenent?: ReactNode;
-  contentComponent: ReactNode;
-  footerComponent?: ReactNode;
-  avoidKeyboard?: boolean;
+	headerComponenent?: ReactNode;
+	contentComponent: ReactNode;
+	footerComponent?: ReactNode;
+	avoidKeyboard?: boolean;
 } & ComponentProps<typeof GSDrawer>;
 
 const Drawer = ({
-  headerComponenent,
-  contentComponent,
-  footerComponent,
-  anchor,
-  isOpen,
-  avoidKeyboard,
-  ...props
+	headerComponenent,
+	contentComponent,
+	footerComponent,
+	anchor,
+	isOpen,
+	avoidKeyboard,
+	...props
 }: DrawerProps) => {
-  const keyboard = useKeyboardHeight();
+	const keyboard = useKeyboardHeight();
 
-  const animatedBodyStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: withTiming(isOpen ? -keyboard.height / 2 : 0) }],
-  }));
+	const animatedBodyStyle = useAnimatedStyle(() => ({
+		transform: [{ translateY: withTiming(isOpen ? -keyboard.height / 2 : 0) }],
+	}));
 
-  useEffect(() => {
-    if (!isOpen) Keyboard.dismiss();
-  }, [isOpen]);
+	useEffect(() => {
+		if (!isOpen) Keyboard.dismiss();
+	}, [isOpen]);
 
-  return (
-    <GSDrawer isOpen={isOpen} anchor={anchor} {...props}>
-      <DrawerBackdrop />
+	return (
+		<GSDrawer isOpen={isOpen} anchor={anchor} {...props}>
+			<DrawerBackdrop />
 
-      <DrawerContent
-        className="bg-transparent border-0"
-        entering={DrawerIn.direction(anchor)}
-        exiting={DrawerOut.direction(anchor)}
-        style={animatedBodyStyle}
-      >
-        <Box className="absolute inset-0 -bottom-20 rounded-xl bg-background" />
+			<DrawerContent
+				className="bg-transparent border-0"
+				entering={DrawerIn.direction(anchor)}
+				exiting={DrawerOut.direction(anchor)}
+				style={animatedBodyStyle}
+			>
+				<Box className="absolute inset-0 -bottom-20 rounded-xl bg-background" />
 
-        <Box
-          className="absolute inset-0 z-30"
-          style={{ pointerEvents: isOpen ? "none" : "box-only" }}
-        />
+				<Box
+					className="absolute inset-0 z-30"
+					style={{ pointerEvents: isOpen ? "none" : "box-only" }}
+				/>
 
-        {headerComponenent && <DrawerHeader>{headerComponenent}</DrawerHeader>}
+				{headerComponenent && <DrawerHeader>{headerComponenent}</DrawerHeader>}
 
-        <DrawerBody keyboardDismissMode="interactive">
-          {contentComponent}
-        </DrawerBody>
+				<DrawerBody keyboardDismissMode="interactive">
+					{contentComponent}
+				</DrawerBody>
 
-        {footerComponent && (
-          <DrawerFooter className="mb-4">{footerComponent}</DrawerFooter>
-        )}
-      </DrawerContent>
-    </GSDrawer>
-  );
+				{footerComponent && (
+					<DrawerFooter className="mb-4">{footerComponent}</DrawerFooter>
+				)}
+			</DrawerContent>
+		</GSDrawer>
+	);
 };
 
 export { Drawer };

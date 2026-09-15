@@ -1,12 +1,9 @@
+export { ProfileList } from "./list/ProfileList";
+export { StudentMultiSelect } from "./list/StudentSelector";
 export { BackButton } from "./nav/BackButton";
 export { LinkButton } from "./nav/LinkButton";
-
-export { ProfileHeader } from "./profile/ProfileHeader";
 export { Greeting } from "./profile/Greeting";
-
+export { ProfileHeader } from "./profile/ProfileHeader";
 export { StudentList } from "./student/StudentList";
 export { StudentListItem } from "./student/StudentListItem";
 export type { StudentData } from "./student/types";
-
-export { ProfileList } from "./list/ProfileList";
-export { StudentMultiSelect } from "./list/StudentSelector";

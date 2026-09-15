@@ -1,55 +1,54 @@
-import { View, ColorValue } from "react-native";
-
-import { useThemeColors } from "@/hooks/useThemeColors";
-
-import {
-  CLUSTER_ARRANGEMENTS,
-  ACCENT_ARRANGEMENTS,
-  SHADOW_CONFIG,
-  LeafPattern,
-} from "./leafArrangements";
 import React from "react";
+import { type ColorValue, View } from "react-native";
+import { useThemeColors } from "@/hooks/useThemeColors";
+import {
+	ACCENT_ARRANGEMENTS,
+	CLUSTER_ARRANGEMENTS,
+	type LeafPattern,
+	SHADOW_CONFIG,
+} from "./leafArrangements";
 
 interface LeafDecorationProps {
-  /** cluster = several overlapping leaves, accent = single leaf */
-  variant?: "cluster" | "accent";
+	/** cluster = several overlapping leaves, accent = single leaf */
+	variant?: "cluster" | "accent";
 
-  pattern?: LeafPattern;
+	pattern?: LeafPattern;
 
-  color?: ColorValue;
+	color?: ColorValue;
 
-  /** Shadow style applied to each leaf */
-  shadow?: keyof typeof SHADOW_CONFIG;
+	/** Shadow style applied to each leaf */
+	shadow?: keyof typeof SHADOW_CONFIG;
 }
 
 export const LeafDecoration = React.memo(function LeafDecoration({
-  variant = "cluster",
-  pattern = "1",
-  color = "primary",
-  shadow = "none",
+	variant = "cluster",
+	pattern = "1",
+	color = "primary",
+	shadow = "none",
 }: LeafDecorationProps) {
-  const { colors } = useThemeColors();
+	const { colors } = useThemeColors();
 
-  const arrangements =
-    variant === "cluster" ? CLUSTER_ARRANGEMENTS : ACCENT_ARRANGEMENTS;
+	const arrangements =
+		variant === "cluster" ? CLUSTER_ARRANGEMENTS : ACCENT_ARRANGEMENTS;
 
-  const placements = arrangements[pattern];
+	const placements = arrangements[pattern];
 
-  return (
-    <>
-      {placements.map(
-        ({ asset: Asset, className, size, opacity, colorKey }, i) => (
-          <View key={i} className={className}>
-            <Asset
-              style={SHADOW_CONFIG[shadow]}
-              width={size}
-              height={size}
-              color={colorKey ? colors[colorKey] : color}
-              opacity={opacity}
-            />
-          </View>
-        ),
-      )}
-    </>
-  );
+	return (
+		<>
+			{placements.map(
+				({ asset: Asset, className, size, opacity, colorKey }, i) => (
+					// biome-ignore lint/suspicious/noArrayIndexKey: Static decorative elements
+					<View key={i} className={className}>
+						<Asset
+							style={SHADOW_CONFIG[shadow]}
+							width={size}
+							height={size}
+							color={colorKey ? colors[colorKey] : color}
+							opacity={opacity}
+						/>
+					</View>
+				),
+			)}
+		</>
+	);
 });

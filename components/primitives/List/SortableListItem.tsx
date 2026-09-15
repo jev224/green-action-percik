@@ -1,10 +1,9 @@
-import { View, Text } from "react-native";
-import React from "react";
+import { Text, View } from "react-native";
 
 export const SortableList = () => {
-  return (
-    <View>
-      <Text>SortableList</Text>
-    </View>
-  );
+	return (
+		<View>
+			<Text>SortableList</Text>
+		</View>
+	);
 };

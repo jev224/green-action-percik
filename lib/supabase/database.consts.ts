@@ -1,3 +1,3 @@
 export const appInfoKeys = {
-  authEmailDomain: "auth_email_domain",
+	authEmailDomain: "auth_email_domain",
 } as const;

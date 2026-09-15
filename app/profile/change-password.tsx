@@ -1,116 +1,112 @@
+import { AlertCircle } from "lucide-react-native";
 import { useState } from "react";
-
 import { BackButton } from "@/components/domain";
 import {
-  Button,
-  ListSection,
-  Screen,
-  ScreenHeader,
-  BottomPanel,
-  TextField,
+	BottomPanel,
+	Button,
+	ListSection,
+	Screen,
+	ScreenHeader,
+	TextField,
 } from "@/components/primitives";
 import {
-  FormControl,
-  FormControlError,
-  FormControlErrorIcon,
-  FormControlErrorText,
+	FormControl,
+	FormControlError,
+	FormControlErrorIcon,
+	FormControlErrorText,
 } from "@/components/ui/form-control";
-
 import { HStack } from "@/components/ui/hstack";
-import { changePassword } from "@/services/user";
-import { AlertCircle } from "lucide-react-native";
 import { VStack } from "@/components/ui/vstack";
 import { useNavigation } from "@/hooks/useNavigation";
+import { changePassword } from "@/services/user";
 
 export default function ChangePasswordScreen() {
-  const { goBack } = useNavigation();
+	const { goBack } = useNavigation();
 
-  const [oldPassword, setOldPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmation, setConfirmation] = useState("");
+	const [oldPassword, setOldPassword] = useState("");
+	const [newPassword, setNewPassword] = useState("");
+	const [confirmation, setConfirmation] = useState("");
 
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async () => {
-    setErrorMessage(null);
-    setIsLoading(true);
+	const handleSubmit = async () => {
+		setErrorMessage(null);
+		setIsLoading(true);
 
-    const result = await changePassword(oldPassword, newPassword, confirmation);
+		const result = await changePassword(oldPassword, newPassword, confirmation);
 
-    setIsLoading(false);
+		setIsLoading(false);
 
-    if (!result.isSuccessful) {
-      setErrorMessage(result.validationErrorMessage);
-      return;
-    }
+		if (!result.isSuccessful) {
+			setErrorMessage(result.validationErrorMessage);
+			return;
+		}
 
-    goBack();
-  };
+		goBack();
+	};
 
-  return (
-    <Screen
-      headerComponent={
-        <ScreenHeader title="Ubah Kata Sandi" leftComponent={<BackButton />} />
-      }
-      overlayComponent={
-        <BottomPanel variant="ghost">
-          <HStack space="md">
-            <Button
-              label="Konfirmasi"
-              fill
-              size="cta"
-              onPress={handleSubmit}
-              isDisabled={isLoading}
-            />
-          </HStack>
-        </BottomPanel>
-      }
-      contentComponent={
-        <>
-          <FormControl isInvalid={!!errorMessage}>
-            <VStack space="lg">
-              <ListSection title="Kata sandi lama">
-                <TextField
-                  placeholder="Masukkan kata sandi lama"
-                  isPassword
-                  value={oldPassword}
-                  onChangeText={setOldPassword}
-                />
-              </ListSection>
+	return (
+		<Screen
+			headerComponent={
+				<ScreenHeader title="Ubah Kata Sandi" leftComponent={<BackButton />} />
+			}
+			overlayComponent={
+				<BottomPanel variant="ghost">
+					<HStack space="md">
+						<Button
+							label="Konfirmasi"
+							fill
+							size="cta"
+							onPress={handleSubmit}
+							isDisabled={isLoading}
+						/>
+					</HStack>
+				</BottomPanel>
+			}
+			contentComponent={
+				<FormControl isInvalid={!!errorMessage}>
+					<VStack space="lg">
+						<ListSection title="Kata sandi lama">
+							<TextField
+								placeholder="Masukkan kata sandi lama"
+								isPassword
+								value={oldPassword}
+								onChangeText={setOldPassword}
+							/>
+						</ListSection>
 
-              <ListSection title="Kata sandi baru">
-                <TextField
-                  placeholder="Masukkan kata sandi baru"
-                  isPassword
-                  value={newPassword}
-                  onChangeText={setNewPassword}
-                />
+						<ListSection title="Kata sandi baru">
+							<TextField
+								placeholder="Masukkan kata sandi baru"
+								isPassword
+								value={newPassword}
+								onChangeText={setNewPassword}
+							/>
 
-                <TextField
-                  placeholder="Konfirmasi kata sandi baru"
-                  isPassword
-                  value={confirmation}
-                  onChangeText={setConfirmation}
-                />
-              </ListSection>
+							<TextField
+								placeholder="Konfirmasi kata sandi baru"
+								isPassword
+								value={confirmation}
+								onChangeText={setConfirmation}
+							/>
+						</ListSection>
 
-              {errorMessage && (
-                <FormControlError>
-                  <FormControlErrorIcon
-                    as={AlertCircle}
-                    className="text-destructive"
-                  />
+						{errorMessage && (
+							<FormControlError>
+								<FormControlErrorIcon
+									as={AlertCircle}
+									className="text-destructive"
+								/>
 
-                  <FormControlErrorText className="text-destructive">
-                    {errorMessage}
-                  </FormControlErrorText>
-                </FormControlError>
-              )}
-            </VStack>
-          </FormControl>
-        </>
-      }
-    />
-  );
+								<FormControlErrorText className="text-destructive">
+									{errorMessage}
+								</FormControlErrorText>
+							</FormControlError>
+						)}
+					</VStack>
+				</FormControl>
+			}
+		/>
+	);
 }
