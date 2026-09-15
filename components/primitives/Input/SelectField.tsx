@@ -29,10 +29,15 @@ export function SelectField({
 	options,
 	value,
 	onValueChange,
-	placeholder = "Select option",
+	placeholder: initialPlaceholder,
 	className,
 	inList,
 }: SelectFieldProps) {
+	const placeholder =
+		initialPlaceholder ||
+		options.find((o) => o.value === value)?.label ||
+		"Silahkan Pilih";
+
 	const [isOpen, setIsOpen] = useState(false);
 
 	return (

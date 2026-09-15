@@ -32,9 +32,10 @@ export function SegmentedControl<T extends string>({
 }: SegmentedControlProps<T>) {
 	return (
 		<View className={cn("flex-row w-full gap-3", className)}>
-			{options.map((option) => (
+			{options.map((option, index) => (
 				<SegmentedControlButton
-					key={value}
+					// biome-ignore lint/suspicious/noArrayIndexKey: Static UI Element
+					key={index}
 					option={option}
 					value={value}
 					onChange={onChange}
@@ -70,7 +71,6 @@ function SegmentedControlButton<T extends string>({
 
 	return (
 		<Pressable
-			key={option.value}
 			onPress={() => onChange(option.value)}
 			onPressIn={bind.onPressIn}
 			onPressOut={bind.onPressOut}

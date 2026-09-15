@@ -99,6 +99,21 @@ export const AnimationConfig = {
 	},
 } as const;
 
+export const EaseTranstionConfig = {
+	spring: Object.fromEntries(
+		Object.entries(AnimationConfig.spring).map(([name, config]) => [
+			name,
+			{
+				damping: config.damping * 0.75,
+				stiffness: config.stiffness * 1.5,
+				mass: config.mass * 0.75,
+			},
+		]),
+	),
+
+	timing: AnimationConfig.timing,
+} as typeof AnimationConfig;
+
 export const ProfileMenuGlideIn = (values: EntryAnimationsValues) => {
 	"worklet";
 

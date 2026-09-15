@@ -143,9 +143,9 @@ export function StudentMultiSelect({
 							<StudentListItem
 								student={item}
 								className="mb-2"
-								noPressAnimation
 								selected={hasItem(item)}
 								onPress={handlePressStudent}
+								noOffset
 							/>
 						)}
 					/>

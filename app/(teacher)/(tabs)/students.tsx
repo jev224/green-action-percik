@@ -34,7 +34,7 @@ export default function StudentsScreen() {
 		isLoading,
 		refresh,
 		isRefreshing,
-	} = useStudents();
+	} = useStudents({ dummy: true });
 
 	const handlePressStudent = useCallback(
 		(student: StudentData) => {
