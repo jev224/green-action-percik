@@ -29,31 +29,60 @@ import {
 
 import { AlertCircle, Check } from "lucide-react-native";
 import { authenticate } from "@/services/auth";
+import { useUserStore } from "@/stores/user";
 import { useNavigation } from "@/hooks/useNavigation";
-import { checkConnection } from "@/utils";
+import { checkConnection, sleepAsync } from "@/utils";
+import { useSettings } from "@/hooks/useSettings";
 
 export default function LoginScreen() {
-  const { navigateFromLogin } = useNavigation();
+  const { set, update, settings } = useSettings();
+  const { updateProfile } = useUserStore.getState();
+  const { navigateToHome } = useNavigation();
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
+  const {
+    rememberMe: rememberedFlag,
+    rememberedUsername,
+    rememberedPassword,
+  } = settings;
+
+  const initialUsername = rememberedFlag ? rememberedUsername : "";
+  const initialPassword = rememberedFlag ? rememberedPassword : "";
+
+  const [rememberMe, setRememberMe] = useState(rememberedFlag);
+  const [username, setUsername] = useState(initialUsername);
+  const [password, setPassword] = useState(initialPassword);
   const [isLoading, setIsLoading] = useState(false);
 
   const [networkDialogShown, setNetworkDialogShown] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
 
+  const checkNetwork = async () => {
+    const isOnline = await checkConnection();
+
+    if (!isOnline) {
+      setNetworkDialogShown(true);
+    }
+
+    return isOnline;
+  };
+
   const handleLogin = async () => {
     setError(null);
 
-    if (!username.trim() || !password) {
+    if (!username.trim() || !password.trim()) {
       setError("Username dan password wajib diisi");
       return;
     }
 
     try {
       setIsLoading(true);
+
+      await sleepAsync(1000);
+
+      if (!(await checkNetwork())) {
+        return;
+      }
 
       const { error: authError, data } = await authenticate(
         username.trim(),
@@ -67,12 +96,24 @@ export default function LoginScreen() {
       }
 
       // login successful
-      navigateFromLogin(data.user);
-    } catch (err) {
-      const isOnline = await checkConnection();
+      const role = data.user.app_metadata.user_role;
+      updateProfile({ role });
 
-      if (!isOnline) {
-        setNetworkDialogShown(true);
+      if (rememberMe) {
+        update({
+          rememberedUsername: username.trim(),
+          rememberedPassword: password.trim(),
+        });
+      } else {
+        update({
+          rememberedUsername: "",
+          rememberedPassword: "",
+        });
+      }
+
+      navigateToHome(role);
+    } catch (err) {
+      if (!(await checkNetwork())) {
         return;
       }
 
@@ -81,6 +122,11 @@ export default function LoginScreen() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleRememberMeChange = (isSelected: boolean) => {
+    setRememberMe(isSelected);
+    set("rememberMe", isSelected);
   };
 
   const hasError = !!error;
@@ -131,7 +177,7 @@ export default function LoginScreen() {
               <Checkbox
                 value="remember"
                 isChecked={rememberMe}
-                onChange={setRememberMe}
+                onChange={handleRememberMeChange}
                 className="ml-1"
               >
                 <CheckboxIndicator>

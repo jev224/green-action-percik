@@ -14,27 +14,45 @@ import { useThemeColors } from "@/hooks/useThemeColors";
 import { EaseView } from "react-native-ease";
 import { AnimationConfig } from "@/components/animation/presets";
 import { config } from "@/components/animation/config";
+import { View } from "react-native";
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
 
 interface StudentListItemProps {
+  selected?: boolean;
+  noPressAnimation?: boolean;
   student: StudentData;
   onPress?: (student: StudentData) => void;
+  className?: string;
 }
 
-export function StudentListItem({ student, onPress }: StudentListItemProps) {
+export function StudentListItem({
+  selected,
+  noPressAnimation,
+  student,
+  onPress,
+  className,
+}: StudentListItemProps) {
   const { name, grade, point, photo_url } = student;
 
-  const colors = useThemeColors();
-  const { bind, scaleAnimation, isPressing } = usePressFeedback(0.96);
+  const { colors } = useThemeColors();
+  const { bind, isPressing } = usePressFeedback(0.96);
 
   const animatedStyle = useAnimatedStyle(() => {
     const paddingVertical = interpolate(isPressing ? 1 : 0, [0, 1], [16, 24]);
-    const paddingHorizontal = interpolate(isPressing ? 1 : 0, [0, 1], [0, 12]);
+    const paddingHorizontal = interpolate(
+      isPressing || selected ? 1 : 0,
+      [0, 1],
+      [0, 14],
+    );
 
     return {
-      paddingVertical: withSpring(
-        paddingVertical,
+      paddingVertical: noPressAnimation
+        ? 12
+        : withSpring(paddingVertical, AnimationConfig.spring.snappy),
+
+      paddingHorizontal: withSpring(
+        paddingHorizontal,
         AnimationConfig.spring.snappy,
       ),
 
@@ -57,9 +75,15 @@ export function StudentListItem({ student, onPress }: StudentListItemProps) {
       onPressOut={bind.onPressOut}
       delayHoverIn={0}
       unstable_pressDelay={config.pressableDelay}
+      className={className}
     >
-      <AnimatedBox style={animatedStyle}>
-        <Box className="absolute -right-4 -left-4 top-0 bottom-0 rounded-lg overflow-hidden">
+      <AnimatedBox
+        style={animatedStyle}
+        className={
+          "rounded-lg overflow-hidden h-24 items-center justify-center"
+        }
+      >
+        <Box className="absolute -right-4 -left-4 top-0 bottom-0">
           <EaseView
             animate={{
               opacity: isPressing ? 0.2 : 0,
@@ -74,28 +98,42 @@ export function StudentListItem({ student, onPress }: StudentListItemProps) {
               backgroundColor: colors.foreground,
             }}
           />
+
+          <EaseView
+            animate={{
+              opacity: selected ? 1.0 : 0,
+            }}
+            transition={{
+              type: "timing",
+              duration: 100,
+            }}
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundColor: selected ? colors.primary : "transparent",
+            }}
+          />
         </Box>
 
-        <EaseView animate={scaleAnimation}>
-          <Box className="flex-row items-center gap-4">
-            <UserAvatar
-              name={name}
-              size="sm"
-              imageSource={photo_url ? { uri: photo_url } : undefined}
-            />
+        <Box className="flex-row items-center gap-4">
+          <UserAvatar
+            selected={selected}
+            name={name}
+            size="sm"
+            imageSource={photo_url ? { uri: photo_url } : undefined}
+          />
 
-            <Box className="flex-1">
-              <Heading numberOfLines={1}>{name}</Heading>
-              {grade && <Text>{grade}</Text>}
-            </Box>
-
-            {point != null && (
-              <Heading className="text-primary font-semibold" size="lg">
-                {point} Poin
-              </Heading>
-            )}
+          <Box className="flex-1">
+            <Heading numberOfLines={1}>{name}</Heading>
+            {grade && <Text>{grade}</Text>}
           </Box>
-        </EaseView>
+
+          {point != null && (
+            <Heading className="text-primary font-semibold" size="lg">
+              {point} Poin
+            </Heading>
+          )}
+        </Box>
       </AnimatedBox>
     </Pressable>
   );

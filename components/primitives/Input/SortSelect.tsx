@@ -12,7 +12,7 @@ import { AnimationConfig } from "@/components/animation/presets";
 import { ArrowDownWideNarrow } from "lucide-react-native";
 
 import { usePressFeedback } from "@/hooks/usePressFeedback";
-import SmoothSelectPortal from "./SmoothSelectPortal";
+import { SmoothSelectPortal } from "./SmoothSelectPortal";
 
 export type SortDirection = "asc" | "desc";
 

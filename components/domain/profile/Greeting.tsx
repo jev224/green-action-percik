@@ -23,7 +23,7 @@ import {
   ProfileMenuGlideOut,
 } from "@/components/animation/presets";
 import { randomBetween, truncateText } from "@/utils";
-import { Cloud1, Leaf4, Leaf5, Spark1, Spark2 } from "@/constants/Images";
+import { Cloud1, Leaf4, Leaf5, Spark1, Spark2 } from "@/constants/Assets";
 import { useThemeColors } from "@/hooks/useThemeColors";
 
 interface GreetingProps {
@@ -35,7 +35,7 @@ interface GreetingProps {
 export function Greeting({ name, info, imageSource }: GreetingProps) {
   const [isMenuOpen, setMenuOpen] = useState(false);
 
-  const colors = useThemeColors();
+  const { colors } = useThemeColors();
 
   return (
     <HStack className="justify-between items-center">

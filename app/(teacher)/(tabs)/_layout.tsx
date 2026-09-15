@@ -2,7 +2,7 @@ import { useThemeColors } from "@/hooks/useThemeColors";
 import { NativeTabs } from "expo-router/unstable-native-tabs";
 
 export default function TabsLayout() {
-  const colors = useThemeColors();
+  const { colors } = useThemeColors();
 
   return (
     <NativeTabs

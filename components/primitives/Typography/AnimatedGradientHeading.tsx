@@ -22,7 +22,7 @@ export function GradientHeading({
   size = "xl",
   className,
 }: GradientHeadingProps) {
-  const colors = useThemeColors();
+  const { colors } = useThemeColors();
 
   // const gradientColors = [
   //   colors.primary,

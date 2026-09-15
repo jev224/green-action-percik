@@ -1,19 +1,16 @@
 import { useEffect, useState } from "react";
-import { Redirect } from "expo-router";
-import { View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import { getRole } from "@/services/auth";
 import { Button, Modal } from "@/components/primitives";
 import { checkConnection } from "@/utils";
-
-type Role = "student" | "teacher" | null;
-
-const ROLE_ROUTES = {
-  teacher: "/(teacher)/(tabs)/home",
-  student: "/(student)/(tabs)/home",
-} as const;
+import { useNavigation } from "@/hooks/useNavigation";
+import { UserRole, useUserStore } from "@/stores/user";
 
 export default function Index() {
-  const [role, setRole] = useState<Role>(null);
+  const { navigateToHome } = useNavigation();
+  const { updateProfile } = useUserStore.getState();
+
+  const [role, setRole] = useState<UserRole | null>(null);
   const [loading, setLoading] = useState(true);
 
   const [showNetworkDialog, setShowNetworkDialog] = useState(false);
@@ -47,6 +44,13 @@ export default function Index() {
     loadRole();
   }, []);
 
+  useEffect(() => {
+    if (!loading && !showNetworkDialog) {
+      updateProfile({ role });
+      navigateToHome(role);
+    }
+  }, [loading, showNetworkDialog, role]);
+
   if (loading || showNetworkDialog) {
     return (
       <>
@@ -54,7 +58,7 @@ export default function Index() {
 
         <Modal
           isOpen={showNetworkDialog}
-          onClose={() => setShowNetworkDialog(false)}
+          onClose={handleRetry}
           title="Tidak Ada Koneksi Internet"
           description="Periksa koneksi internet kamu lalu coba lagi"
           contentComponent={<Button label="Oke" onPress={handleRetry} />}
@@ -63,9 +67,9 @@ export default function Index() {
     );
   }
 
-  if (!role) {
-    return <Redirect href="/(auth)/login" />;
-  }
-
-  return <Redirect href={ROLE_ROUTES[role]} />;
+  return (
+    <View className="bg-background w-full flex-1 justify-center items-center">
+      <ActivityIndicator />
+    </View>
+  );
 }

@@ -1,5 +1,5 @@
 import React, { ReactNode, useEffect, useState } from "react";
-import { useWindowDimensions } from "react-native";
+import { useWindowDimensions, View } from "react-native";
 
 import {
   Gesture,
@@ -26,16 +26,22 @@ import {
 import { AnimationConfig } from "@/components/animation/presets";
 import { SelectPortal } from "@/components/ui/select";
 import { VStack } from "@/components/ui/vstack";
+import { cn, cnBase } from "tailwind-variants";
 
-const SmoothSelectPortal = ({
-  isOpen,
-  onClose,
-  children,
-}: {
+interface SmoothSelectPortalProps {
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
-}) => {
+  fullHeight?: boolean;
+  scrollable?: boolean;
+}
+export const SmoothSelectPortal = ({
+  isOpen,
+  onClose,
+  children,
+  fullHeight,
+  scrollable = true,
+}: SmoothSelectPortalProps) => {
   const { height } = useWindowDimensions();
 
   const [isOpenInternal, setIsOpenInternal] = useState(false);
@@ -148,7 +154,10 @@ const SmoothSelectPortal = ({
 
       <AnimatedPressable onPress={onClose} style={menuAnimatedStyle}>
         <AnimatedSelectContent
-          className="absolute bottom-0 left-0 right-0 p-3 bg-transparent"
+          className={cnBase(
+            "absolute bottom-0 left-0 right-0 p-3 bg-transparent",
+            fullHeight && "min-h-[85%]",
+          )}
           initial={{ y: 0 }}
           animate={{ y: 0 }}
           exit={{ y: 0 }}
@@ -165,16 +174,20 @@ const SmoothSelectPortal = ({
             </GestureDetector>
           </Box>
 
-          <ScrollView
-            className="w-full mt-2"
-            style={{ maxHeight: height - 200 }}
-          >
-            <VStack space="sm">{children}</VStack>
-          </ScrollView>
+          {scrollable ? (
+            <ScrollView
+              className="w-full mt-2"
+              style={{ maxHeight: height - 200 }}
+            >
+              <VStack space="sm">{children}</VStack>
+            </ScrollView>
+          ) : (
+            <View className="flex-1 w-full l mt-2">
+              <VStack space="sm">{children}</VStack>
+            </View>
+          )}
         </AnimatedSelectContent>
       </AnimatedPressable>
     </SelectPortal>
   );
 };
-
-export default SmoothSelectPortal;

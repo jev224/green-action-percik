@@ -31,7 +31,7 @@ export const GlowDecoration = React.memo(function GlowDecoration({
   edgeColors,
   className,
 }: GlowDecorationProps) {
-  const colors = useThemeColors();
+  const { colors } = useThemeColors();
 
   if (variant === "edges") {
     const [leftColor, rightColor] = edgeColors ?? [

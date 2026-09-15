@@ -11,7 +11,9 @@ import { EaseView } from "react-native-ease";
 import { usePressFeedback } from "@/hooks/usePressFeedback";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { AnimationConfig } from "@/components/animation/presets";
-import { ScrollView } from "react-native-gesture-handler";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { config } from "@/components/animation/config";
+import { ScrollView } from "react-native";
 
 interface FilterChipsProps {
   options: string[];
@@ -28,25 +30,38 @@ export function FilterChips({
 }: FilterChipsProps) {
   if (options.length === 0) return null;
 
-  return (
-    <ScrollView showsHorizontalScrollIndicator={false}>
-      <Box className="flex-row gap-2">
-        <Chip
-          label={allLabel}
-          isActive={selected === null}
-          onPress={() => onSelect(null)}
-        />
+  const nativeGesture = Gesture.Native()
+    .disallowInterruption(true)
+    .shouldCancelWhenOutside(false)
+    .hitSlop({ top: 10, bottom: 10, left: 10, right: 10 });
 
-        {options.map((option) => (
+  return (
+    <GestureDetector gesture={nativeGesture}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        bounces={false}
+        overScrollMode="never"
+        style={{ overflow: "visible" }}
+      >
+        <Box className="flex-row gap-2">
           <Chip
-            key={option}
-            label={option}
-            isActive={selected === option}
-            onPress={() => onSelect(option)}
+            label={allLabel}
+            isActive={selected === null}
+            onPress={() => onSelect(null)}
           />
-        ))}
-      </Box>
-    </ScrollView>
+
+          {options.map((option) => (
+            <Chip
+              key={option}
+              label={option}
+              isActive={selected === option}
+              onPress={() => onSelect(option)}
+            />
+          ))}
+        </Box>
+      </ScrollView>
+    </GestureDetector>
   );
 }
 
@@ -59,7 +74,7 @@ function Chip({
   isActive: boolean;
   onPress: () => void;
 }) {
-  const colors = useThemeColors();
+  const { colors } = useThemeColors();
   const { isPressing, bind } = usePressFeedback(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -72,6 +87,7 @@ function Chip({
 
   return (
     <Pressable
+      unstable_pressDelay={config.pressableDelay}
       onPress={onPress}
       onPressIn={bind.onPressIn}
       onPressOut={bind.onPressOut}

@@ -16,7 +16,7 @@ export function SearchField({
   placeholder = "Cari...",
   className,
 }: SearchFieldProps) {
-  const colors = useThemeColors();
+  const { colors } = useThemeColors();
 
   return (
     <Input

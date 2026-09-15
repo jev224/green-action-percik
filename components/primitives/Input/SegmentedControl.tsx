@@ -35,7 +35,7 @@ export function SegmentedControl<T extends string>({
       {options.map((option) => {
         const isActive = option.value === value;
 
-        const colors = useThemeColors();
+        const { colors } = useThemeColors();
         const { isPressing, bind } = usePressFeedback(1);
 
         const animatedStyle = useAnimatedStyle(() => ({

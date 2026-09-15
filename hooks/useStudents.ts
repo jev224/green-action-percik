@@ -29,14 +29,87 @@ export const STUDENT_SORT_OPTIONS: SortFieldOption<StudentSortField>[] = [
   },
 ];
 
-export function useStudents() {
+// ---- dummy/mock data ----
+const MOCK_STUDENTS_RAW: Awaited<ReturnType<typeof getAllStudents>> = [
+  {
+    id: 1,
+    user_id: "u1",
+    name: "Andi Saputra",
+    photo_url: undefined,
+    created_at: "2024-01-10T00:00:00.000Z",
+    class_id: 101,
+    username: "andi.saputra",
+    nis: 2024001,
+    classes: { grade: "7", major: "IPA", sub_major: "A" },
+  },
+  {
+    id: 2,
+    user_id: "u2",
+    name: "Budi Santoso",
+    photo_url: undefined,
+    created_at: "2024-01-10T00:00:00.000Z",
+    class_id: 101,
+    username: "budi.santoso",
+    nis: 2024002,
+    classes: { grade: "7", major: "IPA", sub_major: "A" },
+  },
+  {
+    id: 3,
+    user_id: "u3",
+    name: "Citra Dewi",
+    photo_url: undefined,
+    created_at: "2024-01-11T00:00:00.000Z",
+    class_id: 102,
+    username: "citra.dewi",
+    nis: 2024003,
+    classes: { grade: "8", major: "IPS", sub_major: "B" },
+  },
+  {
+    id: 4,
+    user_id: "u4",
+    name: "Dian Permata",
+    photo_url: undefined,
+    created_at: "2024-01-12T00:00:00.000Z",
+    class_id: 103,
+    username: "dian.permata",
+    nis: 2024004,
+    classes: { grade: "9", major: "IPA", sub_major: "C" },
+  },
+  {
+    id: 5,
+    user_id: "u5",
+    name: "Eka Wijaya",
+    photo_url: undefined,
+    created_at: "2024-01-12T00:00:00.000Z",
+    class_id: 102,
+    username: "eka.wijaya",
+    nis: 2024005,
+    classes: { grade: "8", major: "IPS", sub_major: "B" },
+  },
+];
+
+async function getMockStudents() {
+  // simulate network latency
+  await new Promise((res) => setTimeout(res, 300));
+  return MOCK_STUDENTS_RAW;
+}
+
+export interface UseStudentsOptions {
+  dummy?: boolean;
+}
+
+export function useStudents(options?: UseStudentsOptions) {
+  const { dummy = false } = options ?? {};
+
+  const fetcher = dummy ? getMockStudents : getAllStudents;
+
   const {
     data: rawStudents,
     isLoading,
     isError,
     isRefreshing,
     refresh,
-  } = useAsyncData(getAllStudents, []);
+  } = useAsyncData(fetcher, [dummy]);
 
   const students: StudentData[] = useMemo(
     () =>
@@ -82,6 +155,8 @@ export function useStudents() {
     return direction === "asc" ? sorted : sorted.reverse();
   }, [searched, sort]);
 
+  const unfilteredResults = students;
+
   return {
     isLoading,
     isError,
@@ -98,6 +173,7 @@ export function useStudents() {
     setSort,
 
     results,
+    unfilteredResults,
 
     isRefreshing,
     refresh,

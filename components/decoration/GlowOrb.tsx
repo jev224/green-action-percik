@@ -29,7 +29,6 @@ export function GlowOrb({
 }: GlowOrbProps) {
   // Disabled: sustained ~90-107% CPU / device heat even after react-native-ease swap.
   // Revisit before re-enabling — see notes.
-  // return null;
 
   return (
     <View
@@ -42,7 +41,7 @@ export function GlowOrb({
         transition={{
           transform: {
             type: "timing",
-            loop: isBreathingEnabled ? "repeat" : undefined,
+            loop: isBreathingEnabled ? "reverse" : undefined,
             duration: breathDurationMs,
             delay: breathDelayMs,
             easing: "easeInOut",

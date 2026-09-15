@@ -28,7 +28,7 @@ export const LeafDecoration = React.memo(function LeafDecoration({
   color = "primary",
   shadow = "none",
 }: LeafDecorationProps) {
-  const colors = useThemeColors();
+  const { colors } = useThemeColors();
 
   const arrangements =
     variant === "cluster" ? CLUSTER_ARRANGEMENTS : ACCENT_ARRANGEMENTS;

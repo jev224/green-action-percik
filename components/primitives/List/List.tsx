@@ -56,7 +56,7 @@ function ListRow({ item }: { item: ListItemData }) {
   const textColor = isDestructive ? "text-destructive" : "text-foreground";
   const iconColor = isDestructive ? "text-destructive" : "text-foreground/80";
 
-  const colors = useThemeColors();
+  const { colors } = useThemeColors();
   const { bind, scaleAnimation, isPressing } = usePressFeedback(1.04);
 
   const animatedStyle = useAnimatedStyle(() => {

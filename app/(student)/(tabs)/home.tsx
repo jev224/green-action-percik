@@ -1,5 +1,3 @@
-import { useColorScheme } from "react-native";
-
 import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
 import { Image } from "@/components/ui/image";
@@ -9,6 +7,7 @@ import { Greeting } from "@/components/domain";
 
 import {
   ActionTile,
+  HomeCarousel,
   ListSection,
   QuoteCard,
   Screen,
@@ -30,7 +29,7 @@ import {
   Trash2,
 } from "lucide-react-native";
 
-import { images } from "@/constants/Images";
+import { images } from "@/constants/Assets";
 
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useNavigation } from "@/hooks/useNavigation";
@@ -54,8 +53,8 @@ export default function HomeScreen() {
       return { profile, stats };
     }, []);
 
-  const colors = useThemeColors();
-  const isDark = useColorScheme() === "dark";
+  const { colors, scheme } = useThemeColors();
+  const isDark = scheme === "dark";
 
   return (
     <Screen
@@ -75,22 +74,40 @@ export default function HomeScreen() {
             info={parseProfileInfo({ role: "student", ...classData })}
           />
 
-          <QuoteCard
+          <HomeCarousel
+            height={270}
             outerDecoration={
               <>
                 {!isDark && (
                   <GlowOrb color={colors.success} minScale={1.5} maxScale={2} />
                 )}
-                <LeafDecoration variant="accent" pattern="2" shadow="lg" />
               </>
             }
-            innerDecoration={
-              <Image
-                source={images.bannerDecorationLight}
-                className="size-full"
-              />
-            }
-          />
+          >
+            <QuoteCard
+              outerDecoration={
+                <LeafDecoration variant="accent" pattern="2" shadow="lg" />
+              }
+              innerDecoration={
+                <Image
+                  source={images.bannerDecorationLight}
+                  className="size-full"
+                />
+              }
+            />
+
+            <QuoteCard
+              outerDecoration={
+                <LeafDecoration variant="accent" pattern="2" shadow="lg" />
+              }
+              innerDecoration={
+                <Image
+                  source={images.bannerDecorationLight}
+                  className="size-full"
+                />
+              }
+            />
+          </HomeCarousel>
 
           <ListSection
             title="Statistik saat ini"
@@ -247,7 +264,7 @@ export default function HomeScreen() {
             <Skeleton className="aspect-square w-16 h-16 rounded-full" />
           </HStack>
 
-          <Skeleton className="h-42" />
+          <Skeleton className="h-64" />
 
           <HStack space="md" className="h-32">
             <Skeleton className="flex-1" />

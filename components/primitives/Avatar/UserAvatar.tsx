@@ -1,11 +1,18 @@
 import { ImageSourcePropType } from "react-native";
+import { EaseView } from "react-native-ease";
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
+
 import {
   Avatar as GSAvatar,
   AvatarFallbackText,
   AvatarImage,
-  AvatarGroup,
 } from "@/components/ui/avatar";
+
+import { Icon } from "@/components/ui/icon";
+
+import { CheckCheck } from "lucide-react-native";
+
+import { useThemeColors } from "@/hooks/useThemeColors";
 
 type AvatarSize = "sm" | "md" | "lg";
 
@@ -22,6 +29,7 @@ interface UserAvatarProps {
   imageSource?: ImageSourcePropType;
   size?: AvatarSize;
   className?: string;
+  selected?: boolean;
 }
 
 export function UserAvatar({
@@ -29,9 +37,32 @@ export function UserAvatar({
   imageSource,
   size = "md",
   className,
+  selected,
 }: UserAvatarProps) {
+  const { colors } = useThemeColors();
+
   return (
-    <GSAvatar className={cn(SIZE_CLASSES[size], className)}>
+    <GSAvatar className={cn(SIZE_CLASSES[size], "overflow-hidden", className)}>
+      <EaseView
+        animate={{
+          opacity: selected ? 1.0 : 0,
+        }}
+        transition={{
+          type: "timing",
+          duration: 100,
+        }}
+        style={{
+          position: "absolute",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 2,
+          inset: 0,
+          backgroundColor: selected ? colors.accent : "transparent",
+        }}
+      >
+        <Icon as={CheckCheck} className="size-8 text-accent-foreground" />
+      </EaseView>
+
       <AvatarFallbackText
         className={cn(
           "font-bold",

@@ -15,7 +15,7 @@ export function TextAreaField({
   isDisabled,
   ...props
 }: TextAreaFieldProps) {
-  const colors = useThemeColors();
+  const { colors } = useThemeColors();
 
   return (
     <Animated.View className="min-h-32 max-h-52 flex-none">

@@ -56,7 +56,7 @@ export function Button({
   iconClassName,
   ...props
 }: ButtonProps) {
-  const colors = useThemeColors();
+  const { colors } = useThemeColors();
   const { isPressing, bind, scaleAnimation } = usePressFeedback(
     size === "icon" ? 1.1 : 1.05,
   );

@@ -74,7 +74,7 @@ export function TextField({
   keyboardType,
   ...props
 }: TextFieldProps) {
-  const colors = useThemeColors();
+  const { colors } = useThemeColors();
   const [showPassword, setShowPassword] = useState(false);
   const [internalValue, setInternalValue] = useState(value ?? "");
   const [isFocused, setIsFocused] = useState(false);

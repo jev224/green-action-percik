@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { BackButton } from "@/components/domain";
+import { BackButton, StudentMultiSelect } from "@/components/domain";
 import {
   BottomPanel,
   Button,
@@ -38,6 +38,15 @@ export default function CompostSubmissionScreen() {
               ]}
               value={activityLocation}
               onValueChange={setActivityLocation}
+            />
+          </ListSection>
+
+          <ListSection title="Siswa Hadir">
+            <StudentMultiSelect
+              onSelectionChange={(selected) => {
+                console.log("Selected students:", selected);
+                // e.g. [{ user_id: "1", name: "Haruto Sato", grade: "10A", point: 85 }]
+              }}
             />
           </ListSection>
 

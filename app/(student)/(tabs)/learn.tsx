@@ -28,6 +28,8 @@ import { LeafyGreen } from "lucide-react-native";
 
 import { useLessonStore } from "@/stores/lessonAction";
 
+import { ThemeColors } from "@/constants/Colors";
+
 import { useNavigation } from "@/hooks/useNavigation";
 import { useLessons } from "@/hooks/useLessons";
 import { useThemeColors } from "@/hooks/useThemeColors";
@@ -58,7 +60,7 @@ export default function LearningScreen() {
     [viewLesson, navigateTo],
   );
 
-  const colors = useThemeColors();
+  const { colors } = useThemeColors();
 
   const renderItem = useCallback(
     ({ item }: { item: (typeof results)[number] }) => (
@@ -121,7 +123,7 @@ const LessonListItem = memo(function LessonListItem({
 }: {
   item: ReturnType<typeof useLessons>["results"][number];
   onPress: (id: number) => void;
-  colors: ReturnType<typeof useThemeColors>;
+  colors: ThemeColors;
 }) {
   const handlePress = useCallback(() => onPress(item.id), [onPress, item.id]);
 

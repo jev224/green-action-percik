@@ -1,7 +1,7 @@
 // components/decoration/leafArrangements.ts
 import { ComponentType } from "react";
 import { ColorValue } from "react-native";
-import { Leaf1, Leaf2, Leaf3, Leaf4, Leaf5, Leaf6 } from "@/constants/Images";
+import { Leaf1, Leaf2, Leaf3, Leaf4, Leaf5, Leaf6 } from "@/constants/Assets";
 import { SemanticColor } from "../styles/buildColorsVariants";
 import { ColorToken } from "@/constants/Colors";
 import { SvgProps } from "react-native-svg";

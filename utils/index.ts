@@ -64,3 +64,15 @@ export async function checkConnection(): Promise<boolean> {
 export const randomBetween = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
+
+export function assignKey<T, K extends keyof T>(
+  target: Partial<T>,
+  key: K,
+  value: T[K],
+) {
+  target[key] = value;
+}
+
+export function sleepAsync(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

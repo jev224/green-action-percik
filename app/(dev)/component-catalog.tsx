@@ -48,9 +48,15 @@ import {
   EmptyState,
   List,
   ListSection,
+  HomeCarousel,
 } from "@/components/primitives";
 import { SortSelect } from "@/components/primitives/Input/SortSelect";
-import { Greeting, ProfileHeader, StudentList } from "@/components/domain";
+import {
+  Greeting,
+  ProfileHeader,
+  StudentList,
+  StudentMultiSelect,
+} from "@/components/domain";
 
 // ---------------------------------------------------------------------------
 // Local-only helper for THIS page. Lives in this file, not primitives/,
@@ -101,6 +107,12 @@ export default function ComponentCatalogScreen() {
           {/* THE EXPLANATION — read this first                            */}
           {/* ------------------------------------------------------------- */}
           <VStack space="md" className="border-b border-border pb-8">
+            <HomeCarousel height={270}>
+              <QuoteCard />
+              <QuoteCard />
+              <QuoteCard />
+            </HomeCarousel>
+
             <Heading size="xl">primitives/ vs domain/</Heading>
 
             <Text>
@@ -384,8 +396,20 @@ export default function ComponentCatalogScreen() {
             <ListSection title="Class 10A">
               <StudentList
                 data={[
-                  { id: "1", name: "Haruto Sato", grade: "10A", point: 85 },
-                  { id: "2", name: "Yui Tanaka", grade: "10A", point: 92 },
+                  {
+                    id: 1,
+                    user_id: "1",
+                    name: "Haruto Sato",
+                    grade: "10A",
+                    point: 85,
+                  },
+                  {
+                    id: 2,
+                    user_id: "2",
+                    name: "Yui Tanaka",
+                    grade: "10A",
+                    point: 92,
+                  },
                 ]}
                 onPressStudent={(student) =>
                   console.log("pressed", student.name)
@@ -393,6 +417,13 @@ export default function ComponentCatalogScreen() {
               />
             </ListSection>
           </DemoSection>
+
+          <StudentMultiSelect
+            onSelectionChange={(selected) => {
+              console.log("Selected students:", selected);
+              // e.g. [{ user_id: "1", name: "Haruto Sato", grade: "10A", point: 85 }]
+            }}
+          />
         </VStack>
       }
     />

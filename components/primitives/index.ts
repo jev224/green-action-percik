@@ -40,9 +40,12 @@ export { BottomPanel } from "./Layout/BottomPanel";
 export { Drawer } from "./Layout/Drawer";
 export { Spacer } from "./Layout/Spacer";
 export { Modal } from "./Layout/Modal";
+export { HomeCarousel } from "./Layout/HomeCarousel";
 
 export { List } from "./List/List";
 export type { ListItemData } from "./List/List";
 export { ListSection } from "./List/ListSection";
 
 export { GradientHeading } from "./Typography/AnimatedGradientHeading";
+
+export { SmoothSelectPortal } from "./Input/SmoothSelectPortal";

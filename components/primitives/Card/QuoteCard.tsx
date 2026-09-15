@@ -74,7 +74,7 @@ export function QuoteCard({
   innerDecoration,
   outerDecoration,
 }: QuoteCardProps) {
-  const colors = useThemeColors();
+  const { colors } = useThemeColors();
   const isDarkmode = useColorScheme() === "dark";
 
   const data =
@@ -102,11 +102,11 @@ export function QuoteCard({
   const { quote, author } = data[index];
 
   return (
-    <View>
+    <View className="flex-1">
       <SurfaceCard
         color={color}
         variant={isDarkmode ? "outline" : "solid"}
-        className="p-6 flex-row overflow-hidden relative h-64 items-center shadow-lg shadow-accent-foreground/20"
+        className="p-6 flex-row overflow-hidden relative flex-1 items-center shadow-lg shadow-accent-foreground/20"
       >
         {(styles) => (
           <>

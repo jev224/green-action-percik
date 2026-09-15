@@ -27,7 +27,7 @@ export const BottomPanel = ({
   const styles = bottomPanelStyle({ variant });
 
   return (
-    <View className="w-full h-full justify-end">
+    <View className="absolute w-full bottom-0">
       <View className={styles}>
         <SafeAreaView edges={["bottom"]}>{children}</SafeAreaView>
       </View>

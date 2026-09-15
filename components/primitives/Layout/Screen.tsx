@@ -136,9 +136,7 @@ export function Screen<T = undefined>({
         content
       )}
 
-      {overlayComponent && (
-        <Box className="absolute inset-0 -z-2">{overlayComponent}</Box>
-      )}
+      {overlayComponent}
     </Box>
   );
 }

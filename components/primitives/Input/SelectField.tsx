@@ -4,16 +4,12 @@ import {
   SelectTrigger,
   SelectInput,
   SelectIcon,
-  SelectPortal,
-  SelectBackdrop,
-  SelectContent,
-  SelectDragIndicatorWrapper,
-  SelectDragIndicator,
   SelectItem,
 } from "@/components/ui/select";
 import { ChevronDownIcon } from "@/components/ui/icon";
-import SmoothSelectPortal from "./SmoothSelectPortal";
+import { SmoothSelectPortal } from "./SmoothSelectPortal";
 import { useState } from "react";
+import { truncateText } from "@/utils";
 
 interface SelectOption {
   label: string;
@@ -26,6 +22,7 @@ interface SelectFieldProps {
   onValueChange?: (value: string) => void;
   placeholder?: string;
   className?: string;
+  inList?: boolean;
 }
 
 export function SelectField({
@@ -34,6 +31,7 @@ export function SelectField({
   onValueChange,
   placeholder = "Select option",
   className,
+  inList,
 }: SelectFieldProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -44,12 +42,19 @@ export function SelectField({
       onClose={() => setIsOpen(false)}
     >
       <SelectTrigger
-        className={cn("rounded-md justify-between py-4", className)}
+        className={cn(
+          "rounded-md justify-between py-4",
+          inList && "p-0 -mr-4 gap-2.5 border-0",
+          className,
+        )}
         variant="outline"
         size="lg"
         onPress={() => setIsOpen(true)}
       >
-        <SelectInput className="ml-3 font-medium" placeholder={placeholder} />
+        <SelectInput
+          className={cn("ml-3 font-medium", inList && "pr-0")}
+          placeholder={inList ? truncateText(placeholder, 16) : placeholder}
+        />
         <SelectIcon className="mr-3" as={ChevronDownIcon} />
       </SelectTrigger>
 
@@ -58,7 +63,7 @@ export function SelectField({
           <SelectItem
             className="py-4"
             key={opt.value}
-            label={opt.label}
+            label={inList ? truncateText(opt.label, 16) : opt.label}
             value={opt.value}
           />
         ))}

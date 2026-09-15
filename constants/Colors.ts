@@ -77,6 +77,7 @@ const rawPalette = {
 
 type ColorMode = keyof typeof rawPalette;
 export type ColorToken = keyof typeof rawPalette.light;
+export type ThemeColors = Record<ColorToken, string>;
 
 // derive rgb() strings for direct use in LinearGradient, BlurView, etc.
 const deriveColors = (mode: ColorMode) =>
@@ -85,7 +86,7 @@ const deriveColors = (mode: ColorMode) =>
       key,
       `rgb(${value})`,
     ]),
-  ) as Record<ColorToken, string>;
+  ) as ThemeColors;
 
 export const colors = {
   light: deriveColors("light"),

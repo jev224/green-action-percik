@@ -1,5 +1,3 @@
-import { useColorScheme } from "react-native";
-
 import { Heading } from "@/components/ui/heading";
 import { Skeleton } from "@/components/ui/skeleton";
 import { HStack } from "@/components/ui/hstack";
@@ -51,8 +49,8 @@ export default function StatsiticScreen() {
       return { stats, targets };
     }, []);
 
-  const colors = useThemeColors();
-  const isDark = useColorScheme() === "dark";
+  const { colors, scheme } = useThemeColors();
+  const isDark = scheme === "dark";
 
   return (
     <Screen

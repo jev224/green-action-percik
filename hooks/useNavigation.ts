@@ -1,9 +1,10 @@
 import { useRef } from "react";
-import { User } from "@supabase/supabase-js";
 import { Href, router, useNavigation as useExpoNavigation } from "expo-router";
 import { usePreventRemove } from "@react-navigation/native";
+import { UserRole, useUserStore } from "@/stores/user";
 
 export function useNavigation() {
+  const { profile } = useUserStore.getState();
   const navigation = useExpoNavigation();
   const skipGuardRef = useRef(false);
 
@@ -26,11 +27,14 @@ export function useNavigation() {
     router.replace(href);
   };
 
-  const navigateFromLogin = (user: User) => {
-    const user_role = user.app_metadata.user_role;
-    if (user_role === "teacher") {
+  const navigateToHome = (role?: UserRole | null) => {
+    const userRole = role ?? profile?.role;
+
+    if (!userRole) {
+      resetTo("/(auth)/login");
+    } else if (userRole === "teacher") {
       resetTo("/(teacher)/(tabs)/home");
-    } else if (user_role === "student") {
+    } else if (userRole === "student") {
       resetTo("/(student)/(tabs)/home");
     }
   };
@@ -66,7 +70,7 @@ export function useNavigation() {
     goBack,
     navigateTo,
     resetTo,
-    navigateFromLogin,
+    navigateToHome,
     useBackGuard,
     bypassGuard,
   };

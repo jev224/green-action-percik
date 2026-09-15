@@ -34,14 +34,16 @@ import {
   SurfaceCard,
 } from "@/components/primitives";
 
+import { BookCheck } from "lucide-react-native";
+
 import { AnimationConfig } from "@/components/animation/presets";
 
 import { useLessonStore } from "@/stores/lessonAction";
 
 import { useShowToast } from "@/hooks/useShowToast";
-import { useNavigation } from "@/hooks/useNavigation";
 
 import { calculatePercentage } from "@/utils";
+import { useResultScreen } from "@/hooks/useResultScreen";
 
 // Extracted so swiping doesn't depend on `currentIndex` React state at all —
 // each card reads the shared carouselProgress value directly on the UI
@@ -85,7 +87,7 @@ const CarouselCard = memo(function CarouselCard({
 });
 
 export default function LessonContentScreen() {
-  const { navigateTo } = useNavigation();
+  const { showResult } = useResultScreen();
   const lessonContentData = useLessonStore((state) => state.lessonContentData);
   const { width: screenWidth } = useWindowDimensions();
 
@@ -156,17 +158,18 @@ export default function LessonContentScreen() {
 
   const handleNext = useCallback(() => {
     if (isLast) {
-      showToast({
+      showResult({
+        type: "success",
         title: "Materi Selesai",
-        description: "Kamu sudah menyelesaikan materi pembelajaran keren!",
+        subtitle: "Kamu sudah menyelesaikan materi pembelajaran keren!",
+        icon: BookCheck,
       });
-      navigateTo("/(student)/(tabs)/learn");
       return;
     }
 
     // onSnapToItem drives currentIndex — no need to set it here too.
     carouselRef.current?.next();
-  }, [isLast, showToast, navigateTo]);
+  }, [isLast, showToast]);
 
   const handlePrev = useCallback(() => {
     if (isFirst) return;

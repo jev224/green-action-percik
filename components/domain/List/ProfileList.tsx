@@ -33,7 +33,7 @@ export const ProfileList = ({ items }: ProfileListProps) => {
             key: "settings",
             label: "Pengaturan",
             icon: Settings,
-            onPress: () => {},
+            onPress: () => navigateTo("/profile/settings"),
           },
 
           {
