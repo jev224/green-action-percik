@@ -65,14 +65,20 @@ export const SmoothSelectPortal = ({
 
 		setIsOpenInternal(true);
 
-		opacity.set(withSpring(1, AnimationConfig.timing.smoothEnter));
+		// Let the newly-mounted content commit + do its first layout pass
+		// (still off-screen / transparent) before the spring starts, so the
+		// mount cost doesn't steal frames from the animation.
 
-		translateY.set(
-			withSpring(0, AnimationConfig.spring.heavy, (finished) => {
-				"worklet";
-				if (finished) isAnimating.set(false);
-			}),
-		);
+		requestAnimationFrame(() => {
+			opacity.set(withSpring(1, AnimationConfig.timing.smoothEnter));
+
+			translateY.set(
+				withSpring(0, AnimationConfig.spring.heavy, (finished) => {
+					"worklet";
+					if (finished) isAnimating.set(false);
+				}),
+			);
+		});
 	};
 
 	const handleClose = () => {

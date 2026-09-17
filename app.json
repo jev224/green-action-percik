@@ -7,7 +7,6 @@
 		"icon": "./assets/images/icon.png",
 		"scheme": "starterkitexpo",
 		"userInterfaceStyle": "automatic",
-
 		"splash": {
 			"resizeMode": "contain",
 			"backgroundColor": "#ffffff"
@@ -62,7 +61,13 @@
 					}
 				}
 			],
-			"expo-secure-store"
+			"expo-secure-store",
+			[
+				"expo-image",
+				{
+					"disableLibdav1d": true
+				}
+			]
 		],
 		"experiments": {
 			"typedRoutes": true

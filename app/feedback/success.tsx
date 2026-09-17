@@ -1,8 +1,8 @@
+import { Image } from "expo-image";
 import { Check, Sprout } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { EaseView } from "react-native-ease";
-import FastImage from "react-native-fast-image";
 import { cnBase } from "tailwind-variants";
 import {
 	ActionTile,
@@ -49,16 +49,12 @@ export default function SuccessScreen() {
 						<View className="w-[50%] max-w-38 aspect-square mt-18">
 							<View className="absolute size-full aspect-square">
 								<View className="size-full scale-300">
-									<FastImage
+									<Image
 										accessibilityLabel="Fireworks animation"
 										source={animated.fireworks}
 										style={{ position: "absolute", inset: 0 }}
 									/>
 								</View>
-								<FastImage
-									source={animated.fireworks}
-									className="size-full scale-300"
-								/>
 
 								{!transitionFinished &&
 									Array.from({ length: 2 }).map((_, index, arr) => (

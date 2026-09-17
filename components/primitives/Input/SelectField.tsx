@@ -29,20 +29,18 @@ export function SelectField({
 	options,
 	value,
 	onValueChange,
-	placeholder: initialPlaceholder,
+	placeholder = "Silahkan Pilih",
 	className,
 	inList,
 }: SelectFieldProps) {
-	const placeholder =
-		initialPlaceholder ||
-		options.find((o) => o.value === value)?.label ||
-		"Silahkan Pilih";
-
 	const [isOpen, setIsOpen] = useState(false);
+
+	const initialValue = options.find((o) => o.value === value)?.label;
 
 	return (
 		<Select
 			selectedValue={value}
+			initialLabel={initialValue}
 			onValueChange={onValueChange}
 			onClose={() => setIsOpen(false)}
 		>
@@ -60,6 +58,7 @@ export function SelectField({
 					className={cn("ml-3 font-medium", inList && "pr-0")}
 					placeholder={inList ? truncateText(placeholder, 16) : placeholder}
 				/>
+
 				<SelectIcon className="mr-3" as={ChevronDownIcon} />
 			</SelectTrigger>
 
