@@ -51,6 +51,7 @@ export type Database = {
 					created_at: string;
 					class_id: number;
 					submitted_by: string;
+					submitted_by_role: string;
 					photo?: string;
 				};
 				Insert: {
@@ -58,6 +59,7 @@ export type Database = {
 					created_at?: string;
 					class_id: number;
 					submitted_by: string;
+					submitted_by_role: string;
 					photo?: string;
 				};
 				Update: {
@@ -65,6 +67,7 @@ export type Database = {
 					created_at?: string;
 					class_id?: number;
 					submitted_by?: string;
+					submitted_by_role?: string;
 					photo?: string;
 				};
 				Relationships: [
@@ -127,7 +130,7 @@ export type Database = {
 					student_id: string;
 					activity_type: string;
 					location: string;
-					photo: string;
+					photo?: string;
 				};
 				Insert: {
 					id?: number;
@@ -135,7 +138,7 @@ export type Database = {
 					student_id: string;
 					activity_type: string;
 					location: string;
-					photo: string;
+					photo?: string;
 				};
 				Update: {
 					id?: number;
@@ -326,3 +329,8 @@ export type LessonType =
 export type StudentType = Database["public"]["Tables"]["students"]["Row"];
 
 export type TeacherType = Database["public"]["Tables"]["teachers"]["Row"];
+
+export type TableName = keyof Database["public"]["Tables"];
+
+export type TableRow<T extends TableName> =
+	Database["public"]["Tables"][T]["Row"];

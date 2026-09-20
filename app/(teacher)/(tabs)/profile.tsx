@@ -5,17 +5,15 @@ import { Screen } from "@/components/primitives";
 import { Box } from "@/components/ui/box";
 import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
 import { VStack } from "@/components/ui/vstack";
-import { useAsyncData } from "@/hooks/useAsyncData";
 
 import { useNavigation } from "@/hooks/useNavigation";
-import { getTeacherProfile } from "@/services/teacher/profile";
-
+import { useUserProfile } from "@/hooks/useUser";
 import { parseProfileInfo } from "@/utils";
 
 export default function ProfileScreen() {
 	const { navigateTo } = useNavigation();
 
-	const { data, isLoading, isError } = useAsyncData(getTeacherProfile, []);
+	const { profile, isLoading, isError, revalidate } = useUserProfile("teacher");
 
 	const profileItems = useMemo(
 		() => [
@@ -33,8 +31,10 @@ export default function ProfileScreen() {
 		<Screen
 			isLoading={isLoading}
 			isError={isError}
-			data={data}
-			contentComponent={({ name, major }) => (
+			data={profile}
+			onTryAgain={revalidate}
+			requiredInternet
+			contentComponent={({ name, major, photoUrl }) => (
 				<>
 					<ProfileHeader
 						name={name}
@@ -42,6 +42,7 @@ export default function ProfileScreen() {
 							type: "teacher",
 							info: parseProfileInfo({ role: "teacher", major }),
 						}}
+						imageSource={{ uri: photoUrl }}
 					/>
 
 					<ProfileList items={profileItems} />

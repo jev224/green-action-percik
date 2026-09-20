@@ -8,12 +8,17 @@ import type {
 } from "@/components/primitives/Input/SortSelect";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useFuzzySearch } from "@/hooks/useFuzzySearch";
-import { getAllStudents } from "@/services/teacher/students";
+import { fetchAllStudents } from "@/services/fetcher/teacher/studentManager";
 
 export type StudentSortField = "name" | "grade" | "point";
 
 export const STUDENT_SORT_OPTIONS: SortFieldOption<StudentSortField>[] = [
-	{ field: "name", label: "Nama", ascLabel: "Nama A-Z", descLabel: "Nama Z-A" },
+	{
+		field: "name",
+		label: "Nama",
+		ascLabel: "Nama A-Z",
+		descLabel: "Nama Z-A",
+	},
 	{
 		field: "grade",
 		label: "Kelas",
@@ -29,61 +34,61 @@ export const STUDENT_SORT_OPTIONS: SortFieldOption<StudentSortField>[] = [
 ];
 
 // ---- dummy/mock data ----
-const MOCK_STUDENTS_RAW: Awaited<ReturnType<typeof getAllStudents>> = [
+const MOCK_STUDENTS_RAW: Awaited<ReturnType<typeof fetchAllStudents>> = [
 	{
 		id: 1,
 		user_id: "u1",
 		name: "Andi Saputra",
-		photo_url: undefined,
+		photoUrl: undefined,
 		created_at: "2024-01-10T00:00:00.000Z",
 		class_id: 101,
 		username: "andi.saputra",
 		nis: 2024001,
-		classes: { grade: "7", major: "IPA", sub_major: "A" },
+		class: { grade: "7", major: "IPA", sub_major: "A" },
 	},
 	{
 		id: 2,
 		user_id: "u2",
 		name: "Budi Santoso",
-		photo_url: undefined,
+		photoUrl: undefined,
 		created_at: "2024-01-10T00:00:00.000Z",
 		class_id: 101,
 		username: "budi.santoso",
 		nis: 2024002,
-		classes: { grade: "7", major: "IPA", sub_major: "A" },
+		class: { grade: "7", major: "IPA", sub_major: "A" },
 	},
 	{
 		id: 3,
 		user_id: "u3",
 		name: "Citra Dewi",
-		photo_url: undefined,
+		photoUrl: undefined,
 		created_at: "2024-01-11T00:00:00.000Z",
 		class_id: 102,
 		username: "citra.dewi",
 		nis: 2024003,
-		classes: { grade: "8", major: "IPS", sub_major: "B" },
+		class: { grade: "8", major: "IPS", sub_major: "B" },
 	},
 	{
 		id: 4,
 		user_id: "u4",
 		name: "Dian Permata",
-		photo_url: undefined,
+		photoUrl: undefined,
 		created_at: "2024-01-12T00:00:00.000Z",
 		class_id: 103,
 		username: "dian.permata",
 		nis: 2024004,
-		classes: { grade: "9", major: "IPA", sub_major: "C" },
+		class: { grade: "9", major: "IPA", sub_major: "C" },
 	},
 	{
 		id: 5,
 		user_id: "u5",
 		name: "Eka Wijaya",
-		photo_url: undefined,
+		photoUrl: undefined,
 		created_at: "2024-01-12T00:00:00.000Z",
 		class_id: 102,
 		username: "eka.wijaya",
 		nis: 2024005,
-		classes: { grade: "8", major: "IPS", sub_major: "B" },
+		class: { grade: "8", major: "IPS", sub_major: "B" },
 	},
 ];
 
@@ -100,15 +105,16 @@ export interface UseStudentsOptions {
 export function useStudents(options?: UseStudentsOptions) {
 	const { dummy = false } = options ?? {};
 
-	const fetcher = dummy ? getMockStudents : getAllStudents;
+	const fetcher = dummy ? getMockStudents : fetchAllStudents;
 
 	const {
 		data: rawStudents,
 		isLoading,
 		isError,
 		isRefreshing,
+		errorMessage,
 		refresh,
-	} = useAsyncData(fetcher, [dummy]);
+	} = useAsyncData(fetcher, undefined, [dummy]);
 
 	const students: StudentData[] = useMemo(
 		() =>
@@ -116,8 +122,8 @@ export function useStudents(options?: UseStudentsOptions) {
 				id: s.id,
 				user_id: s.user_id,
 				name: s.name,
-				photo_url: s.photo_url,
-				grade: `Kelas ${s.classes.grade}`,
+				photoUrl: s.photoUrl,
+				grade: `Kelas ${s.class.grade}`,
 				point: 0,
 			})),
 		[rawStudents],
@@ -176,5 +182,7 @@ export function useStudents(options?: UseStudentsOptions) {
 
 		isRefreshing,
 		refresh,
+
+		errorMessage,
 	};
 }

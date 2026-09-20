@@ -10,33 +10,45 @@ import {
 } from "@/components/primitives";
 import { HStack } from "@/components/ui/hstack";
 import { useAsyncData } from "@/hooks/useAsyncData";
+import { useNavigation } from "@/hooks/useNavigation";
 import { useShowToast } from "@/hooks/useShowToast";
-import { getStudentStatisticsById } from "@/services/student/statistics";
-import { getStudentDetails } from "@/services/teacher/students";
+import { fetchStudentStatistics } from "@/services/fetcher/shared/student";
+import { fetchStudentProfile } from "@/services/fetcher/teacher/studentManager";
 import { useStudentActionStore } from "@/stores/studentOverview";
 import { parseProfileInfo } from "@/utils";
 
 export default function StudentOverviewScreen() {
 	const showToast = useShowToast();
+	const { goBack } = useNavigation();
 
 	const studentData = useStudentActionStore((state) => state.studentData);
 
-	const { data, isLoading, isError } = useAsyncData(async () => {
-		if (!studentData) return null;
+	const { data, isLoading, isError, errorMessage } = useAsyncData(
+		async () => {
+			if (!studentData) return null;
 
-		const [details, stats] = await Promise.all([
-			getStudentDetails(studentData.userId),
-			getStudentStatisticsById(studentData.userId),
-		]);
+			const [profile, stats] = await Promise.all([
+				fetchStudentProfile(studentData.userId),
+				fetchStudentStatistics(studentData.userId),
+			]);
 
-		return { details, stats };
-	}, [studentData?.userId]);
+			return { profile, stats };
+		},
+		undefined,
+		[studentData?.userId],
+	);
 
 	useEffect(() => {
+		if (isError) {
+			showToast({ title: errorMessage });
+			goBack("/(teacher)/(tabs)/home");
+			return;
+		}
+
 		if (!isLoading && !data) {
 			showToast({ title: "Data siswa tidak ditemukan" });
 		}
-	}, [isLoading, data]);
+	}, [isLoading, data, errorMessage, isError]);
 
 	if (!isLoading && !data) {
 		return <Redirect href={"/(teacher)/(tabs)/students"} />;
@@ -51,7 +63,6 @@ export default function StudentOverviewScreen() {
 			headerComponent={
 				<ScreenHeader title="Detail Siswa" leftComponent={<BackButton />} />
 			}
-			// Tambahin nanti fuh twin
 			// overlayComponent={
 			//   <BottomPanel variant="ghost">
 			//     <HStack space="md">
@@ -66,7 +77,7 @@ export default function StudentOverviewScreen() {
 					compostActivityCount,
 					studentPoints,
 				},
-				details: { name, nis, class: classData },
+				profile: { name, nis, class: classData },
 			}) => (
 				<>
 					<ProfileHeader

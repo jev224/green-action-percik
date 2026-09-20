@@ -23,15 +23,19 @@ import {
 import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+
 import { useNavigation } from "@/hooks/useNavigation";
 import { useSettings } from "@/hooks/useSettings";
-import { authenticate } from "@/services/auth";
-import { useUserStore } from "@/stores/user";
+import { authenticate } from "@/services/fetcher/shared/auth";
+
+import { getProfileByRole } from "@/services/fetcher/shared/profile";
+import { ServerError } from "@/services/ServerError";
+import { useUserStore } from "@/stores/userStore";
 import { checkConnection, sleepAsync } from "@/utils";
 
 export default function LoginScreen() {
+	const { setUserStore, setRoleStore } = useUserStore();
 	const { set, update, settings } = useSettings();
-	const { updateProfile } = useUserStore.getState();
 	const { navigateToHome } = useNavigation();
 
 	const {
@@ -52,18 +56,9 @@ export default function LoginScreen() {
 
 	const [error, setError] = useState<string | null>(null);
 
-	const checkNetwork = async () => {
-		const isOnline = await checkConnection();
-
-		if (!isOnline) {
-			setNetworkDialogShown(true);
-		}
-
-		return isOnline;
-	};
-
 	const handleLogin = async () => {
 		setError(null);
+		setIsLoading(true);
 
 		if (!username.trim() || !password.trim()) {
 			setError("Username dan password wajib diisi");
@@ -71,28 +66,23 @@ export default function LoginScreen() {
 		}
 
 		try {
-			setIsLoading(true);
+			const isOnline = await checkConnection();
 
-			await sleepAsync(1000);
-
-			if (!(await checkNetwork())) {
+			if (!isOnline) {
+				await sleepAsync(500); // Make it feels waiting for better ux
+				setNetworkDialogShown(true);
 				return;
 			}
 
-			const { error: authError, data } = await authenticate(
-				username.trim(),
-				password.trim(),
-			);
-
-			if (authError) {
-				console.log("[Auth Error]:", authError);
-				setError("Username atau password salah");
-				return;
-			}
+			const user = await authenticate(username.trim(), password.trim());
 
 			// login successful
-			const role = data.user.app_metadata.user_role;
-			updateProfile({ role });
+			const id = user.id;
+			const role = user.app_metadata.user_role;
+			const profile = await getProfileByRole(id, role);
+
+			setUserStore(profile);
+			setRoleStore(role);
 
 			if (rememberMe) {
 				update({
@@ -106,14 +96,13 @@ export default function LoginScreen() {
 				});
 			}
 
-			navigateToHome(role);
-		} catch (err) {
-			if (!(await checkNetwork())) {
-				return;
-			}
+			navigateToHome();
+		} catch (e) {
+			setError(
+				e instanceof ServerError ? e.ui_message : "Terjadi kendala, coba lagi",
+			);
 
-			console.log("[Auth Error]:", err);
-			setError("Terjadi kendala, coba lagi");
+			console.log("[Auth Error]:", e instanceof Error ? e.message : e);
 		} finally {
 			setIsLoading(false);
 		}

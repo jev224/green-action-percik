@@ -5,17 +5,18 @@ import type {
 } from "@/components/primitives/Input/SortSelect";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useFuzzySearch } from "@/hooks/useFuzzySearch";
-import { getAllLessons } from "@/services/teacher/lessons";
+import { fetchAllLessons } from "@/services/fetcher/shared/lessons";
 
 export interface LessonData {
 	id: number;
 	title: string;
 	description: string;
 	photo?: string;
-	photoUrl: string | null;
+	photoUrl?: string | null;
+	createdAt: Date;
 }
 
-export type LessonSortField = "title";
+export type LessonSortField = "title" | "created";
 
 export const LESSON_SORT_OPTIONS: SortFieldOption<LessonSortField>[] = [
 	{
@@ -24,13 +25,26 @@ export const LESSON_SORT_OPTIONS: SortFieldOption<LessonSortField>[] = [
 		ascLabel: "Judul A-Z",
 		descLabel: "Judul Z-A",
 	},
+
+	{
+		field: "created",
+		label: "Tanggal dibuat",
+		ascLabel: "Terbaru",
+		descLabel: "Terlama",
+	},
 ];
 
-// getAllLessons returns numeric ids; normalize to string to match LessonData
-const fetchLessons = async (): Promise<LessonData[]> => {
-	const lessons = await getAllLessons();
-	return lessons;
-};
+const fetchLessons = async (): Promise<LessonData[]> =>
+	(await fetchAllLessons()).map(
+		({ id, title, description, photo, photoUrl, created_at }) => ({
+			id,
+			title,
+			description,
+			photo,
+			photoUrl,
+			createdAt: new Date(created_at),
+		}),
+	);
 
 export function useLessons() {
 	const [searchQuery, setSearchQuery] = useState("");
@@ -41,9 +55,10 @@ export function useLessons() {
 		isLoading,
 		isError,
 		error,
+		errorMessage,
 		refresh,
 		isRefreshing,
-	} = useAsyncData<LessonData[]>(fetchLessons, []);
+	} = useAsyncData<LessonData[]>(fetchLessons);
 
 	const searched = useFuzzySearch(
 		lessons ?? [],
@@ -54,7 +69,19 @@ export function useLessons() {
 	const results = useMemo(() => {
 		if (!sort) return searched;
 
-		const sorted = [...searched].sort((a, b) => a.title.localeCompare(b.title));
+		let sorted = [];
+
+		switch (sort.field) {
+			case "title":
+				sorted = [...searched].sort((a, b) => a.title.localeCompare(b.title));
+				break;
+			case "created":
+				sorted = [...searched].sort(
+					(a, b) =>
+						new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+				);
+				break;
+		}
 
 		return sort.direction === "asc" ? sorted : sorted.reverse();
 	}, [searched, sort]);
@@ -64,6 +91,8 @@ export function useLessons() {
 		setSearchQuery,
 
 		sortOptions: LESSON_SORT_OPTIONS,
+		sortDefaultField: "created" as const,
+		sortDefaultDirection: "asc" as const,
 		sort,
 		setSort,
 
@@ -75,5 +104,6 @@ export function useLessons() {
 
 		refresh,
 		isRefreshing,
+		errorMessage,
 	};
 }

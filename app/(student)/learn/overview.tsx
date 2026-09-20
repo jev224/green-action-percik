@@ -20,8 +20,7 @@ import { VStack } from "@/components/ui/vstack";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useNavigation } from "@/hooks/useNavigation";
 import { useShowToast } from "@/hooks/useShowToast";
-
-import { getLessonDetails } from "@/services/teacher/lessons";
+import { fetchLesson } from "@/services/fetcher/shared/lessons";
 import { useLessonStore } from "@/stores/lessonAction";
 import { formatDate } from "@/utils";
 
@@ -35,10 +34,12 @@ export default function LessonOverviewScreen() {
 		(state) => state.setLessonContentData,
 	);
 
-	const { data, isLoading, isError } = useAsyncData(async () => {
-		if (lesson.mode !== "view") return null;
-		return await getLessonDetails(lesson.id);
-	}, [lesson.mode]);
+	const { data, isLoading, isError, errorMessage, refresh } = useAsyncData(
+		async () => {
+			if (lesson.mode !== "view") return null;
+			return await fetchLesson(lesson.id);
+		},
+	);
 
 	useEffect(() => {
 		if (!isLoading && !data) {
@@ -63,6 +64,9 @@ export default function LessonOverviewScreen() {
 			isLoading={isLoading}
 			isError={isError}
 			data={data}
+			errorMessage={errorMessage}
+			onTryAgain={refresh}
+			requiredInternet
 			headerComponent={
 				<ScreenHeader title="Detail Materi" leftComponent={<BackButton />} />
 			}

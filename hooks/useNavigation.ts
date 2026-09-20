@@ -5,10 +5,9 @@ import {
 	useNavigation as useExpoNavigation,
 } from "expo-router";
 import { useRef } from "react";
-import { type UserRole, useUserStore } from "@/stores/user";
+import { getUserState } from "@/stores/userStore";
 
 export function useNavigation() {
-	const { profile } = useUserStore.getState();
 	const navigation = useExpoNavigation();
 	const skipGuardRef = useRef(false);
 
@@ -31,17 +30,25 @@ export function useNavigation() {
 		router.replace(href);
 	};
 
-	const navigateToHome = (role?: UserRole | null) => {
-		const userRole = role ?? profile?.role;
+	const getHomeRoute = (): Href => {
+		const userRole = getUserState().roleStore;
 
-		if (!userRole) {
-			resetTo("/(auth)/login");
-		} else if (userRole === "teacher") {
-			resetTo("/(teacher)/(tabs)/home");
-		} else if (userRole === "student") {
-			resetTo("/(student)/(tabs)/home");
-		}
+		if (userRole === "teacher") return "/(teacher)/(tabs)/home";
+		if (userRole === "student") return "/(student)/(tabs)/home";
+
+		return "/(auth)/login";
 	};
+
+	const navigateToFeedback = (href: Href) => {
+		if (router.canDismiss()) {
+			router.dismissAll();
+		}
+
+		router.replace(getHomeRoute());
+		router.push(href);
+	};
+
+	const navigateToHome = () => resetTo(getHomeRoute());
 
 	// Guards screen removal (back gesture, hardware back, header back
 	// button — they all funnel through this one listener). When blocked,
@@ -75,6 +82,7 @@ export function useNavigation() {
 		navigateTo,
 		resetTo,
 		navigateToHome,
+		navigateToFeedback,
 		useBackGuard,
 		bypassGuard,
 	};

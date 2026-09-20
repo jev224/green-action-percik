@@ -7,7 +7,7 @@ import {
 	Modal,
 } from "@/components/primitives";
 import { useNavigation } from "@/hooks/useNavigation";
-import { logout } from "@/services/auth";
+import { logout } from "@/services/fetcher/shared/auth";
 
 interface ProfileListProps {
 	items?: ListItemData[];

@@ -5,7 +5,6 @@ import {
 	Coins,
 	GraduationCap,
 	Recycle,
-	Sprout,
 	Trash2,
 } from "lucide-react-native";
 import { Greeting } from "@/components/domain";
@@ -19,21 +18,25 @@ import { HStack } from "@/components/ui/hstack";
 import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
 import { VStack } from "@/components/ui/vstack";
 import { useAsyncData } from "@/hooks/useAsyncData";
-import { getTeacherProfile } from "@/services/teacher/profile";
-import { getAllStudentStats } from "@/services/teacher/students";
-
+import { useNavigation } from "@/hooks/useNavigation";
+import { useUserProfile } from "@/hooks/useUser";
+import { fetchTeacherDashboardStats } from "@/services/fetcher/teacher/dashboard";
+import { useActivityManagerStore } from "@/stores/activityManager";
 import { parseProfileInfo } from "@/utils";
 
 export default function HomeScreen() {
-	const { data, isLoading, isError, refresh, isRefreshing } =
-		useAsyncData(async () => {
-			const [profile, stats] = await Promise.all([
-				getTeacherProfile(),
-				getAllStudentStats(),
-			]);
+	const { setActivityType } = useActivityManagerStore();
+	const { navigateTo } = useNavigation();
 
-			return { profile, stats };
-		}, []);
+	const userProfile = useUserProfile("teacher");
+
+	const { data, isLoading, isError, refresh, errorMessage, isRefreshing } =
+		useAsyncData(
+			async (profile) =>
+				profile && { stats: await fetchTeacherDashboardStats(), profile },
+
+			userProfile,
+		);
 
 	return (
 		<Screen
@@ -41,7 +44,10 @@ export default function HomeScreen() {
 			isLoading={isLoading}
 			isError={isError}
 			data={data}
+			errorMessage={errorMessage}
 			onRefresh={refresh}
+			onTryAgain={refresh}
+			requiredInternet
 			isRefreshing={isRefreshing}
 			contentComponent={({
 				stats: {
@@ -115,33 +121,30 @@ export default function HomeScreen() {
 						</HStack>
 					</ListSection>
 
-					<ListSection title="Aktivitas terbaru">
+					<ListSection title="Kelola aktivitas">
 						<VStack space="md">
 							<ActionTile
-								title="Pengumpulan Sampah"
-								description="Kumpulkan dan catat sampah organik atau anorganik"
+								title="Verifikasi berat sampah"
+								description="Periksa dan konfirmasi berat sampah siswa"
 								icon={Trash2}
 								variant="solid"
 								thumbnailPosition="right"
-								onPress={() => {}}
+								onPress={() => {
+									setActivityType("waste-bank");
+									navigateTo("/(teacher)/activity-manager/activity-list");
+								}}
 							/>
 
 							<ActionTile
-								title="Perawatan Taman"
-								description="Catat kegiatan merawat tanaman dan taman sekolah"
-								icon={Sprout}
-								variant="solid"
-								thumbnailPosition="right"
-								onPress={() => {}}
-							/>
-
-							<ActionTile
-								title="Kegiatan Kompos"
-								description="Catat partisipasi kegiatan kompos bulanan kelas"
+								title="Kelola kegiatan kompos"
+								description="Pantau dan kelola kegiatan kompos kelas"
 								icon={Recycle}
 								variant="solid"
 								thumbnailPosition="right"
-								onPress={() => {}}
+								onPress={() => {
+									setActivityType("compost-activity");
+									navigateTo("/(teacher)/activity-manager/activity-list");
+								}}
 							/>
 						</VStack>
 					</ListSection>

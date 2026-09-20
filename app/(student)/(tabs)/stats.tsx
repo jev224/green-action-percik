@@ -26,23 +26,29 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { VStack } from "@/components/ui/vstack";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useThemeColors } from "@/hooks/useThemeColors";
+import { useUserProfile } from "@/hooks/useUser";
 import {
-	getStudentStatistics,
-	getStudentTargets,
-} from "@/services/student/statistics";
-
+	fetchStudentStatistics,
+	fetchStudentTargets,
+} from "@/services/fetcher/shared/student";
 import { calculatePercentage } from "@/utils";
 
 export default function StatsiticScreen() {
-	const { data, isLoading, isError, refresh, isRefreshing } =
-		useAsyncData(async () => {
+	const userProfile = useUserProfile("student");
+
+	const { data, isLoading, isError, refresh, isRefreshing, errorMessage } =
+		useAsyncData(async (profile) => {
+			if (!profile) {
+				return;
+			}
+
 			const [stats, targets] = await Promise.all([
-				getStudentStatistics(),
-				getStudentTargets(),
+				fetchStudentStatistics(profile.user_id),
+				fetchStudentTargets(profile.user_id),
 			]);
 
 			return { stats, targets };
-		}, []);
+		}, userProfile);
 
 	const { colors, scheme } = useThemeColors();
 	const isDark = scheme === "dark";
@@ -53,8 +59,11 @@ export default function StatsiticScreen() {
 			data={data}
 			isLoading={isLoading}
 			isError={isError}
-			onRefresh={refresh}
 			isRefreshing={isRefreshing}
+			errorMessage={errorMessage}
+			onTryAgain={refresh}
+			onRefresh={refresh}
+			requiredInternet
 			contentComponent={({
 				stats: {
 					wasteWeightTotal,

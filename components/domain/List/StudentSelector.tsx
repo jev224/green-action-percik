@@ -1,14 +1,16 @@
-import { Plus } from "lucide-react-native";
+import { Plus, XIcon } from "lucide-react-native";
 import { useCallback, useMemo, useState } from "react";
 import { type LayoutChangeEvent, View } from "react-native";
-
 import { useResolveClassNames } from "uniwind";
 import {
 	IconButton,
 	SearchField,
 	SmoothSelectPortal,
+	type SortFieldOption,
 	SortSelect,
+	type SortState,
 } from "@/components/primitives";
+import ErrorState from "@/components/primitives/Feedback/ErrorState";
 import {
 	Avatar,
 	AvatarFallbackText,
@@ -24,32 +26,85 @@ import { HStack } from "@/components/ui/hstack";
 import { CheckIcon } from "@/components/ui/icon";
 import { Pressable } from "@/components/ui/pressable";
 import { Select } from "@/components/ui/select";
+import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { useStudents } from "@/hooks/useStudents";
+import { useFuzzySearch } from "@/hooks/useFuzzySearch";
+import type { StudentSortField } from "@/hooks/useStudents";
+import type { fetchStudentByClass } from "@/services/fetcher/shared/student";
 import { StudentListItem } from "../student/StudentListItem";
 import type { StudentData } from "../student/types";
 
+export const STUDENT_SORT_OPTIONS: SortFieldOption<StudentSortField>[] = [
+	{
+		field: "name",
+		label: "Nama",
+		ascLabel: "Nama A-Z",
+		descLabel: "Nama Z-A",
+	},
+	{
+		field: "grade",
+		label: "Kelas",
+		ascLabel: "Kelas A-Z",
+		descLabel: "Kelas Z-A",
+	},
+];
+
 interface StudentMultiSelectProps {
 	onSelectionChange?: (selected: StudentData[]) => void;
+	onRefresh?: () => void;
+	isLoading?: boolean;
+	errorMessage?: string;
+	studentsRes?: Awaited<ReturnType<typeof fetchStudentByClass>> | null;
 }
 
 export function StudentMultiSelect({
 	onSelectionChange,
+	onRefresh,
+	isLoading,
+	errorMessage,
+	studentsRes,
 }: StudentMultiSelectProps) {
 	const [isPortalOpen, setPortalOpen] = useState(false);
 	const [isSelectAll, setSelectAll] = useState(false);
 	const [manualSelection, setManualSelection] = useState<StudentData[]>([]);
 
-	const {
-		searchQuery,
-		setSearchQuery,
-		sortOptions,
-		sort,
-		setSort,
-		results,
-		unfilteredResults,
-	} = useStudents({ dummy: true });
+	const [searchQuery, setSearchQuery] = useState("");
+	const [sort, setSort] = useState<SortState<StudentSortField> | null>(null);
+
+	const unfilteredResults = useMemo(
+		() =>
+			(studentsRes ?? []).map((s) => ({
+				id: s.id,
+				user_id: s.user_id,
+				name: s.name,
+				photoUrl: s.photoUrl,
+				grade: `Kelas ${s.class.grade}`,
+				point: 0,
+			})),
+		[studentsRes],
+	);
+
+	const searched = useFuzzySearch(unfilteredResults, ["name"], searchQuery);
+
+	const filtered = useMemo(() => {
+		if (!sort) return searched;
+
+		const { field, direction } = sort;
+
+		let sorted = searched;
+
+		switch (field) {
+			case "name":
+				sorted = [...searched].sort((a, b) => a.name.localeCompare(b.name));
+				break;
+			case "grade":
+				sorted = [...searched].sort((a, b) => a.grade.localeCompare(b.grade));
+				break;
+		}
+
+		return direction === "asc" ? sorted : sorted.reverse();
+	}, [searched, sort]);
 
 	const handlePressStudent = (student: StudentData) => {
 		const source = isSelectAll ? unfilteredResults : manualSelection;
@@ -111,7 +166,11 @@ export function StudentMultiSelect({
 				<VStack className="px-2" space="lg">
 					<HStack space="sm">
 						<SearchField value={searchQuery} onChangeText={setSearchQuery} />
-						<SortSelect options={sortOptions} value={sort} onChange={setSort} />
+						<SortSelect
+							options={STUDENT_SORT_OPTIONS}
+							value={sort}
+							onChange={setSort}
+						/>
 					</HStack>
 
 					<HStack className="justify-between items-center px-1 -mb-2">
@@ -135,20 +194,58 @@ export function StudentMultiSelect({
 						</Text>
 					</HStack>
 
-					<FlatList
-						data={results}
-						style={{ overflow: "visible" }}
-						keyExtractor={(student) => student.user_id}
-						renderItem={({ item }) => (
-							<StudentListItem
-								student={item}
-								className="mb-2"
-								selected={hasItem(item)}
-								onPress={handlePressStudent}
-								noOffset
-							/>
-						)}
-					/>
+					<View>
+						<View className="absolute inset-0 z-10">
+							{errorMessage && !isLoading && (
+								<View className="absolute inset-0">
+									<ErrorState
+										icon={XIcon}
+										message={errorMessage}
+										onRetry={onRefresh}
+									/>
+								</View>
+							)}
+
+							{isLoading && (
+								<VStack space="md" className="mt-4">
+									{Array.from({ length: 12 }).map((_, index) => (
+										<HStack
+											// biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton placeholders have no identity or state
+											key={index}
+											space="lg"
+											className="w-full items-center mb-2"
+										>
+											<Skeleton className="h-16 w-16 rounded-full" />
+
+											<VStack space="sm">
+												<SkeletonText className="h-5 w-48" />
+												<SkeletonText className="h-5 w-32" />
+											</VStack>
+										</HStack>
+									))}
+								</VStack>
+							)}
+						</View>
+
+						<FlatList
+							data={filtered}
+							style={{
+								overflow: "visible",
+								opacity: isLoading || errorMessage ? 0 : 255,
+								zIndex: isLoading || errorMessage ? 0 : 100,
+							}}
+							keyExtractor={(student) => student.user_id}
+							renderItem={({ item }) => (
+								<StudentListItem
+									student={item}
+									className="mb-2"
+									selected={hasItem(item)}
+									onPress={handlePressStudent}
+									noOffset
+								/>
+							)}
+						/>
+					</View>
 				</VStack>
 			</SmoothSelectPortal>
 		</Select>
@@ -230,7 +327,7 @@ function SelectedAvatarsPreview({
 									}}
 									className="border-4 border-background size-15"
 								>
-									<AvatarImage src={student.photo_url} />
+									<AvatarImage src={student.photoUrl} />
 									<AvatarFallbackText>{student.name}</AvatarFallbackText>
 								</Avatar>
 							))}

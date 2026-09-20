@@ -4,5 +4,5 @@ export type StudentData = {
 	name: string;
 	grade: string;
 	point: number;
-	photo_url?: string;
+	photoUrl?: string;
 };

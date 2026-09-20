@@ -44,6 +44,9 @@ export default function LessonsScreen() {
 		results,
 		refresh,
 		isRefreshing,
+		errorMessage,
+		sortDefaultField,
+		sortDefaultDirection,
 	} = useLessons();
 
 	const handleEdit = useCallback(
@@ -70,15 +73,25 @@ export default function LessonsScreen() {
 		<Screen
 			isLoading={isLoading}
 			isError={isError}
+			relativeErrorPos
 			onRefresh={refresh}
 			isRefreshing={isRefreshing}
+			errorMessage={errorMessage}
+			onTryAgain={refresh}
+			requiredInternet
 			headerComponent={
 				<>
 					<ScreenHeader title="Kelola Materi" />
 
 					<HStack space="sm">
 						<SearchField value={searchQuery} onChangeText={setSearchQuery} />
-						<SortSelect options={sortOptions} value={sort} onChange={setSort} />
+						<SortSelect
+							options={sortOptions}
+							value={sort}
+							onChange={setSort}
+							defaultField={sortDefaultField}
+							defaultDirection={sortDefaultDirection}
+						/>
 					</HStack>
 				</>
 			}

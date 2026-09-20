@@ -4,20 +4,21 @@ import { Box } from "@/components/ui/box";
 import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
 import { VStack } from "@/components/ui/vstack";
 
-import { useAsyncData } from "@/hooks/useAsyncData";
+import { useUserProfile } from "@/hooks/useUser";
 
-import { getStudentProfile } from "@/services/student/profile";
 import { parseProfileInfo } from "@/utils";
 
 export default function ProfileScreen() {
-	const { data, isLoading, isError } = useAsyncData(getStudentProfile, []);
+	const { profile, isError, isLoading, revalidate } = useUserProfile("student");
 
 	return (
 		<Screen
 			isLoading={isLoading}
 			isError={isError}
-			data={data}
-			contentComponent={({ name, class: classData, nis }) => (
+			data={profile}
+			onTryAgain={revalidate}
+			requiredInternet
+			contentComponent={({ name, class: classData, nis, photoUrl }) => (
 				<>
 					<ProfileHeader
 						name={name}
@@ -26,6 +27,7 @@ export default function ProfileScreen() {
 							info: parseProfileInfo({ role: "student", ...classData }),
 							nis,
 						}}
+						imageSource={{ uri: photoUrl }}
 					/>
 
 					<ProfileList />

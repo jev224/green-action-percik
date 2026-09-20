@@ -41,9 +41,12 @@ export default function LearningScreen() {
 		setSort,
 		isLoading,
 		isError,
+		errorMessage,
 		results,
 		refresh,
 		isRefreshing,
+		sortDefaultDirection,
+		sortDefaultField,
 	} = useLessons();
 
 	const handleView = useCallback(
@@ -67,15 +70,25 @@ export default function LearningScreen() {
 		<Screen
 			isLoading={isLoading}
 			isError={isError}
-			onRefresh={refresh}
 			isRefreshing={isRefreshing}
+			errorMessage={errorMessage}
+			relativeErrorPos
+			onTryAgain={refresh}
+			onRefresh={refresh}
+			requiredInternet
 			headerComponent={
 				<>
 					<ScreenHeader title="Belajar" />
 
 					<HStack space="sm">
 						<SearchField value={searchQuery} onChangeText={setSearchQuery} />
-						<SortSelect options={sortOptions} value={sort} onChange={setSort} />
+						<SortSelect
+							options={sortOptions}
+							value={sort}
+							onChange={setSort}
+							defaultField={sortDefaultField}
+							defaultDirection={sortDefaultDirection}
+						/>
 					</HStack>
 				</>
 			}

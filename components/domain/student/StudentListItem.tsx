@@ -27,7 +27,7 @@ export const StudentListItem = memo(function StudentListItem({
 	className,
 	noOffset,
 }: StudentListItemProps) {
-	const { name, grade, point, photo_url } = student;
+	const { name, grade, point, photoUrl } = student;
 
 	const containerStyle = useResolveClassNames(
 		`h-24 items-center justify-center rounded-lg ${
@@ -89,7 +89,7 @@ export const StudentListItem = memo(function StudentListItem({
 									selected={selected}
 									name={name}
 									size="sm"
-									imageSource={photo_url ? { uri: photo_url } : undefined}
+									imageSource={photoUrl ? { uri: photoUrl } : undefined}
 								/>
 
 								<Box className="flex-1 w-[80%]">
@@ -119,7 +119,7 @@ export const StudentListItem = memo(function StudentListItem({
 							selected={selected}
 							name={name}
 							size="sm"
-							imageSource={photo_url ? { uri: photo_url } : undefined}
+							imageSource={photoUrl ? { uri: photoUrl } : undefined}
 						/>
 
 						<Box className="flex-1">

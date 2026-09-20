@@ -15,6 +15,31 @@ export function getCurrentMonthDateRange() {
 	};
 }
 
+export function getDayRange(date: Date = new Date()) {
+	const startOfDay = new Date(date);
+	startOfDay.setHours(0, 0, 0, 0);
+
+	const endOfDay = new Date(startOfDay);
+	endOfDay.setDate(startOfDay.getDate() + 1);
+
+	return { startOfDay, endOfDay };
+}
+
+export function getWeekRange(date: Date = new Date()) {
+	const day = date.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+	const diffToMonday = day === 0 ? -6 : 1 - day;
+
+	const startOfWeek = new Date(date);
+	startOfWeek.setDate(date.getDate() + diffToMonday);
+	startOfWeek.setHours(0, 0, 0, 0);
+
+	const endOfWeek = new Date(startOfWeek);
+	endOfWeek.setDate(startOfWeek.getDate() + 7);
+	endOfWeek.setHours(0, 0, 0, 0);
+
+	return { startOfWeek, endOfWeek };
+}
+
 export const calculatePercentage = (value: number, target: number) => {
 	return Math.min((value / target) * 100, 100);
 };
@@ -33,7 +58,7 @@ export const truncateText = (text: string, maxLength: number) => {
 	return `${text.slice(0, maxLength - 3)}...`;
 };
 
-type ProfileInfo =
+export type ProfileInfo =
 	| {
 			role: "teacher";
 			major?: string;
@@ -45,7 +70,15 @@ type ProfileInfo =
 			sub_major?: string;
 	  };
 
-export const parseProfileInfo = (profile: ProfileInfo) => {
+export const parseProfileInfo = (profile: ProfileInfo, flat = false) => {
+	if (flat) {
+		if (profile.role === "teacher") {
+			return profile.major ? `GURU_${profile.major}` : "";
+		}
+
+		return `${profile.grade} ${profile.major}${profile.sub_major ? `-${profile.sub_major}` : ""}`;
+	}
+
 	if (profile.role === "teacher") {
 		return `${profile.major ? `${profile.major} (Admin)` : "Admin"} • GURU`;
 	}

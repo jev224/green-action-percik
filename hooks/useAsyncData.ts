@@ -1,25 +1,47 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import type {
+	ProfileByRole,
+	UserRole,
+} from "@/services/fetcher/shared/profile";
+import { ServerError } from "@/services/ServerError";
+import type { useUserProfile } from "./useUser";
 
 interface UseAsyncDataResult<T> {
 	data: T | null;
 	isLoading: boolean;
 	isError: boolean;
 	error: unknown;
+	errorMessage: string;
 	refetch: () => void;
 	isRefreshing: boolean;
 	refresh: () => Promise<void>;
 }
 
-export function useAsyncData<T>(
-	fetcher: () => Promise<T>,
+type UserProfileReturn<R extends UserRole> = ReturnType<
+	typeof useUserProfile<R>
+>;
+
+export function useAsyncData<T, R extends UserRole = UserRole>(
+	fetcher: (profile?: ProfileByRole<R> | null) => Promise<T>,
+	userProfileHook?: UserProfileReturn<R>,
 	deps: React.DependencyList = [],
 ): UseAsyncDataResult<T> {
 	const [data, setData] = useState<T | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isError, setIsError] = useState(false);
 	const [error, setError] = useState<unknown>(null);
+	const [errorMessage, setErrorMessage] = useState("");
 	const [reloadIndex, setReloadIndex] = useState(0);
 	const [isRefreshing, setIsRefreshing] = useState(false);
+
+	const profile = userProfileHook?.profile;
+	const profileError = !!userProfileHook?.isError;
+	const profileLoading = !!userProfileHook?.isLoading;
+
+	const userProfileRef = useRef(userProfileHook);
+	useEffect(() => {
+		userProfileRef.current = userProfileHook;
+	});
 
 	// Tracks overall mount state for the standalone `refresh()` below,
 	// which runs outside the main effect's own isMounted closure.
@@ -42,19 +64,33 @@ export function useAsyncData<T>(
 		let isMounted = true;
 
 		const run = async () => {
-			setIsLoading(true);
-			setIsError(false);
-			setError(null);
-
 			try {
-				const result = await fetcher();
+				if (userProfileRef.current?.isError) {
+					throw new Error();
+				}
+
+				setIsLoading(true);
+				setIsError(false);
+				setError(null);
+
+				if (userProfileRef.current?.isLoading) return;
+				if (userProfileRef.current && !userProfileRef.current.profile) return;
+
+				const result = await fetcher(userProfileRef.current?.profile);
 				if (isMounted) {
 					setData(result);
 				}
 			} catch (err) {
 				if (isMounted) {
+					if (err instanceof ServerError) {
+						setErrorMessage(err.ui_message);
+					} else {
+						setErrorMessage("Halaman ini tidak dapat dimuat");
+					}
+
 					setIsError(true);
 					setError(err);
+					setData(null);
 				}
 			} finally {
 				if (isMounted) {
@@ -69,7 +105,7 @@ export function useAsyncData<T>(
 			isMounted = false;
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [...deps, reloadIndex]);
+	}, [...deps, reloadIndex, profile, profileError, profileLoading]);
 
 	const refetch = useCallback(() => {
 		setReloadIndex((i) => i + 1);
@@ -84,7 +120,14 @@ export function useAsyncData<T>(
 		setError(null);
 
 		try {
-			const result = await fetcherRef.current();
+			if (userProfileRef.current?.isError) {
+				await userProfileRef.current?.revalidate?.();
+				return;
+			}
+
+			const result = await fetcherRef.current(userProfileRef.current?.profile);
+			if (userProfileRef.current && !userProfileRef.current.profile) return;
+
 			if (isMountedRef.current) {
 				setData(result);
 			}
@@ -100,5 +143,14 @@ export function useAsyncData<T>(
 		}
 	}, []);
 
-	return { data, isLoading, isError, error, refetch, isRefreshing, refresh };
+	return {
+		data,
+		isLoading,
+		isError,
+		error,
+		errorMessage,
+		refetch,
+		isRefreshing,
+		refresh,
+	};
 }

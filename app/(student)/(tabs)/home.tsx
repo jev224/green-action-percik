@@ -30,23 +30,24 @@ import { images } from "@/constants/Assets";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useNavigation } from "@/hooks/useNavigation";
 import { useThemeColors } from "@/hooks/useThemeColors";
-import { getStudentProfile } from "@/services/student/profile";
-import { getStudentStatistics } from "@/services/student/statistics";
-
+import { useUserProfile } from "@/hooks/useUser";
+import { fetchStudentStatistics } from "@/services/fetcher/shared/student";
 import { parseProfileInfo } from "@/utils";
 
 export default function HomeScreen() {
 	const { navigateTo } = useNavigation();
 
-	const { data, isLoading, isError, refresh, isRefreshing } =
-		useAsyncData(async () => {
-			const [profile, stats] = await Promise.all([
-				getStudentProfile(),
-				getStudentStatistics(),
-			]);
+	const userProfile = useUserProfile("student");
 
-			return { profile, stats };
-		}, []);
+	const { data, isLoading, isError, errorMessage, refresh, isRefreshing } =
+		useAsyncData(
+			async (profile) =>
+				profile && {
+					profile,
+					stats: await fetchStudentStatistics(profile.user_id),
+				},
+			userProfile,
+		);
 
 	const { colors, scheme } = useThemeColors();
 	const isDark = scheme === "dark";
@@ -57,16 +58,20 @@ export default function HomeScreen() {
 			data={data}
 			isLoading={isLoading}
 			isError={isError}
-			onRefresh={refresh}
 			isRefreshing={isRefreshing}
+			errorMessage={errorMessage}
+			onRefresh={refresh}
+			onTryAgain={refresh}
+			requiredInternet
 			contentComponent={({
 				stats: { wasteWeightTotal, gardenActivityCount, compostActivityCount },
-				profile: { name, class: classData },
+				profile: { name, class: classData, photoUrl },
 			}) => (
 				<>
 					<Greeting
 						name={name}
 						info={parseProfileInfo({ role: "student", ...classData })}
+						imageSource={{ uri: photoUrl }}
 					/>
 
 					<HomeCarousel

@@ -421,6 +421,7 @@ export default function ComponentCatalogScreen() {
 							console.log("Selected students:", selected);
 							// e.g. [{ user_id: "1", name: "Haruto Sato", grade: "10A", point: 85 }]
 						}}
+						studentsRes={[]}
 					/>
 				</VStack>
 			}

@@ -5,6 +5,7 @@ import {
 	BottomPanel,
 	Button,
 	ListSection,
+	Modal,
 	Screen,
 	ScreenHeader,
 	TextField,
@@ -18,7 +19,8 @@ import {
 import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
 import { useNavigation } from "@/hooks/useNavigation";
-import { changePassword } from "@/services/user";
+import { changePassword } from "@/services/fetcher/shared/password";
+import { checkConnection, sleepAsync } from "@/utils";
 
 export default function ChangePasswordScreen() {
 	const { goBack } = useNavigation();
@@ -26,6 +28,7 @@ export default function ChangePasswordScreen() {
 	const [oldPassword, setOldPassword] = useState("");
 	const [newPassword, setNewPassword] = useState("");
 	const [confirmation, setConfirmation] = useState("");
+	const [networkDialogShown, setNetworkDialogShown] = useState(false);
 
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
@@ -33,6 +36,14 @@ export default function ChangePasswordScreen() {
 	const handleSubmit = async () => {
 		setErrorMessage(null);
 		setIsLoading(true);
+
+		const isOnline = await checkConnection();
+
+		if (!isOnline) {
+			await sleepAsync(500); // Make it feels waiting for better ux
+			setNetworkDialogShown(true);
+			return;
+		}
 
 		const result = await changePassword(oldPassword, newPassword, confirmation);
 
@@ -52,17 +63,32 @@ export default function ChangePasswordScreen() {
 				<ScreenHeader title="Ubah Kata Sandi" leftComponent={<BackButton />} />
 			}
 			overlayComponent={
-				<BottomPanel variant="ghost">
-					<HStack space="md">
-						<Button
-							label="Konfirmasi"
-							fill
-							size="cta"
-							onPress={handleSubmit}
-							isDisabled={isLoading}
-						/>
-					</HStack>
-				</BottomPanel>
+				<>
+					<Modal
+						isOpen={networkDialogShown}
+						onClose={() => setNetworkDialogShown(false)}
+						title="Tidak Ada Koneksi Internet"
+						description="Periksa koneksi internet kamu lalu coba lagi"
+						contentComponent={
+							<Button
+								label="Oke"
+								onPress={() => setNetworkDialogShown(false)}
+							/>
+						}
+					/>
+
+					<BottomPanel variant="ghost">
+						<HStack space="md">
+							<Button
+								label="Konfirmasi"
+								fill
+								size="cta"
+								onPress={handleSubmit}
+								isDisabled={isLoading}
+							/>
+						</HStack>
+					</BottomPanel>
+				</>
 			}
 			contentComponent={
 				<FormControl isInvalid={!!errorMessage}>

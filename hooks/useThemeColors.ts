@@ -12,7 +12,6 @@ export const useThemeColors = () => {
 	useEffect(() => {
 		const subscription = Appearance.addChangeListener(({ colorScheme }) => {
 			setSystemScheme(colorScheme === "dark" ? "dark" : "light");
-			console.log(colorScheme);
 		});
 
 		return () => subscription.remove();

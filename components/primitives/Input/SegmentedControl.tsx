@@ -78,7 +78,7 @@ function SegmentedControlButton<T extends string>({
 		>
 			<Animated.View
 				style={animatedStyle}
-				className="flex-1 items-center justify-center rounded-md py-4 px-4 border border-border overflow-hidden bg-muted"
+				className="items-center justify-center rounded-md py-4 px-4 border border-border overflow-hidden bg-muted"
 			>
 				<EaseView
 					animate={{

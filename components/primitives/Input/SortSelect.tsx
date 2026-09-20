@@ -1,6 +1,6 @@
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
 import { ArrowDownWideNarrow } from "lucide-react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAnimatedStyle, withSpring } from "react-native-reanimated";
 
 import { AnimatedSelectTrigger } from "@/components/animation/animatedComponent";
@@ -29,6 +29,8 @@ interface SortSelectProps<TField extends string> {
 	value: SortState<TField> | null;
 	onChange: (value: SortState<TField> | null) => void;
 	noneLabel?: string;
+	defaultField?: TField;
+	defaultDirection?: SortDirection;
 }
 
 const stateToValue = <TField extends string>(
@@ -50,10 +52,19 @@ export function SortSelect<TField extends string>({
 	value,
 	onChange,
 	noneLabel = "Tanpa urutan",
+	defaultField,
+	defaultDirection = "desc",
 }: SortSelectProps<TField>) {
 	const { isPressing, bind } = usePressFeedback(1);
 
-	const currentValue = stateToValue(value);
+	const defaultOption = options.find((o) => o.field === defaultField);
+	const otherOptions = options.filter((o) => o.field !== defaultField);
+
+	const currentValue = value
+		? stateToValue(value)
+		: defaultOption
+			? `${defaultOption.field}-${defaultDirection}`
+			: "none";
 
 	const triggerAnimatedStyle = useAnimatedStyle(() => ({
 		transform: [
@@ -63,9 +74,16 @@ export function SortSelect<TField extends string>({
 		],
 	}));
 
+	useEffect(() => {
+		if (defaultField)
+			onChange({ direction: defaultDirection, field: defaultField });
+	}, [defaultField]);
+
 	const [isOpen, setIsOpen] = useState(false);
 
-	const isActive = currentValue !== "none";
+	const isActive =
+		!!value &&
+		!(value.field === defaultField && value.direction === defaultDirection);
 
 	return (
 		<Select
@@ -90,15 +108,33 @@ export function SortSelect<TField extends string>({
 			</AnimatedSelectTrigger>
 
 			<SmoothSelectPortal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-				<SelectItem className="py-4" label={noneLabel} value="none" />
+				{defaultOption ? (
+					<>
+						<SelectItem
+							className="py-4"
+							label={defaultOption.ascLabel ?? `${defaultOption.label} (Naik)`}
+							value={`${defaultOption.field}-asc`}
+						/>
+						<SelectItem
+							className="py-4"
+							label={
+								defaultOption.descLabel ?? `${defaultOption.label} (Turun)`
+							}
+							value={`${defaultOption.field}-desc`}
+						/>
+					</>
+				) : (
+					<SelectItem className="py-4" label={noneLabel} value="none" />
+				)}
 
-				{options.map(({ field, label, ascLabel, descLabel }) => (
+				{otherOptions.map(({ field, label, ascLabel, descLabel }) => (
 					<React.Fragment key={field}>
 						<SelectItem
 							className="py-4"
 							label={ascLabel ?? `${label} (Naik)`}
 							value={`${field}-asc`}
 						/>
+
 						<SelectItem
 							className="py-4"
 							label={descLabel ?? `${label} (Turun)`}

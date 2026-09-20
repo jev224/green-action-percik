@@ -2,41 +2,57 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { Button, Modal } from "@/components/primitives";
 import { useNavigation } from "@/hooks/useNavigation";
-import { getRole } from "@/services/auth";
-import { type UserRole, useUserStore } from "@/stores/user";
+import {
+	getProfileByRole,
+	getUserData,
+} from "@/services/fetcher/shared/profile";
+import { ServerError } from "@/services/ServerError";
+import { useUserStore } from "@/stores/userStore";
 import { checkConnection } from "@/utils";
 
 export default function Index() {
-	const { navigateToHome } = useNavigation();
-	const { updateProfile } = useUserStore.getState();
+	const { setUserStore, setRoleStore } = useUserStore();
 
-	const [role, setRole] = useState<UserRole | null>(null);
-	const [loading, setLoading] = useState(true);
-
+	const [errorMessage, setErrorMessage] = useState("");
 	const [showNetworkDialog, setShowNetworkDialog] = useState(false);
 
-	const loadRole = async () => {
-		setLoading(true);
+	const { navigateToHome, resetTo } = useNavigation();
 
+	const loadRole = async () => {
 		const isOnline = await checkConnection();
 
 		if (!isOnline) {
 			setShowNetworkDialog(true);
-			setLoading(false);
 			return;
 		}
 
 		try {
-			const fetchedRole = await getRole();
-			setRole(fetchedRole);
-		} finally {
-			setLoading(false);
+			const data = await getUserData();
+
+			if (!data) {
+				resetTo("/(auth)/login");
+				return;
+			}
+
+			const { id, role } = data;
+			const profile = await getProfileByRole(id, role);
+
+			setUserStore(profile);
+			setRoleStore(role);
+
+			navigateToHome();
+		} catch (e) {
+			if (e instanceof ServerError) {
+				setErrorMessage(e.ui_message);
+			} else {
+				setErrorMessage("Terjadi kesalahan yang tak terduga, mohon coba lagi!");
+			}
 		}
 	};
 
 	const handleRetry = () => {
-		setLoading(true);
 		setShowNetworkDialog(false);
+		setErrorMessage("");
 		setTimeout(loadRole, 2000);
 	};
 
@@ -44,32 +60,25 @@ export default function Index() {
 		loadRole();
 	}, []);
 
-	useEffect(() => {
-		if (!loading && !showNetworkDialog) {
-			updateProfile({ role });
-			navigateToHome(role);
-		}
-	}, [loading, showNetworkDialog, role]);
-
-	if (loading || showNetworkDialog) {
-		return (
-			<>
-				<View className="bg-background flex-1" />
-
-				<Modal
-					isOpen={showNetworkDialog}
-					onClose={handleRetry}
-					title="Tidak Ada Koneksi Internet"
-					description="Periksa koneksi internet kamu lalu coba lagi"
-					contentComponent={<Button label="Oke" onPress={handleRetry} />}
-				/>
-			</>
-		);
-	}
-
 	return (
 		<View className="bg-background w-full flex-1 justify-center items-center">
 			<ActivityIndicator />
+
+			<Modal
+				isOpen={errorMessage !== ""}
+				onClose={handleRetry}
+				title="Terjadi kesalahan!"
+				description={errorMessage}
+				contentComponent={<Button label="Oke" onPress={handleRetry} />}
+			/>
+
+			<Modal
+				isOpen={showNetworkDialog}
+				onClose={handleRetry}
+				title="Tidak Ada Koneksi Internet"
+				description="Periksa koneksi internet kamu lalu coba lagi"
+				contentComponent={<Button label="Oke" onPress={handleRetry} />}
+			/>
 		</View>
 	);
 }

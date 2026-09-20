@@ -1,3 +1,4 @@
+export { ActivitySubmittedScreen } from "./feedback/AlreadySubmittedScreen";
 export { ProfileList } from "./list/ProfileList";
 export { StudentMultiSelect } from "./list/StudentSelector";
 export { BackButton } from "./nav/BackButton";

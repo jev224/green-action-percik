@@ -34,7 +34,8 @@ export default function StudentsScreen() {
 		isLoading,
 		refresh,
 		isRefreshing,
-	} = useStudents({ dummy: true });
+		errorMessage,
+	} = useStudents();
 
 	const handlePressStudent = useCallback(
 		(student: StudentData) => {
@@ -49,7 +50,11 @@ export default function StudentsScreen() {
 			isLoading={isLoading}
 			isError={isError}
 			onRefresh={refresh}
+			relativeErrorPos
 			isRefreshing={isRefreshing}
+			errorMessage={errorMessage}
+			onTryAgain={refresh}
+			requiredInternet
 			headerComponent={
 				<>
 					<ScreenHeader title="Kelola Siswa" />
