@@ -54,13 +54,37 @@ export async function updateWasteBank(id: number, patch: WasteBankPatch) {
 }
 
 export async function deleteWasteBank(id: number) {
-  const { error } = await supabase.from("waste_banks").delete().eq("id", id);
+  const { data: activities, error: selectError } = await supabase
+    .from("waste_banks")
+    .select("photo")
+    .eq("id", id);
 
-  if (error) {
+  if (selectError) {
     throw new ServerError({
       status: 500,
-      message: `Failed to delete waste bank: ${error.message}`,
-      ui_message: "Daftar bank sampah tidak bisa dihapus. Coba lagi ya",
+      message: `Failed to find selected waste_banks activities: ${selectError.message}`,
+      ui_message: `Bank sampah belum bisa dihapus. Coba lagi ya`,
+    });
+  }
+
+  const photos = (activities ?? [])
+    .map(({ photo }) => photo)
+    .filter((photo): photo is string => Boolean(photo));
+
+  if (photos.length > 0) {
+    await activityPhotos.remove(photos);
+  }
+
+  const { error: deleteError } = await supabase
+    .from("waste_banks")
+    .delete()
+    .eq("id", id);
+
+  if (deleteError) {
+    throw new ServerError({
+      status: 500,
+      message: `Failed to delete selected waste_banks activities: ${deleteError.message}`,
+      ui_message: "Bank sampah tidak bisa dihapus. Coba lagi ya",
     });
   }
 }
