@@ -6,9 +6,8 @@ import {
 	getProfileByRole,
 	getUserData,
 } from "@/services/fetcher/shared/profile";
-import { ServerError } from "@/services/ServerError";
 import { useUserStore } from "@/stores/userStore";
-import { checkConnection } from "@/utils";
+import { checkConnection, normalizeError } from "@/utils";
 
 export default function Index() {
 	const { setUserStore, setRoleStore } = useUserStore();
@@ -42,11 +41,8 @@ export default function Index() {
 
 			navigateToHome();
 		} catch (e) {
-			if (e instanceof ServerError) {
-				setErrorMessage(e.ui_message);
-			} else {
-				setErrorMessage("Terjadi kesalahan yang tak terduga, mohon coba lagi!");
-			}
+			const { uiMessage } = normalizeError(e, "Initial Screen");
+			setErrorMessage(uiMessage);
 		}
 	};
 

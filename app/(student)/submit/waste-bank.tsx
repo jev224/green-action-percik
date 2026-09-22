@@ -1,25 +1,19 @@
 import { Leaf, Recycle } from "lucide-react-native";
-import { useEffect, useState } from "react";
-import { ActivitySubmittedScreen, BackButton } from "@/components/domain";
+import { useState } from "react";
+import { ActivitySubmissionScreen } from "@/components/domain";
 import {
-	BottomPanel,
-	Button,
 	ListSection,
 	PhotoPicker,
-	Screen,
-	ScreenHeader,
 	SegmentedControl,
 	Spacer,
 } from "@/components/primitives";
-import { useResultScreen } from "@/hooks/useResultScreen";
-import { useShowToast } from "@/hooks/useShowToast";
+import { useActivitySubmission } from "@/hooks/useActivitySubmission";
 import { useUserProfile } from "@/hooks/useUser";
 import {
 	deleteSubmittedWasteActivity,
 	isWasteActivitySubmitted,
 	submitWasteActivity,
 } from "@/services/fetcher/students/submission";
-import { ServerError } from "@/services/ServerError";
 
 export default function WasteSubmissionScreen() {
 	const { profile } = useUserProfile("student");
@@ -27,158 +21,89 @@ export default function WasteSubmissionScreen() {
 	const [wasteType, setWasteType] = useState("organic");
 	const [activityPhotoUri, setActivityPhotoUri] = useState<string | null>(null);
 
-	const [isLoading, setLoading] = useState<boolean>(false);
-	const [initialLoading, setInitialLoading] = useState<boolean>(false);
-	const [alreadySubmitted, setSubmitted] = useState<boolean>(false);
+	const {
+		initialLoading,
+		isLoading,
+		submittedInfo,
+		handleDelete,
+		handleSubmit,
+	} = useActivitySubmission(
+		{
+			checkEnabled: !!profile,
 
-	const showToast = useShowToast();
-	const { showResult } = useResultScreen();
+			checkSubmitted: async () => {
+				if (!profile) throw new Error("Profile not loaded");
+				return await isWasteActivitySubmitted(profile.user_id);
+			},
 
-	const isFulfilled = activityPhotoUri;
+			deleteSubmission: async () => {
+				if (!profile) throw new Error("Profile not loaded");
+				await deleteSubmittedWasteActivity(profile.user_id);
+			},
 
-	const handleSubmit = async () => {
-		if (!isFulfilled) {
-			showToast({
-				title: "Yuk lengkapi semua kolom yang wajib diisi",
-			});
-			return;
-		}
+			submit: async () => {
+				if (!profile) throw new Error("Profile not loaded");
+				if (!activityPhotoUri) throw new Error("Missing activity photo");
 
-		setLoading(true);
+				await submitWasteActivity(
+					profile.id,
+					profile.user_id,
+					profile.name,
+					profile.class,
+					wasteType,
+					activityPhotoUri,
+				);
+			},
 
-		try {
-			if (!profile) return;
+			isFulfilled: !!activityPhotoUri,
 
-			await submitWasteActivity(
-				profile.id,
-				profile.user_id,
-				profile.name,
-				profile.class,
-				wasteType,
-				activityPhotoUri,
-			);
+			incompleteMessage: "Yuk lengkapi semua kolom yang wajib diisi",
 
-			showResult({
-				type: "success",
+			successMessage: {
 				title: "Pengumpulan sampah berhasil dikirim",
 				subtitle:
 					"Kegiatan pengumpulan sampah kamu sudah tercatat untuk hari ini",
-			});
-		} catch (e) {
-			if (e instanceof ServerError) {
-				showToast({ title: e.ui_message });
-				console.log("Waste Bank Submission", `[${e.status}]:`, e.message);
-			} else {
-				showToast({ title: "Terjadi kesalahan. Coba lagi" });
-				console.log("Waste Bank Submission", e);
-			}
-		} finally {
-			setLoading(false);
-		}
-	};
+			},
 
-	const handleDelete = async () => {
-		try {
-			if (!profile) return;
-			setLoading(true);
+			logLabel: "Waste Activity",
+		},
+		[profile],
+	);
 
-			await deleteSubmittedWasteActivity(profile.user_id);
-			setSubmitted(false);
-		} catch (e) {
-			if (e instanceof ServerError) {
-				showToast({ title: e.ui_message });
-			} else {
-				showToast({ title: "Terjadi kesalahan. Coba lagi" });
-			}
-
-			console.log("Waste Bank Deletion", e);
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	useEffect(() => {
-		async function run() {
-			setInitialLoading(true);
-
-			try {
-				if (!profile) return;
-				const result = await isWasteActivitySubmitted(profile.user_id);
-				setSubmitted(result.submitted);
-			} catch (e) {
-				if (e instanceof ServerError) {
-					showToast({ title: e.ui_message });
-				}
-
-				console.log("Waste Bank Checker", e);
-			} finally {
-				setInitialLoading(false);
-			}
-		}
-
-		run();
-	}, [profile]);
-
-	return alreadySubmitted ? (
-		<ActivitySubmittedScreen
+	return (
+		<ActivitySubmissionScreen
+			title="Pengumpulan Sampah"
 			initialLoading={initialLoading}
 			isLoading={isLoading}
+			submitted={!!submittedInfo?.submitted}
+			onSubmit={handleSubmit}
 			onDelete={handleDelete}
-			message="Kamu sudah mengirim kegiatan pengumpulan sampah hari ini. Hapus pengiriman jika ingin mengubahnya, atau kembali ke halaman utama."
-		/>
-	) : (
-		<Screen
-			requiredInternet
-			scrollable
-			isLoading={initialLoading}
-			headerComponent={
-				<ScreenHeader
-					title="Pengumpulan Sampah"
-					leftComponent={<BackButton />}
+			submittedMessage="Kamu sudah mengirim kegiatan pengumpulan sampah hari ini. Hapus pengiriman jika ingin mengubahnya, atau kembali ke halaman utama."
+		>
+			<ListSection title="Jenis sampah">
+				<SegmentedControl
+					options={[
+						{
+							label: "Organik",
+							value: "organic",
+							icon: Leaf,
+						},
+						{
+							label: "An-Organik",
+							value: "anorganic",
+							icon: Recycle,
+						},
+					]}
+					value={wasteType}
+					onChange={setWasteType}
 				/>
-			}
-			overlayComponent={
-				<BottomPanel variant="ghost">
-					<Button
-						size="cta"
-						label="Kirim"
-						isLoading={isLoading}
-						onPress={handleSubmit}
-						isDisabled={initialLoading}
-					/>
-				</BottomPanel>
-			}
-			contentComponent={
-				<>
-					<ListSection title="Jenis sampah">
-						<SegmentedControl
-							options={[
-								{
-									label: "Organik",
-									value: "organic",
-									icon: Leaf,
-								},
-								{
-									label: "An-Organik",
-									value: "anorganic",
-									icon: Recycle,
-								},
-							]}
-							value={wasteType}
-							onChange={setWasteType}
-						/>
-					</ListSection>
+			</ListSection>
 
-					<ListSection title="Foto bukti sampah">
-						<PhotoPicker
-							value={activityPhotoUri}
-							onChange={setActivityPhotoUri}
-						/>
-					</ListSection>
+			<ListSection title="Foto bukti sampah">
+				<PhotoPicker value={activityPhotoUri} onChange={setActivityPhotoUri} />
+			</ListSection>
 
-					<Spacer height={108} />
-				</>
-			}
-		/>
+			<Spacer height={108} />
+		</ActivitySubmissionScreen>
 	);
 }

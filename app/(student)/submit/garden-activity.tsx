@@ -1,25 +1,19 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-import { ActivitySubmittedScreen, BackButton } from "@/components/domain";
+import { ActivitySubmissionScreen } from "@/components/domain";
 import {
-	BottomPanel,
-	Button,
 	ListSection,
 	PhotoPicker,
-	Screen,
-	ScreenHeader,
 	SelectField,
 	Spacer,
 } from "@/components/primitives";
-import { useResultScreen } from "@/hooks/useResultScreen";
-import { useShowToast } from "@/hooks/useShowToast";
+import { useActivitySubmission } from "@/hooks/useActivitySubmission";
 import { useUserProfile } from "@/hooks/useUser";
 import {
 	deleteSubmittedGardenActivity,
 	isGardenActivitySubmitted,
 	submitGardenActivity,
 } from "@/services/fetcher/students/submission";
-import { ServerError } from "@/services/ServerError";
 
 export default function CompostSubmissionScreen() {
 	const { profile } = useUserProfile("student");
@@ -28,168 +22,93 @@ export default function CompostSubmissionScreen() {
 	const [activityLocation, setActivityLocation] = useState<string>("");
 	const [activityPhotoUri, setActivityPhotoUri] = useState<string | null>(null);
 
-	const [isLoading, setLoading] = useState<boolean>(false);
-	const [initialLoading, setInitialLoading] = useState<boolean>(false);
-	const [alreadySubmitted, setSubmitted] = useState<boolean>(false);
+	const {
+		initialLoading,
+		isLoading,
+		submittedInfo,
+		handleDelete,
+		handleSubmit,
+	} = useActivitySubmission(
+		{
+			checkEnabled: !!profile,
 
-	const showToast = useShowToast();
-	const { showResult } = useResultScreen();
+			checkSubmitted: async () => {
+				if (!profile) throw new Error("Profile not loaded");
+				return await isGardenActivitySubmitted(profile.user_id);
+			},
 
-	const isFulfilled =
-		!!activityPhotoUri && !!activityLocation && !!activityType;
+			deleteSubmission: async () => {
+				if (!profile) throw new Error("Profile not loaded");
+				await deleteSubmittedGardenActivity(profile.user_id);
+			},
 
-	const handleSubmit = async () => {
-		if (!isFulfilled) {
-			showToast({
-				title: "Yuk lengkapi semua kolom yang wajib diisi",
-			});
-			return;
-		}
+			submit: async () => {
+				if (!profile) throw new Error("Profile not loaded");
+				if (!activityPhotoUri) throw new Error("Missing activity photo");
+				await submitGardenActivity(
+					profile.id,
+					profile.user_id,
+					profile.name,
+					profile.class,
+					activityType,
+					activityLocation,
+					activityPhotoUri,
+				);
+			},
 
-		setLoading(true);
+			isFulfilled: !!activityPhotoUri && !!activityLocation && !!activityType,
 
-		try {
-			if (!profile) return;
+			incompleteMessage: "Yuk lengkapi semua kolom yang wajib diisi",
 
-			await submitGardenActivity(
-				profile.id,
-				profile.user_id,
-				profile.name,
-				profile.class,
-				activityType,
-				activityLocation,
-				activityPhotoUri,
-			);
-
-			showResult({
-				type: "success",
+			successMessage: {
 				title: "Kegiatan kebun berhasil dikirim",
 				subtitle: "Kegiatan kebun kamu sudah tercatat untuk hari ini",
-			});
-		} catch (e) {
-			if (e instanceof ServerError) {
-				showToast({ title: e.ui_message });
-				console.log(
-					"Garden activity Submission ",
-					`[${e.status}]: `,
-					e.message,
-				);
-			} else {
-				showToast({ title: "Terjadi kesalahan. Coba lagi" });
-				console.log("Garden activity Submission", e);
-			}
-		} finally {
-			setLoading(false);
-		}
-	};
+			},
 
-	const handleDelete = async () => {
-		try {
-			if (!profile) return;
-			setLoading(true);
+			logLabel: "Garden Activity",
+		},
+		[profile],
+	);
 
-			await deleteSubmittedGardenActivity(profile.user_id);
-			setSubmitted(false);
-		} catch (e) {
-			if (e instanceof ServerError) {
-				showToast({ title: e.ui_message });
-			} else {
-				showToast({ title: "Terjadi kesalahan. Coba lagi" });
-			}
-
-			console.log("Garden activity Deletion", e);
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	useEffect(() => {
-		async function run() {
-			setInitialLoading(true);
-
-			try {
-				if (!profile) return;
-				const result = await isGardenActivitySubmitted(profile.user_id);
-				setSubmitted(result.submitted);
-			} catch (e) {
-				if (e instanceof ServerError) {
-					showToast({ title: e.ui_message });
-				}
-
-				console.log("Compost activity Checker", e);
-			} finally {
-				setInitialLoading(false);
-			}
-		}
-
-		run();
-	}, [profile]);
-
-	return alreadySubmitted ? (
-		<ActivitySubmittedScreen
+	return (
+		<ActivitySubmissionScreen
+			title="Perawatan Tanaman"
 			initialLoading={initialLoading}
 			isLoading={isLoading}
+			submitted={!!submittedInfo?.submitted}
+			onSubmit={handleSubmit}
 			onDelete={handleDelete}
-			message="Kamu sudah mengirim kegiatan perawatan Tanaman hari ini. Hapus pengiriman jika ingin mengubahnya, atau kembali ke halaman utama."
-		/>
-	) : (
-		<Screen
-			scrollable
-			requiredInternet
-			isLoading={initialLoading}
-			headerComponent={
-				<ScreenHeader
-					title="Perawatan Tanaman"
-					leftComponent={<BackButton />}
+			submittedMessage="Kamu sudah mengirim kegiatan perawatan Tanaman hari ini. Hapus pengiriman jika ingin mengubahnya, atau kembali ke halaman utama."
+		>
+			<ListSection title="Jenis Kegiatan">
+				<SelectField
+					placeholder="Pilih Kegiatan"
+					options={[
+						{ label: "Menyiram tanaman", value: "Menyiram tanaman" },
+						{ label: "Memberi makan ikan", value: "Memberi makan ikan" },
+					]}
+					value={activityType}
+					onValueChange={setActivityType}
 				/>
-			}
-			overlayComponent={
-				<BottomPanel variant="ghost">
-					<Button
-						size="cta"
-						label="Kirim"
-						isLoading={isLoading}
-						onPress={handleSubmit}
-						isDisabled={initialLoading}
-					/>
-				</BottomPanel>
-			}
-			contentComponent={
-				<>
-					<ListSection title="Jenis Kegiatan">
-						<SelectField
-							placeholder="Pilih Kegiatan"
-							options={[
-								{ label: "Menyiram tanaman", value: "Menyiram tanaman" },
-								{ label: "Memberi makan ikan", value: "Memberi makan ikan" },
-							]}
-							value={activityType}
-							onValueChange={setActivityType}
-						/>
-					</ListSection>
+			</ListSection>
 
-					<ListSection title="Lokasi Kegiatan">
-						<SelectField
-							placeholder="Pilih Lokasi"
-							options={[
-								{ label: "Pendopo", value: "pendopo" },
-								{ label: "Lapangan", value: "lapangan" },
-							]}
-							value={activityLocation}
-							onValueChange={setActivityLocation}
-						/>
-					</ListSection>
+			<ListSection title="Lokasi Kegiatan">
+				<SelectField
+					placeholder="Pilih Lokasi"
+					options={[
+						{ label: "Pendopo", value: "pendopo" },
+						{ label: "Lapangan", value: "lapangan" },
+					]}
+					value={activityLocation}
+					onValueChange={setActivityLocation}
+				/>
+			</ListSection>
 
-					<ListSection title="Foto Kegiatan">
-						<PhotoPicker
-							value={activityPhotoUri}
-							onChange={setActivityPhotoUri}
-						/>
-					</ListSection>
+			<ListSection title="Foto Kegiatan">
+				<PhotoPicker value={activityPhotoUri} onChange={setActivityPhotoUri} />
+			</ListSection>
 
-					<Spacer height={108} />
-				</>
-			}
-		/>
+			<Spacer height={108} />
+		</ActivitySubmissionScreen>
 	);
 }

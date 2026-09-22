@@ -1,4 +1,5 @@
 import NetInfo from "@react-native-community/netinfo";
+import { ServerError } from "@/services/ServerError";
 
 export const sumReduceFn = (sum: number, curr: number) => sum + curr;
 
@@ -108,4 +109,52 @@ export function assignKey<T, K extends keyof T>(
 
 export function sleepAsync(ms: number): Promise<void> {
 	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+type NormalizedError = {
+	name: string;
+	message: string;
+	uiMessage: string;
+	status?: number;
+};
+
+const FALLBACK_UI_MESSAGE = "Terjadi kesalahan. Coba lagi";
+
+export function normalizeError(error: unknown, label: string): NormalizedError {
+	if (error instanceof ServerError) {
+		console.log(
+			label,
+			error.status ?? `[${error.status}]`,
+			`(${error.name}):`,
+			error.message,
+		);
+
+		return {
+			name: error.name,
+			message: error.message,
+			uiMessage: error.ui_message,
+			status: error.status,
+		};
+	}
+
+	if (error instanceof Error) {
+		console.log(label, `(${error.name}):`, error.message);
+
+		return {
+			name: error.name,
+			message: error.message,
+			uiMessage: FALLBACK_UI_MESSAGE,
+		};
+	}
+
+	const name = "unknown";
+	const message = `An error occured with no reason: ${error}`;
+
+	console.log(label, `(${name}):`, message);
+
+	return {
+		name,
+		message,
+		uiMessage: FALLBACK_UI_MESSAGE,
+	};
 }

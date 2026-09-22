@@ -29,9 +29,8 @@ import { useSettings } from "@/hooks/useSettings";
 import { authenticate } from "@/services/fetcher/shared/auth";
 
 import { getProfileByRole } from "@/services/fetcher/shared/profile";
-import { ServerError } from "@/services/ServerError";
 import { useUserStore } from "@/stores/userStore";
-import { checkConnection, sleepAsync } from "@/utils";
+import { checkConnection, normalizeError, sleepAsync } from "@/utils";
 
 export default function LoginScreen() {
 	const { setUserStore, setRoleStore } = useUserStore();
@@ -98,11 +97,8 @@ export default function LoginScreen() {
 
 			navigateToHome();
 		} catch (e) {
-			setError(
-				e instanceof ServerError ? e.ui_message : "Terjadi kendala, coba lagi",
-			);
-
-			console.log("[Auth Error]:", e instanceof Error ? e.message : e);
+			const { uiMessage } = normalizeError(e, "Login");
+			setError(uiMessage);
 		} finally {
 			setIsLoading(false);
 		}
