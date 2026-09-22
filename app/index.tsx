@@ -5,7 +5,7 @@ import { useNavigation } from "@/hooks/useNavigation";
 import {
 	getProfileByRole,
 	getUserData,
-} from "@/services/fetcher/shared/profile";
+} from "@/services/fetcher/account/profile";
 import { useUserStore } from "@/stores/userStore";
 import { checkConnection, normalizeError } from "@/utils";
 

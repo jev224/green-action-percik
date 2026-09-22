@@ -31,7 +31,7 @@ import { useAsyncData } from "@/hooks/useAsyncData";
 import { useNavigation } from "@/hooks/useNavigation";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { useUserProfile } from "@/hooks/useUser";
-import { fetchStudentStatistics } from "@/services/fetcher/shared/student";
+import { fetchStudentStatistics } from "@/services/fetcher/student/studentDashboard";
 import { parseProfileInfo } from "@/utils";
 
 export default function HomeScreen() {

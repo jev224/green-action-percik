@@ -1,7 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { ServerError } from "@/services/ServerError";
 import { getCurrentMonthDateRange, sumReduceFn } from "@/utils";
-import { withProfilePicture } from "./profile";
 
 export async function fetchStudentStatistics(userId: string) {
 	const { start, end } = getCurrentMonthDateRange();
@@ -65,22 +64,3 @@ export async function fetchStudentTargets(_userId: string) {
 		gardenActivityTarget: 4,
 	};
 }
-
-export const fetchStudentByClass = async (classId: number) => {
-	const { error, data } = await supabase
-		.from("students")
-		.select("*, class:classes(id, grade, major, sub_major)")
-		.eq("class_id", classId);
-
-	if (error) {
-		throw new ServerError({
-			status: 500,
-			message: `Failed to fetch students for class ${classId}: ${error.message}`,
-			ui_message: "Daftar siswa di kelas ini belum bisa dimuat. Coba lagi ya",
-		});
-	}
-
-	return Promise.all(
-		data.map((student) => withProfilePicture(student, "photo")),
-	);
-};

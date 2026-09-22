@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { ServerError } from "@/services/ServerError";
-import { withProfilePicture } from "../shared/profile";
+import { withProfilePicture } from "../account/profile";
 
 export const fetchAllStudents = async () => {
 	const { error, data } = await supabase
@@ -36,4 +36,23 @@ export const fetchStudentProfile = async (userId: string) => {
 	}
 
 	return await withProfilePicture(data, "photo");
+};
+
+export const fetchStudentsByClass = async (classId: number) => {
+	const { error, data } = await supabase
+		.from("students")
+		.select("*, class:classes(id, grade, major, sub_major)")
+		.eq("class_id", classId);
+
+	if (error) {
+		throw new ServerError({
+			status: 500,
+			message: `Failed to fetch students for class ${classId}: ${error.message}`,
+			ui_message: "Daftar siswa di kelas ini belum bisa dimuat. Coba lagi ya",
+		});
+	}
+
+	return Promise.all(
+		data.map((student) => withProfilePicture(student, "photo")),
+	);
 };

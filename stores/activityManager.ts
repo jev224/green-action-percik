@@ -1,13 +1,34 @@
 import { create } from "zustand";
+import type { Database } from "@/lib/supabase/database.types";
 
-type ActivityType = "waste-bank" | "compost-activity";
+export type ActivityType = "waste-bank" | "compost-activity";
+export type ClassData = Database["public"]["Tables"]["classes"]["Row"];
+export type WasteBankData = Database["public"]["Tables"]["waste_banks"]["Row"];
 
-type ActivityTypeState<T extends string = ActivityType> = {
-	activityType: T | null;
-	setActivityType: (type: T) => void;
+type ActivityManagerState = {
+	activityType: ActivityType | null;
+	selectedClass: ClassData | null;
+	selectedWaste: WasteBankData | null;
+
+	setActivityType: (type: ActivityType) => void;
+	setSelectedClass: (data: ClassData) => void;
+	setSelectedWaste: (data: WasteBankData) => void;
+	reset: () => void;
 };
 
-export const useActivityManagerStore = create<ActivityTypeState>((set) => ({
+const initialState = {
 	activityType: null,
+	selectedClass: null,
+	selectedWaste: null,
+} satisfies Pick<
+	ActivityManagerState,
+	"activityType" | "selectedClass" | "selectedWaste"
+>;
+
+export const useActivityManagerStore = create<ActivityManagerState>((set) => ({
+	...initialState,
 	setActivityType: (type) => set({ activityType: type }),
+	setSelectedClass: (data) => set({ selectedClass: data }),
+	setSelectedWaste: (data) => set({ selectedWaste: data }),
+	reset: () => set(initialState),
 }));

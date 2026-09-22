@@ -1,5 +1,6 @@
 import NetInfo from "@react-native-community/netinfo";
 import { ServerError } from "@/services/ServerError";
+import type { ClassData } from "@/types";
 
 export const sumReduceFn = (sum: number, curr: number) => sum + curr;
 
@@ -71,21 +72,25 @@ export type ProfileInfo =
 			sub_major?: string;
 	  };
 
-export const parseProfileInfo = (profile: ProfileInfo, flat = false) => {
-	if (flat) {
-		if (profile.role === "teacher") {
-			return profile.major ? `GURU_${profile.major}` : "";
-		}
-
-		return `${profile.grade} ${profile.major}${profile.sub_major ? `-${profile.sub_major}` : ""}`;
-	}
-
+export const parseProfileInfo = (profile: ProfileInfo) => {
 	if (profile.role === "teacher") {
 		return `${profile.major ? `${profile.major} (Admin)` : "Admin"} • GURU`;
 	}
 
 	return `${profile.grade} ${profile.major}${profile.sub_major ? `-${profile.sub_major}` : ""} • SISWA`;
 };
+
+export const formatClassPathSegment = (classData: ClassData) => {
+	const { grade, major, sub_major } = classData;
+	return `${grade}_${major}${sub_major ? `-${sub_major}` : ""}`;
+};
+
+export const parseClassName = (classData: {
+	grade: string;
+	major: string;
+	sub_major?: string;
+}) =>
+	`${classData.grade} ${classData.major}${classData.sub_major ? `-${classData.sub_major}` : ""}`;
 
 export async function checkConnection(): Promise<boolean> {
 	const state = await NetInfo.fetch();

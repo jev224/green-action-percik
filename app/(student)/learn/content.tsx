@@ -35,7 +35,7 @@ import { Text } from "@/components/ui/text";
 import { useResultScreen } from "@/hooks/useResultScreen";
 
 import { useShowToast } from "@/hooks/useShowToast";
-import { useLessonStore } from "@/stores/lessonAction";
+import { useLessonStore } from "@/stores/lesson";
 import { calculatePercentage } from "@/utils";
 
 // Extracted so swiping doesn't depend on `currentIndex` React state at all —

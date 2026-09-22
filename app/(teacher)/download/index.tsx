@@ -59,7 +59,7 @@ export default function DownloadScreen() {
             <SelectField value="2026-08" options={PERIOD_OPTIONS} /> */}
 
 						<ActionTile
-							className="rounded-4xl p-3"
+							className="rounded-2xl p-3"
 							thumbnailPosition="top"
 							title="Ekspor Data Sekolah"
 							description="Unduh data aktivitas lingkungan dalam format Excel"

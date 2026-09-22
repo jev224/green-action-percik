@@ -26,7 +26,7 @@ import { useLessons } from "@/hooks/useLessons";
 
 import { useNavigation } from "@/hooks/useNavigation";
 import { useThemeColors } from "@/hooks/useThemeColors";
-import { useLessonStore } from "@/stores/lessonAction";
+import { useLessonStore } from "@/stores/lesson";
 
 export default function LearningScreen() {
 	const { navigateTo } = useNavigation();

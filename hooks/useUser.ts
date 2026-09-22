@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import type { UserRole } from "@/services/fetcher/shared/profile";
+import type { UserRole } from "@/services/fetcher/account/profile";
 import {
 	getProfileByRole,
 	getUserData,
-} from "@/services/fetcher/shared/profile";
+} from "@/services/fetcher/account/profile";
 import { useUserStore } from "@/stores/userStore";
 import { useNavigation } from "./useNavigation";
 import { useShowToast } from "./useShowToast";

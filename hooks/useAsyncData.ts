@@ -2,8 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type {
 	ProfileByRole,
 	UserRole,
-} from "@/services/fetcher/shared/profile";
-import { ServerError } from "@/services/ServerError";
+} from "@/services/fetcher/account/profile";
+import { normalizeError } from "@/utils";
 import type { useUserProfile } from "./useUser";
 
 interface UseAsyncDataResult<T> {
@@ -82,12 +82,8 @@ export function useAsyncData<T, R extends UserRole = UserRole>(
 				}
 			} catch (err) {
 				if (isMounted) {
-					if (err instanceof ServerError) {
-						setErrorMessage(err.ui_message);
-					} else {
-						setErrorMessage("Halaman ini tidak dapat dimuat");
-					}
-
+					const { uiMessage } = normalizeError(err, "Data Fetcher");
+					setErrorMessage(uiMessage);
 					setIsError(true);
 					setError(err);
 					setData(null);

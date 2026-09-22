@@ -3,7 +3,7 @@ import { create } from "zustand";
 import type {
 	ProfileByRole,
 	UserRole,
-} from "@/services/fetcher/shared/profile";
+} from "@/services/fetcher/account/profile";
 
 type AnyProfile = ProfileByRole<UserRole>;
 

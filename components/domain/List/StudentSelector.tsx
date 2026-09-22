@@ -31,7 +31,7 @@ import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { useFuzzySearch } from "@/hooks/useFuzzySearch";
 import type { StudentSortField } from "@/hooks/useStudents";
-import type { fetchStudentByClass } from "@/services/fetcher/shared/student";
+import type { fetchStudentsByClass } from "@/services/fetcher/student/studentQuery";
 import { StudentListItem } from "../student/StudentListItem";
 import type { StudentData } from "../student/types";
 
@@ -55,7 +55,7 @@ interface StudentMultiSelectProps {
 	onRefresh?: () => void;
 	isLoading?: boolean;
 	errorMessage?: string;
-	studentsRes?: Awaited<ReturnType<typeof fetchStudentByClass>> | null;
+	studentsRes?: Awaited<ReturnType<typeof fetchStudentsByClass>> | null;
 }
 
 export function StudentMultiSelect({

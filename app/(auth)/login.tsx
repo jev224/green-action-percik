@@ -26,9 +26,9 @@ import { VStack } from "@/components/ui/vstack";
 
 import { useNavigation } from "@/hooks/useNavigation";
 import { useSettings } from "@/hooks/useSettings";
-import { authenticate } from "@/services/fetcher/shared/auth";
+import { authenticate } from "@/services/fetcher/account/auth";
 
-import { getProfileByRole } from "@/services/fetcher/shared/profile";
+import { getProfileByRole } from "@/services/fetcher/account/profile";
 import { useUserStore } from "@/stores/userStore";
 import { checkConnection, normalizeError, sleepAsync } from "@/utils";
 

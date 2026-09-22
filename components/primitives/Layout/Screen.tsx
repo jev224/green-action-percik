@@ -146,80 +146,82 @@ export function Screen<T = undefined>({
 	);
 
 	return (
-		<Box className="flex-1 bg-background">
-			{headerComponent && (
-				<Box className="z-10 -mb-4 pb-4 pt-6">
-					<SafeAreaView edges={["top", "left", "right"]}>
-						<VStack className="px-8" space={space}>
-							{headerComponent}
-						</VStack>
-					</SafeAreaView>
+		<Box className="flex-1 w-full bg-background items-center">
+			<Box className="flex-1 w-full max-w-200">
+				{headerComponent && (
+					<Box className="z-10 -mb-4 pb-4 pt-6">
+						<SafeAreaView edges={["top", "left", "right"]}>
+							<VStack className="px-8" space={space}>
+								{headerComponent}
+							</VStack>
+						</SafeAreaView>
 
-					<Box className="absolute inset-0 bg-background -z-1" />
-				</Box>
-			)}
+						<Box className="absolute inset-0 bg-background -z-1" />
+					</Box>
+				)}
 
-			{shouldScroll ? (
-				<ScrollView
-					showsVerticalScrollIndicator={false}
-					// Only real "scrollable" screens should stretch/scroll content freely.
-					// Refresh-only screens (scrollable=false, hasRefresh=true) still need
-					// the container to grow to fill height so layout doesn't break.
-					contentContainerStyle={!scrollable ? { flexGrow: 1 } : undefined}
-					refreshControl={
-						hasRefresh ? (
-							<RefreshControl
-								refreshing={effectiveIsRefreshing}
-								onRefresh={async () => {
-									if (requiredInternet) await refreshInternet();
-									onRefresh?.();
-								}}
-								progressViewOffset={
-									Platform.OS === "android"
-										? headerComponent
-											? 24
-											: insets.top + 8
-										: 100
-								} // nudge below status bar on Android
-							/>
-						) : undefined
-					}
-				>
-					{content}
-				</ScrollView>
-			) : (
-				content
-			)}
+				{shouldScroll ? (
+					<ScrollView
+						showsVerticalScrollIndicator={false}
+						// Only real "scrollable" screens should stretch/scroll content freely.
+						// Refresh-only screens (scrollable=false, hasRefresh=true) still need
+						// the container to grow to fill height so layout doesn't break.
+						contentContainerStyle={!scrollable ? { flexGrow: 1 } : undefined}
+						refreshControl={
+							hasRefresh ? (
+								<RefreshControl
+									refreshing={effectiveIsRefreshing}
+									onRefresh={async () => {
+										if (requiredInternet) await refreshInternet();
+										onRefresh?.();
+									}}
+									progressViewOffset={
+										Platform.OS === "android"
+											? headerComponent
+												? 24
+												: insets.top + 8
+											: 100
+									} // nudge below status bar on Android
+								/>
+							) : undefined
+						}
+					>
+						{content}
+					</ScrollView>
+				) : (
+					content
+				)}
 
-			{effectiveIsError && !effectiveIsLoading && (
-				<Center
-					className={cn(
-						"px-12 py-8  absolute inset-0",
-						relativeErrorPos && "-translate-y-24 relative",
-					)}
-				>
-					{internetError ? (
-						<ErrorState
-							message="Tidak ada koneksi internet. Coba periksa koneksi kamu"
-							onRetry={async () => {
-								await refreshInternet();
-								if (isError) onTryAgain?.();
-							}}
-							icon={WifiOff}
-						/>
-					) : (
-						errorComponent || (
+				{effectiveIsError && !effectiveIsLoading && (
+					<Center
+						className={cn(
+							"px-12 py-8  absolute inset-0",
+							relativeErrorPos && "-translate-y-24 relative",
+						)}
+					>
+						{internetError ? (
 							<ErrorState
-								message={errorMessage}
-								onRetry={onTryAgain}
-								icon={Frown}
+								message="Tidak ada koneksi internet. Coba periksa koneksi kamu"
+								onRetry={async () => {
+									await refreshInternet();
+									if (isError) onTryAgain?.();
+								}}
+								icon={WifiOff}
 							/>
-						)
-					)}
-				</Center>
-			)}
+						) : (
+							errorComponent || (
+								<ErrorState
+									message={errorMessage}
+									onRetry={onTryAgain}
+									icon={Frown}
+								/>
+							)
+						)}
+					</Center>
+				)}
 
-			{!effectiveIsError && overlayComponent}
+				{!effectiveIsError && overlayComponent}
+			</Box>
 		</Box>
 	);
 }

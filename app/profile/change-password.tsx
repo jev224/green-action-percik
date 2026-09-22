@@ -19,7 +19,7 @@ import {
 import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
 import { useNavigation } from "@/hooks/useNavigation";
-import { changePassword } from "@/services/fetcher/shared/password";
+import { changePassword } from "@/services/fetcher/account/password";
 import { checkConnection, sleepAsync } from "@/utils";
 
 export default function ChangePasswordScreen() {

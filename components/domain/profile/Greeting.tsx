@@ -1,3 +1,4 @@
+import { LogOut } from "lucide-react-native";
 import { useState } from "react";
 import { type ImageSourcePropType, View } from "react-native";
 import { EaseView } from "react-native-ease";
@@ -5,22 +6,24 @@ import {
 	ProfileMenuGlideIn,
 	ProfileMenuGlideOut,
 } from "@/components/animation/presets";
+import { Button, Modal } from "@/components/primitives";
 import { UserAvatar } from "@/components/primitives/Avatar/UserAvatar";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
+import { Icon, InfoIcon, SettingsIcon } from "@/components/ui/icon";
 import {
-	AddIcon,
-	GlobeIcon,
-	Icon,
-	PlayIcon,
-	SettingsIcon,
-} from "@/components/ui/icon";
-import { Menu, MenuItem, MenuItemLabel } from "@/components/ui/menu";
+	Menu,
+	MenuItem,
+	MenuItemLabel,
+	MenuSeparator,
+} from "@/components/ui/menu";
 import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { Cloud1, Leaf4, Spark2 } from "@/constants/Assets";
+import { useNavigation } from "@/hooks/useNavigation";
 import { useThemeColors } from "@/hooks/useThemeColors";
+import { logout } from "@/services/fetcher/account/auth";
 import { randomBetween, truncateText } from "@/utils";
 
 interface GreetingProps {
@@ -30,9 +33,21 @@ interface GreetingProps {
 }
 
 export function Greeting({ name, info, imageSource }: GreetingProps) {
+	const [showLogoutModal, setShowLogoutModal] = useState(false);
+	const [isLoggingOut, setIsLoggingOut] = useState(false);
 	const [isMenuOpen, setMenuOpen] = useState(false);
 
+	const handleLogout = () => {
+		setIsLoggingOut(true);
+
+		logout().finally(() => {
+			setShowLogoutModal(false);
+			resetTo("/(auth)/login");
+		});
+	};
+
 	const { colors } = useThemeColors();
+	const { resetTo, navigateTo } = useNavigation();
 
 	return (
 		<HStack className="justify-between items-center">
@@ -45,7 +60,6 @@ export function Greeting({ name, info, imageSource }: GreetingProps) {
 				placement="bottom right"
 				offset={5}
 				className="rounded-lg p-1.5"
-				disabledKeys={["Settings"]}
 				onOpen={() => setMenuOpen(true)}
 				onClose={() => setMenuOpen(false)}
 				entering={ProfileMenuGlideIn}
@@ -104,38 +118,61 @@ export function Greeting({ name, info, imageSource }: GreetingProps) {
 				}}
 			>
 				<MenuItem
-					className="px-3 py-4 rounded-sm"
-					key="Add account"
-					textValue="Add account"
-				>
-					<Icon as={AddIcon} size="md" className="mr-2 " />
-					<MenuItemLabel>Add account</MenuItemLabel>
-				</MenuItem>
-				<MenuItem
-					className="px-3 py-4 rounded-sm"
-					key="Community"
-					textValue="Community"
-				>
-					<Icon as={GlobeIcon} size="md" className="mr-2 " />
-					<MenuItemLabel>Community</MenuItemLabel>
-				</MenuItem>
-				<MenuItem
-					className="px-3 py-4 rounded-sm"
-					key="Plugins"
-					textValue="Plugins"
-				>
-					<Icon as={PlayIcon} size="md" className="mr-2 " />
-					<MenuItemLabel>Plugins</MenuItemLabel>
-				</MenuItem>
-				<MenuItem
+					onPress={() => navigateTo("/profile/settings")}
 					className="px-3 py-4 rounded-sm"
 					key="Settings"
-					textValue="Settings"
+					textValue="Pengaturan"
 				>
 					<Icon as={SettingsIcon} size="md" className="mr-2 " />
-					<MenuItemLabel>Settings</MenuItemLabel>
+					<MenuItemLabel>Pengaturan</MenuItemLabel>
+				</MenuItem>
+
+				<MenuItem
+					onPress={() => navigateTo("/profile/about")}
+					className="px-3 py-4 rounded-sm"
+					key="About"
+					textValue="Tentang"
+				>
+					<Icon as={InfoIcon} size="md" className="mr-2 " />
+					<MenuItemLabel>Tentang</MenuItemLabel>
+				</MenuItem>
+
+				<MenuSeparator />
+
+				<MenuItem
+					onPress={() => setShowLogoutModal(true)}
+					className="px-3 py-4 rounded-sm"
+					key="Logout"
+					textValue="Keluar"
+				>
+					<Icon as={LogOut} size="md" className="mr-2 text-destructive" />
+					<MenuItemLabel className="text-destructive">Keluar</MenuItemLabel>
 				</MenuItem>
 			</Menu>
+
+			<Modal
+				isOpen={showLogoutModal}
+				onClose={() => !isLoggingOut && setShowLogoutModal(false)}
+				title="Mau cabut dulu? 👋"
+				description="Yakin mau logout? Santuy, progress kamu aman kok"
+				contentComponent={
+					<>
+						<Button
+							isDisabled={isLoggingOut}
+							label="Batalkan"
+							variant="outline"
+							onPress={() => setShowLogoutModal(false)}
+						/>
+
+						<Button
+							isLoading={isLoggingOut}
+							label="Keluar"
+							variant="destructive"
+							onPress={handleLogout}
+						/>
+					</>
+				}
+			/>
 		</HStack>
 	);
 }

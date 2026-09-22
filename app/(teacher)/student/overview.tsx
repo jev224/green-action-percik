@@ -12,8 +12,8 @@ import { HStack } from "@/components/ui/hstack";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useNavigation } from "@/hooks/useNavigation";
 import { useShowToast } from "@/hooks/useShowToast";
-import { fetchStudentStatistics } from "@/services/fetcher/shared/student";
-import { fetchStudentProfile } from "@/services/fetcher/teacher/studentManager";
+import { fetchStudentStatistics } from "@/services/fetcher/student/studentDashboard";
+import { fetchStudentProfile } from "@/services/fetcher/student/studentQuery";
 import { useStudentActionStore } from "@/stores/studentOverview";
 import { parseProfileInfo } from "@/utils";
 

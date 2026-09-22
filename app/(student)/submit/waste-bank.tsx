@@ -13,7 +13,7 @@ import {
 	deleteSubmittedWasteActivity,
 	isWasteActivitySubmitted,
 	submitWasteActivity,
-} from "@/services/fetcher/students/submission";
+} from "@/services/fetcher/activity/studentActivitySubmission";
 
 export default function WasteSubmissionScreen() {
 	const { profile } = useUserProfile("student");

@@ -8,7 +8,7 @@ import type {
 } from "@/components/primitives/Input/SortSelect";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useFuzzySearch } from "@/hooks/useFuzzySearch";
-import { fetchAllStudents } from "@/services/fetcher/teacher/studentManager";
+import { fetchAllStudents } from "@/services/fetcher/student/studentQuery";
 
 export type StudentSortField = "name" | "grade" | "point";
 

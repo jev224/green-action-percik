@@ -30,7 +30,7 @@ import { useUserProfile } from "@/hooks/useUser";
 import {
 	fetchStudentStatistics,
 	fetchStudentTargets,
-} from "@/services/fetcher/shared/student";
+} from "@/services/fetcher/student/studentDashboard";
 import { calculatePercentage } from "@/utils";
 
 export default function StatsiticScreen() {

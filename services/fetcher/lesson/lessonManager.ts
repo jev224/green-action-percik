@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import type { LessonContent } from "@/lib/supabase/database.types";
 import { ServerError } from "@/services/ServerError";
-import { lessonPhotos, TABLE_NAME } from "../shared/lessons";
+import { lessonPhotos, TABLE_NAME } from "./lessonQuery";
 
 export type LessonFields = {
 	title: string;
@@ -183,4 +183,4 @@ export const getChangedLessonFields = (
 	return changed;
 };
 
-export { fetchAllLessons, fetchLesson } from "../shared/lessons";
+export { fetchAllLessons, fetchLesson } from "./lessonQuery";

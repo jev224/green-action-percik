@@ -13,7 +13,7 @@ import {
 	deleteSubmittedGardenActivity,
 	isGardenActivitySubmitted,
 	submitGardenActivity,
-} from "@/services/fetcher/students/submission";
+} from "@/services/fetcher/activity/studentActivitySubmission";
 
 export default function CompostSubmissionScreen() {
 	const { profile } = useUserProfile("student");

@@ -42,9 +42,9 @@ import {
 	type LessonFields,
 	type LessonForm,
 	updateLesson,
-} from "@/services/fetcher/teacher/lessonManager";
+} from "@/services/fetcher/lesson/lessonManager";
 import { ServerError } from "@/services/ServerError";
-import { useLessonStore } from "@/stores/lessonAction";
+import { useLessonStore } from "@/stores/lesson";
 
 // Date.now() alone can collide if two blocks are added in the same
 // millisecond (e.g. double-tap); pad with a random suffix.

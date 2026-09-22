@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
 	ActivitySubmissionScreen,
@@ -12,6 +12,7 @@ import {
 } from "@/components/primitives";
 import { useActivitySubmission } from "@/hooks/useActivitySubmission";
 import { useAsyncData } from "@/hooks/useAsyncData";
+import { useNavigation } from "@/hooks/useNavigation";
 import { useUserProfile } from "@/hooks/useUser";
 import {
 	deleteSubmittedCompostActivity,
@@ -19,12 +20,14 @@ import {
 	submitCompostActivity,
 } from "@/services/fetcher/activity/compostActivity";
 import { fetchStudentsByClass } from "@/services/fetcher/student/studentQuery";
+import { useActivityManagerStore } from "@/stores/activityManager";
 
 type Student = { user_id: string };
 
 export default function CompostSubmissionScreen() {
-	const userProfile = useUserProfile("student");
-	const { profile } = userProfile;
+	const { profile } = useUserProfile("teacher");
+	const selectedClass = useActivityManagerStore((s) => s.selectedClass);
+	const { goBack } = useNavigation();
 
 	const {
 		data: students,
@@ -32,9 +35,7 @@ export default function CompostSubmissionScreen() {
 		isLoading: isFetchLaoding,
 		refresh,
 	} = useAsyncData(
-		async (profile) =>
-			profile && (await fetchStudentsByClass(profile.class_id)),
-		userProfile,
+		async () => selectedClass && (await fetchStudentsByClass(selectedClass.id)),
 	);
 
 	const [activityLocation, setActivityLocation] = useState<string>("");
@@ -49,27 +50,30 @@ export default function CompostSubmissionScreen() {
 		handleSubmit,
 	} = useActivitySubmission(
 		{
-			checkEnabled: !!userProfile.profile && !!students,
+			checkEnabled: !!profile && !!selectedClass,
 
 			checkSubmitted: async () => {
 				if (!profile) throw new Error("Profile not loaded");
-				return await isCompostActivitySubmitted(profile.class_id);
+				if (!selectedClass) throw new Error("Class not found");
+				return await isCompostActivitySubmitted(selectedClass.id);
 			},
 
 			deleteSubmission: async () => {
 				if (!profile) throw new Error("Profile not loaded");
-				await deleteSubmittedCompostActivity(profile.class_id);
+				if (!selectedClass) throw new Error("Class not found");
+				await deleteSubmittedCompostActivity(selectedClass.id);
 			},
 
 			submit: async () => {
 				if (!profile) throw new Error("Profile not loaded");
 				if (!students) throw new Error("Students not loaded");
 				if (!activityPhotoUri) throw new Error("Missing activity photo");
+				if (!selectedClass) throw new Error("Class not found");
 				await submitCompostActivity(
 					"student",
 					profile.user_id,
-					profile.class_id,
-					profile.class,
+					selectedClass.id,
+					selectedClass,
 					activityPhotoUri,
 					students.map(({ user_id }) => user_id),
 					selectedStudents.map(({ user_id }) => user_id),
@@ -87,13 +91,17 @@ export default function CompostSubmissionScreen() {
 
 			logLabel: "Compost Activity",
 		},
-		[profile],
+		[profile, selectedClass],
 	);
 
 	const isByMe =
-		submittedInfo &&
-		userProfile.profile &&
-		submittedInfo.submittedBy === userProfile.profile.user_id;
+		submittedInfo && profile && submittedInfo.submittedBy === profile.user_id;
+
+	useEffect(() => {
+		if (!selectedClass) goBack();
+	}, [selectedClass]);
+
+	if (!selectedClass) return null;
 
 	return (
 		<ActivitySubmissionScreen
@@ -106,7 +114,7 @@ export default function CompostSubmissionScreen() {
 			submittedMessage={
 				isByMe
 					? "Kamu sudah mengirim kegiatan kompos bulan ini. Hapus pengiriman jika ingin mengubahnya, atau kembali ke halaman utama."
-					: `Kegiatan kompos sudah kirim oleh ${submittedInfo?.submittedAuthor || "Seseorang"} pada bulan ini. Minta ${submittedInfo?.submittedAuthor || "dia"} jika ingin mengubah pengiriman, atau kembali ke halaman utama.`
+					: `Kegiatan kompos sudah kirim oleh ${submittedInfo?.submittedAuthor ?? "Seseorang"} pada bulan ini. Minta ${submittedInfo?.submittedAuthor ?? "dia"} jika ingin mengubah pengiriman, atau kembali ke halaman utama.`
 			}
 		>
 			<ListSection title="Lokasi Kegiatan">

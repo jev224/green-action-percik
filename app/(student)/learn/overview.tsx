@@ -20,8 +20,8 @@ import { VStack } from "@/components/ui/vstack";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useNavigation } from "@/hooks/useNavigation";
 import { useShowToast } from "@/hooks/useShowToast";
-import { fetchLesson } from "@/services/fetcher/shared/lessons";
-import { useLessonStore } from "@/stores/lessonAction";
+import { fetchLesson } from "@/services/fetcher/lesson/lessonQuery";
+import { useLessonStore } from "@/stores/lesson";
 import { formatDate } from "@/utils";
 
 export default function LessonOverviewScreen() {

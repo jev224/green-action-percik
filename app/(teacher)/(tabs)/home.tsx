@@ -20,12 +20,13 @@ import { VStack } from "@/components/ui/vstack";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useNavigation } from "@/hooks/useNavigation";
 import { useUserProfile } from "@/hooks/useUser";
-import { fetchTeacherDashboardStats } from "@/services/fetcher/teacher/dashboard";
+import { fetchTeacherDashboardStats } from "@/services/fetcher/teacher/teacherDashboard";
 import { useActivityManagerStore } from "@/stores/activityManager";
 import { parseProfileInfo } from "@/utils";
 
 export default function HomeScreen() {
-	const { setActivityType } = useActivityManagerStore();
+	const setActivityType = useActivityManagerStore((s) => s.setActivityType);
+
 	const { navigateTo } = useNavigation();
 
 	const userProfile = useUserProfile("teacher");
@@ -34,7 +35,6 @@ export default function HomeScreen() {
 		useAsyncData(
 			async (profile) =>
 				profile && { stats: await fetchTeacherDashboardStats(), profile },
-
 			userProfile,
 		);
 

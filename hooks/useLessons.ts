@@ -5,7 +5,7 @@ import type {
 } from "@/components/primitives/Input/SortSelect";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useFuzzySearch } from "@/hooks/useFuzzySearch";
-import { fetchAllLessons } from "@/services/fetcher/shared/lessons";
+import { fetchAllLessons } from "@/services/fetcher/lesson/lessonQuery";
 
 export interface LessonData {
 	id: number;

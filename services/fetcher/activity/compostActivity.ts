@@ -1,19 +1,17 @@
 import { supabase } from "@/lib/supabase";
 import { ServerError } from "@/services/ServerError";
-import { getWeekRange } from "@/utils";
-import {
-	baseActivityPhotoPath,
-	type ClassData,
-	deletePhoto,
-	uploadPhoto,
-} from "./activity";
-import { getProfileByRole, type UserRole } from "./profile";
+import { PhotoStorage } from "@/services/storage/photo";
+import type { ClassData } from "@/types";
+import { formatClassPathSegment, getWeekRange } from "@/utils";
+import { getProfileByRole, type UserRole } from "../account/profile";
 
-const compostPhotoPath = (
+export const compostPhotos = new PhotoStorage("compost_activity_photo");
+
+export const buildCompostPhotoPath = (
 	id: number,
 	classData: ClassData,
 	timestamptz: string,
-) => `Compost/${baseActivityPhotoPath(id, "KELAS", classData, timestamptz)}`;
+) => `${id}_Kelas_${formatClassPathSegment(classData)}/${timestamptz}.jpg`;
 
 export async function submitCompostActivity(
 	role: UserRole,
@@ -26,8 +24,8 @@ export async function submitCompostActivity(
 ) {
 	const nowTimestamptz = new Date().toISOString();
 
-	const photo = await uploadPhoto(
-		compostPhotoPath(classId, classData, nowTimestamptz),
+	const { path } = await compostPhotos.upload(
+		buildCompostPhotoPath(classId, classData, nowTimestamptz),
 		photoUri,
 	);
 
@@ -37,7 +35,7 @@ export async function submitCompostActivity(
 			class_id: classId,
 			submitted_by: userId,
 			submitted_by_role: role,
-			photo,
+			photo: path,
 			created_at: nowTimestamptz,
 		})
 		.select("id")
@@ -137,7 +135,7 @@ export async function deleteSubmittedCompostActivity(classId: number) {
 		.filter((photo): photo is string => Boolean(photo));
 
 	if (photos.length > 0) {
-		await deletePhoto(photos);
+		await compostPhotos.remove(photos);
 	}
 
 	const { error: deleteError } = await supabase

@@ -24,7 +24,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { VStack } from "@/components/ui/vstack";
 import { useLessons } from "@/hooks/useLessons";
 import { useNavigation } from "@/hooks/useNavigation";
-import { useLessonStore } from "@/stores/lessonAction";
+import { useLessonStore } from "@/stores/lesson";
 
 export default function LessonsScreen() {
 	const insets = useSafeAreaInsets();
