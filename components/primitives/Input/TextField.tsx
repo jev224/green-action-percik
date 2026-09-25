@@ -50,7 +50,7 @@ function clamp(value: string, min?: number, max?: number) {
 	if (Number.isNaN(parsed)) return value;
 	if (min !== undefined && parsed < min) return String(min);
 	if (max !== undefined && parsed > max) return String(max);
-	return value;
+	return String(parsed);
 }
 
 export function TextField({
@@ -92,6 +92,7 @@ export function TextField({
 			onChangeText?.(text);
 			return;
 		}
+
 		const sanitized = sanitizeNumeric(text, !!isDecimal);
 		setInternalValue(sanitized);
 		onChangeText?.(sanitized);
@@ -133,12 +134,13 @@ export function TextField({
 	return (
 		<View className="flex-row items-center gap-2">
 			<Input
-				className="flex-1 py-3 px-5 border-2 shadow-none"
+				className="flex-1 py-3 px-5 border-2 shadow-none pb-!8"
 				isDisabled={isDisabled}
 			>
 				<GSInputField
+					numberOfLines={1}
 					type={inputFieldType}
-					className={cn("text-lg ", className)}
+					className={cn("text-lg", className)}
 					placeholderTextColor={colors.mutedForeground}
 					secureTextEntry={isPassword && !showPassword}
 					value={value ?? (isNumeric ? internalValue : undefined)}
@@ -151,7 +153,9 @@ export function TextField({
 
 				{unit && (
 					<InputSlot>
-						<Text className="text-lg mr-1 font-medium">{unit}</Text>
+						<Text numberOfLines={1} className="text-lg mr-1 font-medium">
+							{unit}
+						</Text>
 					</InputSlot>
 				)}
 

@@ -2,6 +2,7 @@ import { cn } from "@gluestack-ui/utils/nativewind-utils";
 import { Frown, WifiOff } from "lucide-react-native";
 import { type ReactNode, useEffect, useState } from "react";
 import { Platform, RefreshControl, ScrollView } from "react-native";
+import { EaseView } from "react-native-ease";
 import {
 	SafeAreaView,
 	useSafeAreaInsets,
@@ -10,6 +11,7 @@ import { Box } from "@/components/ui/box";
 import { Center } from "@/components/ui/center";
 import { Spinner } from "@/components/ui/spinner";
 import { VStack } from "@/components/ui/vstack";
+import { useKeyboardHeight } from "@/hooks/useKeyboardHeight";
 import { checkConnection, sleepAsync } from "@/utils";
 import ErrorState from "../Feedback/ErrorState";
 
@@ -19,6 +21,7 @@ interface ScreenProps<T = undefined> {
 	isLoading?: boolean;
 	isError?: boolean;
 	data?: T;
+	avoidKeyboard?: boolean;
 	relativeErrorPos?: boolean;
 	overlayComponent?: ReactNode;
 	portalComponent?: ReactNode;
@@ -40,6 +43,7 @@ export function Screen<T = undefined>({
 	isLoading,
 	isError,
 	data,
+	avoidKeyboard,
 	relativeErrorPos,
 	space = "2xl",
 	headerComponent,
@@ -55,6 +59,7 @@ export function Screen<T = undefined>({
 	isRefreshing,
 	onRefresh,
 }: ScreenProps<T>) {
+	const keyboard = useKeyboardHeight();
 	const [hasInternet, setInternet] = useState(true);
 	const [internetLoading, setInternetLoading] = useState(true);
 
@@ -137,11 +142,17 @@ export function Screen<T = undefined>({
 			edges={headerComponent ? ["left", "right", "bottom"] : undefined}
 			style={contentStyle}
 		>
-			<VStack className="px-8 py-6" style={contentStyle} space={space}>
-				{canRenderContent && renderedContent}
-				{effectiveIsLoading && renderedLoading}
-				{footerComponent}
-			</VStack>
+			<EaseView
+				style={{ flex: 1 }}
+				animate={{ translateY: avoidKeyboard ? -keyboard.height : 0 }}
+				transition={{ type: "spring", damping: 32, stiffness: 320, mass: 1 }}
+			>
+				<VStack className="px-8 py-6" style={contentStyle} space={space}>
+					{canRenderContent && renderedContent}
+					{effectiveIsLoading && renderedLoading}
+					{footerComponent}
+				</VStack>
+			</EaseView>
 		</SafeAreaView>
 	);
 
@@ -149,13 +160,15 @@ export function Screen<T = undefined>({
 		<Box className="flex-1 w-full bg-background items-center">
 			<Box className="flex-1 w-full max-w-200">
 				{headerComponent && (
-					<Box className="z-10 -mb-4 pb-4 pt-6">
+					<Box
+						className="z-10 -mb-4 pb-4 pt-6 shrink-0"
+						style={{ position: "relative", zIndex: 10 }}
+					>
 						<SafeAreaView edges={["top", "left", "right"]}>
 							<VStack className="px-8" space={space}>
 								{headerComponent}
 							</VStack>
 						</SafeAreaView>
-
 						<Box className="absolute inset-0 bg-background -z-1" />
 					</Box>
 				)}

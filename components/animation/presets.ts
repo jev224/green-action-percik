@@ -45,6 +45,12 @@ export const AnimationConfig = {
 			stiffness: 140,
 			mass: 1,
 		},
+
+		glide: {
+			damping: 16,
+			stiffness: 240,
+			mass: 1,
+		},
 	},
 
 	// ─────────────────────────────────────────────
@@ -370,5 +376,14 @@ export const DialogPopOut = (_values: ExitAnimationsValues) => {
 				},
 			],
 		},
+	};
+};
+
+export const AnimationNone = () => {
+	"worklet";
+
+	return {
+		initialValues: {},
+		animations: {},
 	};
 };

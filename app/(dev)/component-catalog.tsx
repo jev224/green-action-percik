@@ -23,6 +23,7 @@ import { useState } from "react";
 import {
 	Greeting,
 	ProfileHeader,
+	QuoteCard,
 	StudentList,
 	StudentMultiSelect,
 } from "@/components/domain";
@@ -37,7 +38,6 @@ import {
 	ListSection,
 	PhotoPicker,
 	ProgressBar,
-	QuoteCard,
 	Screen,
 	ScreenHeader,
 	SearchField,

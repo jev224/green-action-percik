@@ -112,6 +112,7 @@ function Chip({
 						backgroundColor: colors.primary,
 						position: "absolute",
 						inset: 0,
+						zIndex: -1,
 					}}
 				/>
 

@@ -93,7 +93,7 @@ export default function FailedScreen() {
 								<Center className="size-full rounded-full bg-destructive ring-8 ring-destructive/50">
 									<Icon
 										as={icon || XIcon}
-										className="size-[70%] text-destructive-foreground"
+										className="w-[70%] h-[70%] text-destructive-foreground"
 									/>
 								</Center>
 							</EaseView>

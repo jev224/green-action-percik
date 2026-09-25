@@ -119,6 +119,28 @@ export class PhotoStorage {
 		}
 	}
 
+	async getRecentPhotos(path: string, limit = 100) {
+		const { data, error } = await supabase.storage
+			.from(this.bucket)
+			.list(path, {
+				limit,
+				sortBy: {
+					column: "created_at",
+					order: "desc",
+				},
+			});
+
+		if (error) {
+			throw this._parseError(
+				"get recent photos",
+				"Foto tidak bisa dimuat. Coba lagi ya",
+				error,
+			);
+		}
+
+		return data ?? [];
+	}
+
 	private _parseError(
 		action: string,
 		ui_message: string,

@@ -1,45 +1,50 @@
 import { supabase } from "@/lib/supabase";
 import { ServerError } from "@/services/ServerError";
-import { getCurrentMonthDateRange, sumReduceFn } from "@/utils";
+import { getCurrentMonthDateRange } from "@/utils";
 
 export async function fetchTeacherDashboardStats() {
 	const { start, end } = getCurrentMonthDateRange();
 
-	const [studentsRes, wasteBankRes, gardenActivityRes, compostRes] =
-		await Promise.all([
-			supabase.from("students").select("*", {
-				count: "exact",
-				head: true,
-			}),
+	const [
+		studentPointsRes,
+		studentsRes,
+		wasteWeightRes,
+		gardenActivityRes,
+		compostRes,
+	] = await Promise.all([
+		supabase.rpc("get_total_student_points"),
 
-			supabase
-				.from("waste_banks")
-				.select("weight")
-				.gte("created_at", start)
-				.lt("created_at", end),
+		supabase.from("students").select("*", {
+			count: "exact",
+			head: true,
+		}),
 
-			supabase
-				.from("garden_activities")
-				.select("*", { count: "estimated", head: true })
-				.gte("created_at", start)
-				.lt("created_at", end),
+		supabase.rpc("get_monthly_waste_weight", { p_start: start, p_end: end }),
 
-			supabase
-				.from("compost_participants")
-				.select("*", { count: "estimated", head: true })
-				.gte("created_at", start)
-				.lt("created_at", end),
-		]);
+		supabase
+			.from("garden_activities")
+			.select("*", { count: "estimated", head: true })
+			.gte("created_at", start)
+			.lt("created_at", end),
+
+		supabase
+			.from("compost_participants")
+			.select("*", { count: "estimated", head: true })
+			.gte("created_at", start)
+			.lt("created_at", end),
+	]);
 
 	if (
+		studentPointsRes.error ||
 		studentsRes.error ||
-		wasteBankRes.error ||
+		wasteWeightRes.error ||
 		gardenActivityRes.error ||
 		compostRes.error
 	) {
 		const failedQueries = [
+			studentPointsRes.error && "Student points",
 			studentsRes.error && "Student",
-			wasteBankRes.error && "waste bank",
+			wasteWeightRes.error && "waste bank weight",
 			gardenActivityRes.error && "garden activity",
 			compostRes.error && "compost activity",
 		]
@@ -53,15 +58,10 @@ export async function fetchTeacherDashboardStats() {
 		});
 	}
 
-	const wasteWeightTotal = wasteBankRes.data.reduce(
-		(sum, item) => sumReduceFn(sum, item.weight),
-		0,
-	);
-
 	return {
 		studentCount: studentsRes.count ?? 0,
-		studentPoinTotal: 0,
-		wasteWeightTotal,
+		studentPoinTotal: studentPointsRes.data ?? 0,
+		wasteWeightTotal: wasteWeightRes.data ?? 0,
 		gardenActivityCount: gardenActivityRes.count ?? 0,
 		compostActivityCount: compostRes.count ?? 0,
 	};

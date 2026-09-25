@@ -1,10 +1,10 @@
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
 import { useState } from "react";
 import {
-	Dimensions,
 	type ImageSourcePropType,
 	Modal,
 	Pressable,
+	useWindowDimensions,
 } from "react-native";
 import Animated, {
 	measure,
@@ -22,8 +22,8 @@ import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 
-const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get("window");
-const PREVIEW_PX = SCREEN_W - 64; // the actual rendered pixel size of UserAvatar size="lg"
+const PREVIEW_MAX_SIZE = 560;
+const PREVIEW_SIDE_OFFSET = 64;
 
 type ProfileRole =
 	| { type: "student"; info?: string; nis?: number }
@@ -44,11 +44,17 @@ export function ProfileHeader({
 	size = "lg",
 	role,
 }: ProfileHeaderProps) {
+	const { width, height } = useWindowDimensions();
+	const previewPx = Math.min(
+		Math.min(width, height) - PREVIEW_SIDE_OFFSET,
+		PREVIEW_MAX_SIZE,
+	);
+
 	const avatarRef = useAnimatedRef<typeof Pressable>();
 	const [previewVisible, setPreviewVisible] = useState(false);
 
-	const targetLeft = (SCREEN_W - PREVIEW_PX) / 2;
-	const targetTop = (SCREEN_H - PREVIEW_PX) / 2;
+	const targetLeft = (width - previewPx) / 2;
+	const targetTop = (height - previewPx) / 2;
 
 	const opacity = useSharedValue(0);
 	const radius = useSharedValue(0);
@@ -91,7 +97,7 @@ export function ProfileHeader({
 			// ...then animate straight to the centered target box
 			top.value = withSpring(targetTop, AnimationConfig.spring.snappy);
 			left.value = withSpring(targetLeft, AnimationConfig.spring.snappy);
-			boxSize.value = withSpring(PREVIEW_PX, AnimationConfig.spring.snappy);
+			boxSize.value = withSpring(previewPx, AnimationConfig.spring.snappy);
 
 			opacity.value = withTiming(1, AnimationConfig.timing.fastEnter);
 			radius.value = withTiming(12, AnimationConfig.timing.smoothEnter);

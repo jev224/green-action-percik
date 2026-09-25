@@ -1,17 +1,34 @@
 import { supabase } from "@/lib/supabase";
 import { ServerError } from "@/services/ServerError";
-import { getCurrentMonthDateRange, sumReduceFn } from "@/utils";
+import { getCurrentMonthDateRange } from "@/utils";
+
+const DEFAULT_TARGETS = {
+	wasteWeightTarget: 160,
+	compostActivityTarget: 1,
+	gardenActivityTarget: 4,
+} as const;
 
 export async function fetchStudentStatistics(userId: string) {
 	const { start, end } = getCurrentMonthDateRange();
 
-	const [wasteBankRes, gardenActivityRes, compostRes] = await Promise.all([
-		supabase
-			.from("waste_banks")
-			.select("weight")
-			.eq("student_id", userId)
-			.gte("created_at", start)
-			.lt("created_at", end),
+	const [
+		studentPointRes,
+		claimablePriceRes,
+		wasteWeightRes,
+		gardenActivityRes,
+		compostRes,
+	] = await Promise.all([
+		supabase.from("students").select("points").eq("user_id", userId).single(),
+
+		supabase.rpc("get_unpaid_student_waste_total", {
+			p_student_id: userId,
+		}),
+
+		supabase.rpc("get_monthly_waste_weight", {
+			p_start: start,
+			p_end: end,
+			p_student_id: userId,
+		}),
 
 		supabase
 			.from("garden_activities")
@@ -28,9 +45,17 @@ export async function fetchStudentStatistics(userId: string) {
 			.lt("created_at", end),
 	]);
 
-	if (wasteBankRes.error || gardenActivityRes.error || compostRes.error) {
+	if (
+		studentPointRes.error ||
+		claimablePriceRes.error ||
+		wasteWeightRes.error ||
+		gardenActivityRes.error ||
+		compostRes.error
+	) {
 		const failedQueries = [
-			wasteBankRes.error && "waste bank",
+			studentPointRes.error && "Student data",
+			claimablePriceRes.error && "Claimable waste price",
+			wasteWeightRes.error && "waste bank",
 			gardenActivityRes.error && "garden activity",
 			compostRes.error && "compost activity",
 		]
@@ -44,23 +69,54 @@ export async function fetchStudentStatistics(userId: string) {
 		});
 	}
 
-	const wasteWeightTotal = wasteBankRes.data.reduce(
-		(sum, item) => sumReduceFn(sum, item.weight),
-		0,
-	);
-
 	return {
-		studentPoints: 0, // TODO: not wired up yet — reward formula still unresolved
-		wasteWeightTotal,
+		studentPoints: studentPointRes.data.points,
+		claimablePrice: claimablePriceRes.data ?? 0,
+		wasteWeightTotal: wasteWeightRes.data ?? 0,
 		gardenActivityCount: gardenActivityRes.count ?? 0,
 		compostActivityCount: compostRes.count ?? 0,
 	};
 }
 
-export async function fetchStudentTargets(_userId: string) {
+export async function fetchStudentTargets(userId: string) {
+	const [studentRes, globalRes] = await Promise.all([
+		supabase
+			.from("student_targets")
+			.select("*")
+			.eq("student_id", userId)
+			.maybeSingle(),
+
+		supabase.from("all_student_targets").select("*").limit(1).maybeSingle(),
+	]);
+
+	if (studentRes.error) {
+		console.error(
+			`Failed to fetch student targets (student_id: ${userId}): ${studentRes.error.message}`,
+		);
+	}
+
+	if (globalRes.error) {
+		console.error(
+			`Failed to fetch all_student_targets: ${globalRes.error.message}`,
+		);
+	}
+
+	const student = studentRes.data;
+	const global = globalRes.data;
+
+	// Priority per field: student override -> global target -> hardcoded default
 	return {
-		wasteWeightTarget: 160,
-		compostActivityTarget: 1,
-		gardenActivityTarget: 4,
+		wasteWeightTarget:
+			student?.waste_weight ??
+			global?.waste_weight ??
+			DEFAULT_TARGETS.wasteWeightTarget,
+		compostActivityTarget:
+			student?.compost_activity ??
+			global?.compost_activity ??
+			DEFAULT_TARGETS.compostActivityTarget,
+		gardenActivityTarget:
+			student?.garden_activity ??
+			global?.garden_activity ??
+			DEFAULT_TARGETS.gardenActivityTarget,
 	};
 }

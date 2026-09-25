@@ -54,7 +54,7 @@ export default function LessonOverviewScreen() {
 	const handleReadLesson = () => {
 		if (!data) return;
 
-		setLessonContentData(data.title, data.contents);
+		setLessonContentData(data.id, data.title, data.contents);
 		navigateTo("/(student)/learn/content");
 	};
 

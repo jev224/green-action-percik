@@ -114,7 +114,7 @@ export default function SuccessScreen() {
 								<Center className="size-full rounded-full bg-success ring-8 ring-success/50">
 									<Icon
 										as={icon || Check}
-										className="size-[70%] text-success-foreground"
+										className="w-[70%] h-[70%] text-success-foreground"
 									/>
 								</Center>
 							</EaseView>

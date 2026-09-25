@@ -18,7 +18,8 @@ export function StudentList({ data, onPressStudent }: StudentListProps) {
 		<FlatList
 			data={data}
 			showsVerticalScrollIndicator={false}
-			className="overflow-visible"
+			style={{ overflow: "visible" }}
+			removeClippedSubviews={false}
 			renderItem={({ item }) => (
 				<Animated.View
 					layout={contentLayoutTransition}

@@ -45,6 +45,7 @@ const MOCK_STUDENTS_RAW: Awaited<ReturnType<typeof fetchAllStudents>> = [
 		username: "andi.saputra",
 		nis: 2024001,
 		class: { grade: "7", major: "IPA", sub_major: "A" },
+		points: 0,
 	},
 	{
 		id: 2,
@@ -56,6 +57,7 @@ const MOCK_STUDENTS_RAW: Awaited<ReturnType<typeof fetchAllStudents>> = [
 		username: "budi.santoso",
 		nis: 2024002,
 		class: { grade: "7", major: "IPA", sub_major: "A" },
+		points: 0,
 	},
 	{
 		id: 3,
@@ -67,6 +69,7 @@ const MOCK_STUDENTS_RAW: Awaited<ReturnType<typeof fetchAllStudents>> = [
 		username: "citra.dewi",
 		nis: 2024003,
 		class: { grade: "8", major: "IPS", sub_major: "B" },
+		points: 0,
 	},
 	{
 		id: 4,
@@ -78,6 +81,7 @@ const MOCK_STUDENTS_RAW: Awaited<ReturnType<typeof fetchAllStudents>> = [
 		username: "dian.permata",
 		nis: 2024004,
 		class: { grade: "9", major: "IPA", sub_major: "C" },
+		points: 0,
 	},
 	{
 		id: 5,
@@ -89,6 +93,7 @@ const MOCK_STUDENTS_RAW: Awaited<ReturnType<typeof fetchAllStudents>> = [
 		username: "eka.wijaya",
 		nis: 2024005,
 		class: { grade: "8", major: "IPS", sub_major: "B" },
+		points: 0,
 	},
 ];
 
@@ -124,7 +129,7 @@ export function useStudents(options?: UseStudentsOptions) {
 				name: s.name,
 				photoUrl: s.photoUrl,
 				grade: `Kelas ${s.class.grade}`,
-				point: 0,
+				point: s.points,
 			})),
 		[rawStudents],
 	);

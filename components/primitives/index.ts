@@ -9,7 +9,6 @@ export { UserAvatar } from "./Avatar/UserAvatar";
 export { Button } from "./Button/Button";
 export { IconButton } from "./Button/IconButton";
 export { ActionTile } from "./Card/ActionTile";
-export { QuoteCard } from "./Card/QuoteCard";
 export { SortableCard } from "./Card/SortableCard";
 export { StatCard } from "./Card/StatCard";
 export { SurfaceCard } from "./Card/SurfaceCard";

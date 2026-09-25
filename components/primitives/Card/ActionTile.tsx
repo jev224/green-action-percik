@@ -1,7 +1,9 @@
+import { cn } from "@gluestack-ui/utils/nativewind-utils";
+
 import type { ComponentProps, ReactNode } from "react";
 import { type ImageSourcePropType, Pressable, StyleSheet } from "react-native";
 import { EaseView } from "react-native-ease";
-import { cnBase, tv, type VariantProps } from "tailwind-variants";
+import { tv, type VariantProps } from "tailwind-variants";
 import { config } from "@/components/animation/config";
 import { AnimationConfig } from "@/components/animation/presets";
 import type {
@@ -23,7 +25,7 @@ const actionTileStyle = tv({
 		card: "shadow-md",
 		thumbnail: "size-18",
 		icon: "w-12 h-12",
-		content: "flex-1",
+		content: "flex-1 w-full",
 		description: "leading-5 opacity-80",
 		title: "",
 	},
@@ -135,7 +137,7 @@ export function ActionTile({
 			color={color}
 			variant={variant === "ghost" ? "outline" : variant}
 			className={styles.card({
-				className: cnBase(
+				className: cn(
 					className,
 					variant === "ghost" &&
 						"bg-transparent border-transparent p-1 overflow-visible shadow-none",
@@ -180,7 +182,7 @@ export function ActionTile({
 					{/* Content */}
 					<VStack
 						className={styles.content({
-							className: cnBase(contentPosition === "top" && "self-start"),
+							className: cn(contentPosition === "top" && "self-start"),
 						})}
 						space="xs"
 					>

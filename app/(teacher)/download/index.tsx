@@ -81,7 +81,7 @@ export default function DownloadScreen() {
 					<ListSection title="Data yang Disertakan">
 						<SurfaceCard color="neutral" variant="outline" className="p-5">
 							{(styles) => (
-								<VStack space="xl" className="">
+								<VStack space="xl" className="w-full">
 									{INCLUDED_DATA.map((item, index) => (
 										<HStack
 											// biome-ignore lint/suspicious/noArrayIndexKey: Static UI items with fixed order

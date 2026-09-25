@@ -8,7 +8,9 @@ interface EmptyStateProps {
 export function EmptyState({ message }: EmptyStateProps) {
 	return (
 		<Center className="items-center py-10">
-			<Text className="text-muted-foreground">{message}</Text>
+			<Text className="text-muted-foreground text-center max-w-[80%]">
+				{message}
+			</Text>
 		</Center>
 	);
 }

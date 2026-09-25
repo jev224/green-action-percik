@@ -9,6 +9,25 @@ export type Json =
 export type Database = {
 	public: {
 		Tables: {
+			motivations: {
+				Row: {
+					id: number;
+					quote: string;
+					author: string;
+				};
+				Insert: {
+					id?: number;
+					quote: string;
+					author: string;
+				};
+				Update: {
+					id?: number;
+					quote?: string;
+					author?: string;
+				};
+				Relationships: [];
+			};
+
 			app_public_informations: {
 				Row: {
 					key: string;
@@ -188,6 +207,97 @@ export type Database = {
 				};
 				Relationships: [];
 			};
+			completed_lessons: {
+				Row: {
+					id: number;
+					lesson_id: number;
+					student_id: string;
+					created_at: string;
+				};
+				Insert: {
+					id?: number;
+					lesson_id: number;
+					student_id: string;
+					created_at?: string;
+				};
+				Update: {
+					id?: number;
+					lesson_id?: number;
+					student_id?: string;
+					created_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "completed_lessons_lesson_id_fkey";
+						columns: ["lesson_id"];
+						isOneToOne: false;
+						referencedRelation: "learning_lessons";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "completed_lessons_student_id_fkeyy";
+						columns: ["student_id"];
+						isOneToOne: false;
+						referencedRelation: "students";
+						referencedColumns: ["user_id"];
+					},
+				];
+			};
+
+			all_student_targets: {
+				Row: {
+					id: number;
+					waste_weight: number;
+					compost_activity: number;
+					garden_activity: number;
+				};
+				Insert: {
+					id?: number;
+					waste_weight?: number;
+					compost_activity?: number;
+					garden_activity?: number;
+				};
+				Update: {
+					id?: number;
+					waste_weight?: number;
+					compost_activity?: number;
+					garden_activity?: number;
+				};
+				Relationships: [];
+			};
+
+			student_targets: {
+				Row: {
+					id: number;
+					student_id: string;
+					waste_weight: number;
+					compost_activity: number;
+					garden_activity: number;
+				};
+				Insert: {
+					id?: number;
+					student_id: string;
+					waste_weight?: number;
+					compost_activity?: number;
+					garden_activity?: number;
+				};
+				Update: {
+					student_id?: string;
+					waste_weight?: number;
+					compost_activity?: number;
+					garden_activity?: number;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "student_targets_student_id_fkey";
+						columns: ["student_id"];
+						isOneToOne: false;
+						referencedRelation: "students";
+						referencedColumns: ["user_id"];
+					},
+				];
+			};
+
 			students: {
 				Row: {
 					id: number;
@@ -198,6 +308,7 @@ export type Database = {
 					name: string;
 					nis: number;
 					photo?: string;
+					points: number;
 				};
 				Insert: {
 					id?: number;
@@ -208,6 +319,7 @@ export type Database = {
 					name: string;
 					nis: number;
 					photo?: string;
+					points?: number;
 				};
 				Update: {
 					id?: number;
@@ -218,6 +330,7 @@ export type Database = {
 					name?: string;
 					nis?: number;
 					photo?: string;
+					points?: number;
 				};
 				Relationships: [
 					{
@@ -303,7 +416,24 @@ export type Database = {
 			[_ in never]: never;
 		};
 		Functions: {
-			[_ in never]: never;
+			get_total_student_points: {
+				Args: Record<PropertyKey, never>;
+				Returns: number;
+			};
+			get_monthly_waste_weight: {
+				Args: {
+					p_start: string;
+					p_end: string;
+					p_student_id?: string;
+				};
+				Returns: number;
+			};
+			get_unpaid_student_waste_total: {
+				Args: {
+					p_student_id?: string;
+				};
+				Returns: number;
+			};
 		};
 		Enums: {
 			// TODO: replace with your actual enum values for the "major" column

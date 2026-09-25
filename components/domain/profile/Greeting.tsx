@@ -11,12 +11,7 @@ import { UserAvatar } from "@/components/primitives/Avatar/UserAvatar";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Icon, InfoIcon, SettingsIcon } from "@/components/ui/icon";
-import {
-	Menu,
-	MenuItem,
-	MenuItemLabel,
-	MenuSeparator,
-} from "@/components/ui/menu";
+import { Menu, MenuItem, MenuItemLabel } from "@/components/ui/menu";
 import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
@@ -136,8 +131,6 @@ export function Greeting({ name, info, imageSource }: GreetingProps) {
 					<Icon as={InfoIcon} size="md" className="mr-2 " />
 					<MenuItemLabel>Tentang</MenuItemLabel>
 				</MenuItem>
-
-				<MenuSeparator />
 
 				<MenuItem
 					onPress={() => setShowLogoutModal(true)}

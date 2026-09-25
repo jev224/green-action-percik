@@ -1,3 +1,4 @@
+import { Image } from "expo-image";
 import {
 	Apple,
 	BrushCleaning,
@@ -11,26 +12,24 @@ import {
 	GlowOrb,
 	LeafDecoration,
 } from "@/components/decoration";
-import { Greeting } from "@/components/domain";
+import { Greeting, PhotoCard, QuoteCard } from "@/components/domain";
 import {
 	ActionTile,
 	HomeCarousel,
 	ListSection,
-	QuoteCard,
 	Screen,
 	StatCard,
 } from "@/components/primitives";
 import { HStack } from "@/components/ui/hstack";
-import { Image } from "@/components/ui/image";
 import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
 import { VStack } from "@/components/ui/vstack";
-
 import { images } from "@/constants/Assets";
-
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useNavigation } from "@/hooks/useNavigation";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { useUserProfile } from "@/hooks/useUser";
+import { fetchMotiovations } from "@/services/fetcher/others/motivations";
+import { fetchOrganizationPhotoURLs } from "@/services/fetcher/others/organizationPhotos";
 import { fetchStudentStatistics } from "@/services/fetcher/student/studentDashboard";
 import { parseProfileInfo } from "@/utils";
 
@@ -43,6 +42,8 @@ export default function HomeScreen() {
 		useAsyncData(
 			async (profile) =>
 				profile && {
+					motivations: await fetchMotiovations(),
+					organizationPhotos: await fetchOrganizationPhotoURLs(),
 					profile,
 					stats: await fetchStudentStatistics(profile.user_id),
 				},
@@ -64,6 +65,8 @@ export default function HomeScreen() {
 			onTryAgain={refresh}
 			requiredInternet
 			contentComponent={({
+				organizationPhotos,
+				motivations,
 				stats: { wasteWeightTotal, gardenActivityCount, compostActivityCount },
 				profile: { name, class: classData, photoUrl },
 			}) => (
@@ -83,28 +86,23 @@ export default function HomeScreen() {
 						}
 					>
 						<QuoteCard
+							quotesData={motivations}
 							outerDecoration={
 								<LeafDecoration variant="accent" pattern="2" shadow="lg" />
 							}
 							innerDecoration={
 								<Image
 									source={images.bannerDecorationLight}
-									className="size-full"
+									style={{ width: "100%", height: "100%" }}
+									contentFit="cover"
+									contentPosition="bottom"
 								/>
 							}
 						/>
 
-						<QuoteCard
-							outerDecoration={
-								<LeafDecoration variant="accent" pattern="2" shadow="lg" />
-							}
-							innerDecoration={
-								<Image
-									source={images.bannerDecorationLight}
-									className="size-full"
-								/>
-							}
-						/>
+						{organizationPhotos.length > 0 && (
+							<PhotoCard photos={organizationPhotos} />
+						)}
 					</HomeCarousel>
 
 					<ListSection

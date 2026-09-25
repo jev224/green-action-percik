@@ -35,8 +35,10 @@ import { Text } from "@/components/ui/text";
 import { useResultScreen } from "@/hooks/useResultScreen";
 
 import { useShowToast } from "@/hooks/useShowToast";
+import { useUserProfile } from "@/hooks/useUser";
+import { insertCompletedLesson } from "@/services/fetcher/lesson/completedLesson";
 import { useLessonStore } from "@/stores/lesson";
-import { calculatePercentage } from "@/utils";
+import { calculatePercentage, normalizeError } from "@/utils";
 
 // Extracted so swiping doesn't depend on `currentIndex` React state at all —
 // each card reads the shared carouselProgress value directly on the UI
@@ -59,11 +61,11 @@ const CarouselCard = memo(function CarouselCard({
 
 	return (
 		<Animated.View style={cardStyle}>
+			<View className="inset-0 absolute bg-background -z-1" />
+
 			<SurfaceCard className="p-0 gap-2 items-start min-h-[70%]">
 				{(styles) => (
 					<>
-						<View className="inset-0 absolute bg-background -z-1" />
-
 						<ScrollView contentContainerClassName="p-6 pr-9 gap-2">
 							<Heading className={styles.text()} size="xl">
 								{title}
@@ -80,6 +82,9 @@ const CarouselCard = memo(function CarouselCard({
 });
 
 export default function LessonContentScreen() {
+	const [isLoading, setLoading] = useState(false);
+	const { profile } = useUserProfile("student");
+
 	const { showResult } = useResultScreen();
 	const lessonContentData = useLessonStore((state) => state.lessonContentData);
 	const { width: screenWidth } = useWindowDimensions();
@@ -149,14 +154,27 @@ export default function LessonContentScreen() {
 		[screenWidth],
 	);
 
-	const handleNext = useCallback(() => {
+	const handleNext = useCallback(async () => {
 		if (isLast) {
-			showResult({
-				type: "success",
-				title: "Materi Selesai",
-				subtitle: "Kamu sudah menyelesaikan materi pembelajaran keren!",
-				icon: BookCheck,
-			});
+			try {
+				if (!profile || !lessonContentData) return;
+				setLoading(true);
+
+				await insertCompletedLesson(lessonContentData.id, profile.user_id);
+
+				showResult({
+					type: "success",
+					title: "Materi Selesai",
+					subtitle: "Kamu sudah menyelesaikan materi pembelajaran keren!",
+					icon: BookCheck,
+				});
+			} catch (e) {
+				const { uiMessage } = normalizeError(e, "Lesson reader");
+				showToast({ title: uiMessage });
+			} finally {
+				setLoading(false);
+			}
+
 			return;
 		}
 
@@ -187,6 +205,7 @@ export default function LessonContentScreen() {
 
 	return (
 		<Screen
+			isLoading={isLoading}
 			headerComponent={
 				<>
 					<ScreenHeader
@@ -206,11 +225,12 @@ export default function LessonContentScreen() {
 				<BottomPanel>
 					<HStack space="md">
 						<Button
+							fill
 							size="cta"
 							label="Sebelumnya"
 							variant="outline"
 							onPress={handlePrev}
-							disabled={isFirst}
+							isDisabled={isLoading || isFirst}
 						/>
 						<Animated.View className={"flex-1"} style={doneButtonAnimatedStyle}>
 							<Button
@@ -218,6 +238,7 @@ export default function LessonContentScreen() {
 								fill
 								label={isLast ? "Selesai" : "Lanjut"}
 								onPress={handleNext}
+								isLoading={isLoading}
 							/>
 						</Animated.View>
 					</HStack>

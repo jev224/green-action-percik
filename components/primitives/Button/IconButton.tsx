@@ -26,7 +26,7 @@ export function IconButton({
 			iconClassName={cn(size === "sm" && "w-5 h-5")}
 			{...props}
 			className={cn(
-				"p-2 aspect-square rounded-sm",
+				"p-2 aspect-square rounded-sm ",
 				size === "sm" && "p-1",
 				className,
 			)}

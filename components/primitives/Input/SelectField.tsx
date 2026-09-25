@@ -11,6 +11,14 @@ import {
 import { truncateText } from "@/utils";
 import { SmoothSelectPortal } from "./SmoothSelectPortal";
 
+const BROWSER_RESET_STYLE = {
+	outlineWidth: 0,
+	boxShadow: "none",
+	WebkitTapHighlightColor: "transparent",
+	cursor: "pointer",
+	userSelect: "none",
+} as const;
+
 interface SelectOption {
 	label: string;
 	value: string;
@@ -47,15 +55,19 @@ export function SelectField({
 			<SelectTrigger
 				className={cn(
 					"rounded-md justify-between py-4",
-					inList && "p-0 -mr-4 gap-2.5 border-0",
+					inList &&
+						"p-0 -mr-4 gap-2.5 border-0 ring-0 w-fit" +
+							"data-[focus=true]:border-0 data-[focus=true]:ring-0 " +
+							"data-[hover=true]:border-0 data-[active=true]:border-0",
 					className,
 				)}
+				style={inList ? BROWSER_RESET_STYLE : undefined}
 				variant="outline"
 				size="lg"
 				onPress={() => setIsOpen(true)}
 			>
 				<SelectInput
-					className={cn("ml-3 font-medium", inList && "pr-0")}
+					className={cn("ml-3 font-medium", inList && "pr-0 text-right")}
 					placeholder={inList ? truncateText(placeholder, 16) : placeholder}
 				/>
 

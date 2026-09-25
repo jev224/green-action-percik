@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { tv, type VariantProps } from "tailwind-variants";
 
 const bottomPanelStyle = tv({
-	base: "p-8 pb-2 rounded-t-xl",
+	base: "p-8 rounded-t-xl",
 	variants: {
 		variant: {
 			ghost: "bg-transparent border-0",

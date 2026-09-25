@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
-import { ActivitySubmittedScreen, BackButton } from "@/components/domain";
 import {
 	BottomPanel,
 	Button,
 	Screen,
 	ScreenHeader,
 } from "@/components/primitives";
+import { BackButton } from "../nav/BackButton";
+import { ActivitySubmittedScreen } from "./AlreadySubmittedScreen";
 
 type Props = {
 	title: string;

@@ -57,7 +57,7 @@ function ListRow({ item }: { item: ListItemData }) {
 	const iconColor = isDestructive ? "text-destructive" : "text-foreground/80";
 
 	const { colors } = useThemeColors();
-	const { bind, scaleAnimation, isPressing } = usePressFeedback(1.04);
+	const { bind, isPressing } = usePressFeedback(1.04);
 
 	const animatedStyle = useAnimatedStyle(() => {
 		const paddingVertical = interpolate(isPressing ? 1 : 0, [0, 1], [20, 24]);
@@ -126,7 +126,7 @@ function ListRow({ item }: { item: ListItemData }) {
 				}}
 			/>
 
-			<EaseView animate={scaleAnimation}>{content}</EaseView>
+			{content}
 		</Pressable>
 	);
 }

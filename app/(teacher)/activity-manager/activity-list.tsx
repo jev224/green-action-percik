@@ -23,6 +23,7 @@ import {
 } from "@/services/fetcher/activity/teacherActivityManager";
 import {
 	type ClassData,
+	type FilterSection,
 	useActivityManagerStore,
 	type WasteBankData,
 } from "@/stores/activityManager";
@@ -48,9 +49,7 @@ type WasteCardData = {
 
 type ActivityCardData = CompostCardData | WasteCardData;
 
-type FilterStatus = "incompleted" | "completed";
-
-const FILTER_OPTIONS: SegmentedControlOption<FilterStatus>[] = [
+const FILTER_OPTIONS: SegmentedControlOption<FilterSection>[] = [
 	{ label: "Belum Selesai", value: "incompleted" },
 	{ label: "Selesai", value: "completed" },
 ] as const;
@@ -84,11 +83,13 @@ async function toWasteCards(): Promise<WasteCardData[]> {
 
 export default function ActivityListScreen() {
 	const [searchQuery, setSearchQuery] = useState("");
-	const [filterStatus, setFilterStatus] = useState<FilterStatus>("incompleted");
+	const [filterStatus, setFilterStatus] =
+		useState<FilterSection>("incompleted");
 
 	const activityType = useActivityManagerStore((s) => s.activityType);
 	const setSelectedClass = useActivityManagerStore((s) => s.setSelectedClass);
 	const setSelectedWaste = useActivityManagerStore((s) => s.setSelectedWaste);
+	const setSourceSection = useActivityManagerStore((s) => s.setSourceSection);
 
 	const { goBack, navigateTo } = useNavigation();
 	const showToast = useShowToast();
@@ -120,17 +121,19 @@ export default function ActivityListScreen() {
 
 	const handlePress = useCallback(
 		(cardData: ActivityCardData) => {
+			setSourceSection(filterStatus);
+
 			if (cardData.type === "compost-activity") {
 				setSelectedClass(cardData.data);
-				navigateTo("/activity-manager/compost-submission");
+				navigateTo("/(teacher)/activity-manager/compost-submission");
 			}
 
 			if (cardData.type === "waste-bank") {
 				setSelectedWaste(cardData.data);
-				navigateTo("/activity-manager/waste-verifier");
+				navigateTo("/(teacher)/activity-manager/waste-verifier");
 			}
 		},
-		[setSelectedClass, setSelectedWaste],
+		[filterStatus, setSelectedClass, setSelectedWaste, setSourceSection],
 	);
 
 	const renderItem = useCallback(

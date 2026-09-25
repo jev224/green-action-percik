@@ -75,7 +75,7 @@ export const StudentListItem = memo(function StudentListItem({
 				/>
 
 				{noOffset ? (
-					<Box className="flex-row items-center">
+					<Box className="flex-row items-center w-full">
 						<EaseView
 							style={{ flex: 1 }}
 							animate={{ translateX: isPressing || selected ? 14 : 0 }}
@@ -114,7 +114,7 @@ export const StudentListItem = memo(function StudentListItem({
 						)}
 					</Box>
 				) : (
-					<Box className="flex-row items-center px-4 gap-4">
+					<Box className="flex-row items-center px-4 gap-4 w-full">
 						<UserAvatar
 							selected={selected}
 							name={name}

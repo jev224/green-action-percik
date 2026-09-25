@@ -1,6 +1,6 @@
 import { type ComponentProps, type ReactNode, useEffect } from "react";
 import { Keyboard } from "react-native";
-import { useAnimatedStyle, withTiming } from "react-native-reanimated";
+import { EaseView } from "react-native-ease";
 import { DrawerIn, DrawerOut } from "@/components/animation/presets";
 import { Box } from "@/components/ui/box";
 import {
@@ -31,10 +31,6 @@ const Drawer = ({
 }: DrawerProps) => {
 	const keyboard = useKeyboardHeight();
 
-	const animatedBodyStyle = useAnimatedStyle(() => ({
-		transform: [{ translateY: withTiming(isOpen ? -keyboard.height / 2 : 0) }],
-	}));
-
 	useEffect(() => {
 		if (!isOpen) Keyboard.dismiss();
 	}, [isOpen]);
@@ -43,29 +39,40 @@ const Drawer = ({
 		<GSDrawer isOpen={isOpen} anchor={anchor} {...props}>
 			<DrawerBackdrop />
 
-			<DrawerContent
-				className="bg-transparent border-0"
-				entering={DrawerIn.direction(anchor)}
-				exiting={DrawerOut.direction(anchor)}
-				style={animatedBodyStyle}
+			<EaseView
+				style={{
+					flex: 1,
+					justifyContent: "flex-end",
+					alignItems: "center",
+				}}
+				animate={{ translateY: -keyboard.height / 2 }}
+				transition={{ type: "spring", damping: 32, stiffness: 320, mass: 1 }}
 			>
-				<Box className="absolute inset-0 -bottom-20 rounded-xl bg-background" />
+				<DrawerContent
+					className="bg-transparent border-0 relative max-w-180"
+					entering={DrawerIn.direction(anchor)}
+					exiting={DrawerOut.direction(anchor)}
+				>
+					<Box className="absolute inset-0 -bottom-full rounded-xl bg-background" />
 
-				<Box
-					className="absolute inset-0 z-30"
-					style={{ pointerEvents: isOpen ? "none" : "box-only" }}
-				/>
+					<Box
+						className="absolute inset-0 z-30"
+						style={{ pointerEvents: isOpen ? "none" : "box-only" }}
+					/>
 
-				{headerComponenent && <DrawerHeader>{headerComponenent}</DrawerHeader>}
+					{headerComponenent && (
+						<DrawerHeader>{headerComponenent}</DrawerHeader>
+					)}
 
-				<DrawerBody keyboardDismissMode="interactive">
-					{contentComponent}
-				</DrawerBody>
+					<DrawerBody keyboardDismissMode="interactive">
+						{contentComponent}
+					</DrawerBody>
 
-				{footerComponent && (
-					<DrawerFooter className="mb-4">{footerComponent}</DrawerFooter>
-				)}
-			</DrawerContent>
+					{footerComponent && (
+						<DrawerFooter className="mb-4">{footerComponent}</DrawerFooter>
+					)}
+				</DrawerContent>
+			</EaseView>
 		</GSDrawer>
 	);
 };

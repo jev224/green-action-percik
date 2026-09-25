@@ -7,6 +7,7 @@ type Lesson =
 	| { mode: "view"; id: number };
 
 interface LessonContentData {
+	id: number;
 	title: string;
 	contents: LessonContent[];
 }
@@ -18,15 +19,19 @@ interface LessonStore {
 	viewLesson: (id: number) => void;
 
 	lessonContentData: LessonContentData | null;
-	setLessonContentData: (title: string, contents: LessonContent[]) => void;
+	setLessonContentData: (
+		id: number,
+		title: string,
+		contents: LessonContent[],
+	) => void;
 	clearLessonContentData: () => void;
 }
 
 export const useLessonStore = create<LessonStore>((set) => ({
 	lesson: { mode: "create" },
 	lessonContentData: null,
-	setLessonContentData: (title, contents) =>
-		set({ lessonContentData: { title, contents } }),
+	setLessonContentData: (id, title, contents) =>
+		set({ lessonContentData: { id, title, contents } }),
 	clearLessonContentData: () => set({ lessonContentData: null }),
 
 	createLesson: () => set({ lesson: { mode: "create" } }),

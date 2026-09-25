@@ -105,9 +105,11 @@ function SegmentedControlButton<T extends string>({
 						)}
 					/>
 				)}
+
 				<RNText
+					numberOfLines={1}
 					className={cn(
-						"font-bold text-base",
+						"font-bold text-base ",
 						isActive ? "text-primary-foreground" : "text-foreground",
 					)}
 				>

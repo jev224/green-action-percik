@@ -16,26 +16,32 @@ import {
 	Screen,
 	ScreenHeader,
 	SearchField,
+	SegmentedControl,
 	SortSelect,
 } from "@/components/primitives";
+import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Skeleton } from "@/components/ui/skeleton";
 import { VStack } from "@/components/ui/vstack";
 import type { ThemeColors } from "@/constants/Colors";
 import { useLessons } from "@/hooks/useLessons";
-
 import { useNavigation } from "@/hooks/useNavigation";
 import { useThemeColors } from "@/hooks/useThemeColors";
+import { useUserProfile } from "@/hooks/useUser";
 import { useLessonStore } from "@/stores/lesson";
 
 export default function LearningScreen() {
 	const { navigateTo } = useNavigation();
+	const { profile } = useUserProfile("student");
 
 	const viewLesson = useLessonStore((state) => state.viewLesson);
 
 	const {
 		searchQuery,
 		setSearchQuery,
+		segmentedControlOptions,
+		segmentedControlValue,
+		segementedControlSet,
 		sortOptions,
 		sort,
 		setSort,
@@ -47,7 +53,7 @@ export default function LearningScreen() {
 		isRefreshing,
 		sortDefaultDirection,
 		sortDefaultField,
-	} = useLessons();
+	} = useLessons(profile?.user_id);
 
 	const handleView = useCallback(
 		(id: number) => {
@@ -90,6 +96,12 @@ export default function LearningScreen() {
 							defaultDirection={sortDefaultDirection}
 						/>
 					</HStack>
+
+					<SegmentedControl
+						onChange={segementedControlSet}
+						value={segmentedControlValue}
+						options={segmentedControlOptions}
+					/>
 				</>
 			}
 			contentComponent={
@@ -101,8 +113,20 @@ export default function LearningScreen() {
 						renderItem={renderItem}
 						keyExtractor={(lesson) => String(lesson.id)}
 					/>
+				) : segmentedControlValue === "incompleted" ? (
+					<>
+						<Heading size="5xl" className="self-center mt-8 -mb-8 py-1">
+							😎👏
+						</Heading>
+						<EmptyState message="Kamu telah menyelesaikan semua materi pembelajaran." />
+					</>
 				) : (
-					<EmptyState message="Tidak ada materi pembalajaran." />
+					<>
+						<Heading size="5xl" className="self-center mt-8 -mb-8 py-1">
+							😕
+						</Heading>
+						<EmptyState message="Tidak ada materi pembalajaran yang kamu selesaikan." />
+					</>
 				)
 			}
 			loadingComponent={

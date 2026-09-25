@@ -1,3 +1,5 @@
+export { PhotoCard } from "./card/PhotoCard";
+export { QuoteCard } from "./card/QuoteCard";
 export { ProfileList } from "./list/ProfileList";
 export { StudentMultiSelect } from "./list/StudentSelector";
 export { BackButton } from "./nav/BackButton";

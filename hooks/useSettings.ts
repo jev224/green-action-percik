@@ -1,9 +1,11 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 import { useCallback, useEffect, useState } from "react";
-
+import { Platform } from "react-native";
 import { appInformation } from "@/constants/App";
 import { assignKey } from "@/utils";
+
+const isWeb = Platform.OS === "web";
 
 export type Settings = {
 	theme: "light" | "dark" | "system";
@@ -28,11 +30,23 @@ let cachedSettings: Settings = { ...DEFAULT_SETTINGS };
 let isLoaded = false;
 let listeners: Array<(s: Settings) => void> = [];
 
+const secureStorage = {
+	get(): string | null {
+		return isWeb
+			? localStorage.getItem(appInformation.storageKey)
+			: SecureStore.getItem(appInformation.storageKey);
+	},
+	set(value: string) {
+		if (isWeb) localStorage.setItem(appInformation.storageKey, value);
+		else SecureStore.setItem(appInformation.storageKey, value);
+	},
+};
+
 async function loadSettings(): Promise<Settings> {
 	if (isLoaded) return cachedSettings;
 
 	try {
-		const settings = await AsyncStorage.getItem(appInformation.storageKey);
+		const settings = secureStorage.get();
 		if (settings) Object.assign(cachedSettings, JSON.parse(settings));
 	} catch {
 		console.error("Settings: Failed to retrieve settings from AsyncStorage.");
@@ -77,10 +91,7 @@ async function persist(next: Settings) {
 		JSON.stringify(regularSettings),
 	);
 
-	SecureStore.setItem(
-		appInformation.storageKey,
-		JSON.stringify(securedSettings),
-	);
+	secureStorage.set(JSON.stringify(securedSettings));
 }
 
 export function useSettings() {

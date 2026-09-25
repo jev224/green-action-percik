@@ -1,7 +1,7 @@
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
 import type { ComponentProps, ReactNode } from "react";
 import { type ImageSourcePropType, Pressable, View } from "react-native";
-import {
+import Animated, {
 	interpolate,
 	useAnimatedStyle,
 	useSharedValue,
@@ -9,10 +9,7 @@ import {
 	withSpring,
 } from "react-native-reanimated";
 import { tv, type VariantProps } from "tailwind-variants";
-import {
-	AnimatedBox,
-	AnimatedSurfaceCard,
-} from "@/components/animation/animatedComponent";
+
 import { config } from "@/components/animation/config";
 import type {
 	SemanticColor,
@@ -22,6 +19,7 @@ import { Heading } from "@/components/ui/heading";
 import { Icon } from "@/components/ui/icon";
 import { Image } from "@/components/ui/image";
 import { VStack } from "@/components/ui/vstack";
+import { SurfaceCard } from "./SurfaceCard";
 
 const statCardStyle = tv({
 	slots: {
@@ -156,69 +154,70 @@ export function StatCard({
 
 	return (
 		<View className={cn(fill && "flex-1")}>
-			<AnimatedSurfaceCard
-				color={color}
-				variant={variant}
-				className={styles.card({ className })}
-				style={cardAnimatedStyle}
-			>
-				{(baseStyles) => (
-					<>
-						{innerDecoration && (
-							<View className="absolute inset-0">{innerDecoration}</View>
-						)}
+			<Animated.View style={cardAnimatedStyle}>
+				<SurfaceCard
+					color={color}
+					variant={variant}
+					className={styles.card({ className })}
+				>
+					{(baseStyles) => (
+						<>
+							{innerDecoration && (
+								<View className="absolute inset-0">{innerDecoration}</View>
+							)}
 
-						{/* Only mounts (and only captures touches) when there's actually
+							{/* Only mounts (and only captures touches) when there's actually
               something to animate — previously this always sat over the
               whole card, even with animation="none". */}
-						{isInteractive && (
-							<Pressable
-								delayHoverIn={0}
-								unstable_pressDelay={config.pressableDelay}
-								className="absolute inset-0 z-20"
-								onPress={handlePress}
-							/>
-						)}
+							{isInteractive && (
+								<Pressable
+									delayHoverIn={0}
+									unstable_pressDelay={config.pressableDelay}
+									className="absolute inset-0 z-20"
+									onPress={handlePress}
+								/>
+							)}
 
-						{hasThumbnail && (
-							<AnimatedBox
-								className={styles.thumbnail()}
-								style={thumbnailAnimatedStyle}
-							>
-								{imageSource ? (
-									<Image className="w-full h-full" source={imageSource} />
-								) : (
-									<Icon
-										as={icon}
-										className={baseStyles.icon({
-											className: styles.icon(),
-										})}
-									/>
-								)}
-							</AnimatedBox>
-						)}
+							{hasThumbnail && (
+								<Animated.View
+									className={styles.thumbnail()}
+									style={thumbnailAnimatedStyle}
+								>
+									{imageSource ? (
+										<Image className="w-full h-full" source={imageSource} />
+									) : (
+										<Icon
+											as={icon}
+											className={baseStyles.icon({
+												className: styles.icon(),
+											})}
+										/>
+									)}
+								</Animated.View>
+							)}
 
-						<VStack className={styles.content()}>
-							<Heading
-								className={baseStyles.text({
-									className: styles.title(),
-								})}
-								numberOfLines={1}
-							>
-								{title}
-							</Heading>
-							<Heading
-								className={baseStyles.text({
-									className: styles.stats(),
-								})}
-								numberOfLines={1}
-							>
-								{stats}
-							</Heading>
-						</VStack>
-					</>
-				)}
-			</AnimatedSurfaceCard>
+							<VStack className={styles.content()}>
+								<Heading
+									className={baseStyles.text({
+										className: styles.title(),
+									})}
+									numberOfLines={1}
+								>
+									{title}
+								</Heading>
+								<Heading
+									className={baseStyles.text({
+										className: styles.stats(),
+									})}
+									numberOfLines={1}
+								>
+									{stats}
+								</Heading>
+							</VStack>
+						</>
+					)}
+				</SurfaceCard>
+			</Animated.View>
 
 			{outerDecoration}
 		</View>
