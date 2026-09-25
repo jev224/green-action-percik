@@ -11,6 +11,7 @@ import {
 	SafeAreaProvider,
 } from "react-native-safe-area-context";
 import { Uniwind } from "uniwind";
+import { ToastHost } from "@/components/primitives/Feedback/Toast/ToastHost";
 import { useThemeColors } from "@/hooks/useThemeColors";
 
 export { ErrorBoundary } from "expo-router";
@@ -38,8 +39,11 @@ function RootLayoutNav() {
 				<GestureHandlerRootView style={{ flex: 1 }}>
 					<GluestackUIProvider mode={scheme}>
 						<StatusBar style={scheme === "dark" ? "light" : "dark"} />
+
 						<Stack screenOptions={{ headerShown: false }} />
 					</GluestackUIProvider>
+
+					<ToastHost />
 				</GestureHandlerRootView>
 			</SafeAreaListener>
 		</SafeAreaProvider>

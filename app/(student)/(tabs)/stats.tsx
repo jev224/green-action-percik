@@ -1,25 +1,25 @@
 import {
-  Apple,
-  BrushCleaning,
-  Bubbles,
-  Leaf,
-  Medal,
-  PiggyBank,
-  Sprout,
-  Trash2,
+	Apple,
+	BrushCleaning,
+	Bubbles,
+	Leaf,
+	Medal,
+	PiggyBank,
+	Sprout,
+	Trash2,
 } from "lucide-react-native";
 import {
-  GlowDecoration,
-  GlowOrb,
-  LeafDecoration,
+	GlowDecoration,
+	GlowOrb,
+	LeafDecoration,
 } from "@/components/decoration";
 import {
-  ActionTile,
-  ListSection,
-  ProgressBar,
-  Screen,
-  ScreenHeader,
-  StatCard,
+	ActionTile,
+	ListSection,
+	ProgressBar,
+	Screen,
+	ScreenHeader,
+	StatCard,
 } from "@/components/primitives";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
@@ -29,224 +29,224 @@ import { useAsyncData } from "@/hooks/useAsyncData";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { useUserProfile } from "@/hooks/useUser";
 import {
-  fetchStudentStatistics,
-  fetchStudentTargets,
+	fetchStudentStatistics,
+	fetchStudentTargets,
 } from "@/services/fetcher/student/studentDashboard";
 import { calculatePercentage, formatPrice } from "@/utils";
 
 export default function StatsiticScreen() {
-  const userProfile = useUserProfile("student");
+	const userProfile = useUserProfile("student");
 
-  const { data, isLoading, isError, refresh, isRefreshing, errorMessage } =
-    useAsyncData(async (profile) => {
-      if (!profile) {
-        return;
-      }
+	const { data, isLoading, isError, refresh, isRefreshing, errorMessage } =
+		useAsyncData(async (profile) => {
+			if (!profile) {
+				return;
+			}
 
-      const [stats, targets] = await Promise.all([
-        fetchStudentStatistics(profile.user_id),
-        fetchStudentTargets(profile.user_id),
-      ]);
+			const [stats, targets] = await Promise.all([
+				fetchStudentStatistics(profile.user_id),
+				fetchStudentTargets(profile.user_id),
+			]);
 
-      return { stats, targets };
-    }, userProfile);
+			return { stats, targets };
+		}, userProfile);
 
-  const { colors, scheme } = useThemeColors();
-  const isDark = scheme === "dark";
+	const { colors, scheme } = useThemeColors();
+	const isDark = scheme === "dark";
 
-  return (
-    <Screen
-      scrollable
-      data={data}
-      isLoading={isLoading}
-      isError={isError}
-      isRefreshing={isRefreshing}
-      errorMessage={errorMessage}
-      onTryAgain={refresh}
-      onRefresh={refresh}
-      requiredInternet
-      contentComponent={({
-        stats: {
-          wasteWeightTotal,
-          claimablePrice,
-          gardenActivityCount,
-          compostActivityCount,
-          studentPoints,
-        },
-        targets: {
-          wasteWeightTarget,
-          compostActivityTarget,
-          gardenActivityTarget,
-        },
-      }) => (
-        <>
-          <ScreenHeader title="Statistik kamu" />
+	return (
+		<Screen
+			scrollable
+			data={data}
+			isLoading={isLoading}
+			isError={isError}
+			isRefreshing={isRefreshing}
+			errorMessage={errorMessage}
+			onTryAgain={refresh}
+			onRefresh={refresh}
+			requiredInternet
+			contentComponent={({
+				stats: {
+					wasteWeightTotal,
+					claimablePrice,
+					gardenActivityCount,
+					compostActivityCount,
+					studentPoints,
+				},
+				targets: {
+					wasteWeightTarget,
+					compostActivityTarget,
+					gardenActivityTarget,
+				},
+			}) => (
+				<>
+					<ScreenHeader title="Statistik kamu" />
 
-          <StatCard
-            stats={studentPoints}
-            title={"Poin"}
-            size="lg"
-            color="warning"
-            icon={Medal}
-            outerDecoration={
-              !isDark && (
-                <GlowOrb color={colors.warning} minScale={1.5} maxScale={2} />
-              )
-            }
-            innerDecoration={
-              <GlowDecoration
-                variant="edges"
-                edgeColors={[colors.destructive, colors.warningForeground]}
-              />
-            }
-          />
+					<StatCard
+						stats={studentPoints}
+						title={"Poin"}
+						size="lg"
+						color="warning"
+						icon={Medal}
+						outerDecoration={
+							!isDark && (
+								<GlowOrb color={colors.warning} minScale={1.5} maxScale={2} />
+							)
+						}
+						innerDecoration={
+							<GlowDecoration
+								variant="edges"
+								edgeColors={[colors.destructive, colors.warningForeground]}
+							/>
+						}
+					/>
 
-          <StatCard
-            title="Saldo yang dapat dicairkan"
-            stats={`Rp ${formatPrice(claimablePrice)}`}
-            icon={PiggyBank}
-            variant="outline"
-            size="md"
-            fill
-            color="primary"
-            innerDecoration={
-              <LeafDecoration
-                variant="cluster"
-                pattern="1"
-                color={colors.inorganic}
-              />
-            }
-          />
+					<StatCard
+						title="Saldo yang dapat dicairkan"
+						stats={`Rp ${formatPrice(claimablePrice)}`}
+						icon={PiggyBank}
+						variant="outline"
+						size="md"
+						fill
+						color="primary"
+						innerDecoration={
+							<LeafDecoration
+								variant="cluster"
+								pattern="1"
+								color={colors.inorganic}
+							/>
+						}
+					/>
 
-          <HStack space="md">
-            <StatCard
-              title="Sampah"
-              stats={`${wasteWeightTotal} kg`}
-              icon={Bubbles}
-              variant="outline"
-              fill
-              animation="fun"
-              color="organic"
-              innerDecoration={
-                <LeafDecoration
-                  variant="cluster"
-                  pattern="1"
-                  color={colors.organic}
-                />
-              }
-            />
+					<HStack space="md">
+						<StatCard
+							title="Sampah"
+							stats={`${wasteWeightTotal} kg`}
+							icon={Bubbles}
+							variant="outline"
+							fill
+							animation="fun"
+							color="organic"
+							innerDecoration={
+								<LeafDecoration
+									variant="cluster"
+									pattern="1"
+									color={colors.organic}
+								/>
+							}
+						/>
 
-            <StatCard
-              title="Perawatan"
-              stats={`${gardenActivityCount} Kali`}
-              icon={BrushCleaning}
-              variant="outline"
-              fill
-              animation="fun"
-              innerDecoration={
-                <LeafDecoration
-                  variant="cluster"
-                  pattern="2"
-                  color={colors.primary}
-                />
-              }
-            />
+						<StatCard
+							title="Perawatan"
+							stats={`${gardenActivityCount} Kali`}
+							icon={BrushCleaning}
+							variant="outline"
+							fill
+							animation="fun"
+							innerDecoration={
+								<LeafDecoration
+									variant="cluster"
+									pattern="2"
+									color={colors.primary}
+								/>
+							}
+						/>
 
-            <StatCard
-              title="Kompos"
-              stats={`${compostActivityCount} Kali`}
-              icon={Apple}
-              variant="outline"
-              fill
-              animation="fun"
-              color="inorganic"
-              innerDecoration={
-                <LeafDecoration
-                  variant="cluster"
-                  pattern="3"
-                  color={colors.inorganic}
-                />
-              }
-            />
-          </HStack>
+						<StatCard
+							title="Kompos"
+							stats={`${compostActivityCount} Kali`}
+							icon={Apple}
+							variant="outline"
+							fill
+							animation="fun"
+							color="inorganic"
+							innerDecoration={
+								<LeafDecoration
+									variant="cluster"
+									pattern="3"
+									color={colors.inorganic}
+								/>
+							}
+						/>
+					</HStack>
 
-          <ListSection title="Target bulan ini">
-            <ActionTile
-              title="Sampah"
-              icon={Trash2}
-              variant="ghost"
-              headerRightComponent={
-                <Heading size="md">{wasteWeightTarget} kg</Heading>
-              }
-              bottomComponent={
-                <ProgressBar
-                  text={`${wasteWeightTotal} dari ${wasteWeightTarget} kg terkumpul`}
-                  value={calculatePercentage(
-                    wasteWeightTotal,
-                    wasteWeightTarget,
-                  )}
-                />
-              }
-            />
+					<ListSection title="Target bulan ini">
+						<ActionTile
+							title="Sampah"
+							icon={Trash2}
+							variant="ghost"
+							headerRightComponent={
+								<Heading size="md">{wasteWeightTarget} kg</Heading>
+							}
+							bottomComponent={
+								<ProgressBar
+									text={`${wasteWeightTotal} dari ${wasteWeightTarget} kg terkumpul`}
+									value={calculatePercentage(
+										wasteWeightTotal,
+										wasteWeightTarget,
+									)}
+								/>
+							}
+						/>
 
-            <ActionTile
-              title="Perawatan Taman"
-              icon={Sprout}
-              variant="ghost"
-              headerRightComponent={
-                <Heading size="md">{gardenActivityTarget}x</Heading>
-              }
-              bottomComponent={
-                <ProgressBar
-                  text={`${gardenActivityCount} dari ${gardenActivityTarget} kegiatan`}
-                  value={calculatePercentage(
-                    gardenActivityCount,
-                    gardenActivityTarget,
-                  )}
-                />
-              }
-            />
+						<ActionTile
+							title="Perawatan Taman"
+							icon={Sprout}
+							variant="ghost"
+							headerRightComponent={
+								<Heading size="md">{gardenActivityTarget}x</Heading>
+							}
+							bottomComponent={
+								<ProgressBar
+									text={`${gardenActivityCount} dari ${gardenActivityTarget} kegiatan`}
+									value={calculatePercentage(
+										gardenActivityCount,
+										gardenActivityTarget,
+									)}
+								/>
+							}
+						/>
 
-            <ActionTile
-              title="Kompos"
-              icon={Leaf}
-              variant="ghost"
-              headerRightComponent={
-                <Heading size="md">{compostActivityTarget}x</Heading>
-              }
-              bottomComponent={
-                <ProgressBar
-                  text={`${compostActivityCount} dari ${compostActivityTarget} kegiatan`}
-                  value={calculatePercentage(
-                    compostActivityCount,
-                    compostActivityTarget,
-                  )}
-                />
-              }
-            />
-          </ListSection>
-        </>
-      )}
-      loadingComponent={
-        <>
-          <Skeleton className="h-8 w-32 self-center" />
+						<ActionTile
+							title="Kompos"
+							icon={Leaf}
+							variant="ghost"
+							headerRightComponent={
+								<Heading size="md">{compostActivityTarget}x</Heading>
+							}
+							bottomComponent={
+								<ProgressBar
+									text={`${compostActivityCount} dari ${compostActivityTarget} kegiatan`}
+									value={calculatePercentage(
+										compostActivityCount,
+										compostActivityTarget,
+									)}
+								/>
+							}
+						/>
+					</ListSection>
+				</>
+			)}
+			loadingComponent={
+				<>
+					<Skeleton className="h-8 w-32 self-center" />
 
-          <Skeleton className="h-38" />
-          <Skeleton className="h-24" />
+					<Skeleton className="h-38" />
+					<Skeleton className="h-24" />
 
-          <HStack space="md" className="h-32">
-            <Skeleton className="flex-1" />
-            <Skeleton className="flex-1" />
-            <Skeleton className="flex-1" />
-          </HStack>
+					<HStack space="md" className="h-32">
+						<Skeleton className="flex-1" />
+						<Skeleton className="flex-1" />
+						<Skeleton className="flex-1" />
+					</HStack>
 
-          <VStack space="md">
-            <Skeleton className="h-24" />
-            <Skeleton className="h-24" />
-            <Skeleton className="h-24" />
-          </VStack>
-        </>
-      }
-    />
-  );
+					<VStack space="md">
+						<Skeleton className="h-24" />
+						<Skeleton className="h-24" />
+						<Skeleton className="h-24" />
+					</VStack>
+				</>
+			}
+		/>
+	);
 }
