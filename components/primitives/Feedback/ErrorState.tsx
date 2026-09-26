@@ -16,7 +16,7 @@ const ErrorState = ({ icon, message, onRetry }: ErrorStateProps) => {
 	return (
 		<View className="w-full h-100 gap-8 justify-center items-center">
 			<VStack space="sm" className="items-center">
-				{icon && <Icon as={icon} className="size-28 mb-4 text-center" />}
+				{icon && <Icon as={icon} className="w-28 h-28 mb-4 text-center" />}
 				<Heading size="2xl">Terjadi kesalahan</Heading>
 				<Text size="md" className="opacity-70 text-center">
 					{message || "Halaman ini tidak dapat dimuat"}

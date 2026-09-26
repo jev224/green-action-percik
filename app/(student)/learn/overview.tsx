@@ -1,3 +1,4 @@
+import { Image } from "expo-image";
 import { Redirect } from "expo-router";
 import { useEffect } from "react";
 import { BackButton } from "@/components/domain";
@@ -13,10 +14,8 @@ import {
 import { Box } from "@/components/ui/box";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
-import { Image } from "@/components/ui/image";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useNavigation } from "@/hooks/useNavigation";
 import { useShowToast } from "@/hooks/useShowToast";
@@ -92,8 +91,8 @@ export default function LessonOverviewScreen() {
 					{photoUrl && (
 						<Box className="w-full h-52 bg-accent-foreground/20 rounded-md overflow-hidden">
 							<Image
-								className="w-full h-full"
-								resizeMode="cover"
+								style={{ position: "absolute", inset: 0 }}
+								contentFit="cover"
 								source={photoUrl}
 							/>
 						</Box>

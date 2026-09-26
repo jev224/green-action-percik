@@ -11,6 +11,7 @@
 		"**/*.tsx",
 		".expo/types/**/*.ts",
 		"expo-env.d.ts",
-		"uniwind-types.d.ts"
+		"uniwind-types.d.ts",
+		"components/primitives/Typography/.web.tsx"
 	]
 }

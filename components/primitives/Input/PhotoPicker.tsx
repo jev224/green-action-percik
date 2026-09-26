@@ -1,5 +1,6 @@
 import { tva } from "@gluestack-ui/utils/nativewind-utils";
 import { File } from "expo-file-system";
+import { Image } from "expo-image";
 import * as ImageManipulator from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
 import { CameraIcon, RotateCcwIcon, XIcon } from "lucide-react-native";
@@ -9,7 +10,6 @@ import { Box } from "@/components/ui/box";
 import { Center } from "@/components/ui/center";
 import { HStack } from "@/components/ui/hstack";
 import { Icon } from "@/components/ui/icon";
-import { Image } from "@/components/ui/image";
 import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
@@ -149,10 +149,10 @@ export const PhotoPicker = React.forwardRef<
 				{uri ? (
 					<>
 						<Image
-							source={{ uri }}
+							source={uri}
 							alt="Foto yang diambil"
-							className="w-full h-full"
-							resizeMode="cover"
+							style={{ position: "absolute", inset: 0 }}
+							contentFit="cover"
 						/>
 
 						{/* bottom action bar: retake / remove */}

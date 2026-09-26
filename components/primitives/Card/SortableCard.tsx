@@ -9,6 +9,7 @@ import { Heading } from "@/components/ui/heading";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { nativeOnlyProps } from "@/utils";
 import { IconButton } from "../Button/IconButton";
 import { SurfaceCard } from "./SurfaceCard";
 
@@ -51,7 +52,12 @@ export const SortableCard = ({
 								{title}
 							</Heading>
 							{description && (
-								<Text className={styles.text()} numberOfLines={1}>
+								<Text
+									className={styles.text()}
+									{...nativeOnlyProps({
+										numberOfLines: 1,
+									})}
+								>
 									{description}
 								</Text>
 							)}

@@ -1,5 +1,5 @@
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
-
+import { Image } from "expo-image";
 import type { ComponentProps, ReactNode } from "react";
 import { type ImageSourcePropType, Pressable, StyleSheet } from "react-native";
 import { EaseView } from "react-native-ease";
@@ -14,10 +14,10 @@ import { Box } from "@/components/ui/box";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Icon } from "@/components/ui/icon";
-import { Image } from "@/components/ui/image";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { usePressFeedback } from "@/hooks/usePressFeedback";
+import { nativeOnlyProps } from "@/utils";
 import { SurfaceCard } from "./SurfaceCard";
 
 const actionTileStyle = tv({
@@ -168,7 +168,11 @@ export function ActionTile({
 								}}
 							>
 								{imageSource ? (
-									<Image className="w-full h-full" source={imageSource} />
+									<Image
+										style={{ position: "absolute", inset: 0 }}
+										contentFit="cover"
+										source={imageSource}
+									/>
 								) : (
 									<Icon
 										className={baseStyles.icon({ className: styles.icon() })}
@@ -190,7 +194,9 @@ export function ActionTile({
 							<Heading
 								size="md"
 								className={baseStyles.text({ className: styles.title() })}
-								numberOfLines={thumbnailPosition === "top" ? 2 : 1}
+								{...nativeOnlyProps({
+									numberOfLines: thumbnailPosition === "top" ? 2 : 1,
+								})}
 							>
 								{title}
 							</Heading>
@@ -202,7 +208,9 @@ export function ActionTile({
 							<Text
 								className={baseStyles.text({ className: styles.description() })}
 								size="sm"
-								numberOfLines={size === "lg" ? 3 : 2}
+								{...nativeOnlyProps({
+									numberOfLines: size === "lg" ? 3 : 2,
+								})}
 							>
 								{description}
 							</Text>

@@ -1,15 +1,18 @@
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
 import { useState } from "react";
+import { Platform } from "react-native";
 import { ChevronDownIcon } from "@/components/ui/icon";
 import {
 	Select,
+	SelectContent,
 	SelectIcon,
 	SelectInput,
 	SelectItem,
+	SelectPortal,
 	SelectTrigger,
 } from "@/components/ui/select";
 import { truncateText } from "@/utils";
-import { SmoothSelectPortal } from "./SmoothSelectPortal";
+import { SmoothActionSheet } from "../Layout/SmoothActionSheet";
 
 const BROWSER_RESET_STYLE = {
 	outlineWidth: 0,
@@ -74,16 +77,35 @@ export function SelectField({
 				<SelectIcon className="mr-3" as={ChevronDownIcon} />
 			</SelectTrigger>
 
-			<SmoothSelectPortal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-				{options.map((opt) => (
-					<SelectItem
-						className="py-4"
-						key={opt.value}
-						label={inList ? truncateText(opt.label, 16) : opt.label}
-						value={opt.value}
-					/>
-				))}
-			</SmoothSelectPortal>
+			{Platform.OS === "web" ? (
+				<SelectPortal>
+					<SelectContent>
+						{options.map((opt) => (
+							<SelectItem
+								className="py-4 bg-amber-400"
+								key={opt.value}
+								label={inList ? truncateText(opt.label, 16) : opt.label}
+								value={opt.value}
+							/>
+						))}
+					</SelectContent>
+				</SelectPortal>
+			) : (
+				<SmoothActionSheet
+					isOpen={isOpen}
+					onClose={() => setIsOpen(false)}
+					selectPortal
+				>
+					{options.map((opt) => (
+						<SelectItem
+							className="py-4 bg-amber-400"
+							key={opt.value}
+							label={inList ? truncateText(opt.label, 16) : opt.label}
+							value={opt.value}
+						/>
+					))}
+				</SmoothActionSheet>
+			)}
 		</Select>
 	);
 }

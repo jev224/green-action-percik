@@ -13,6 +13,7 @@ import {
 import { Text } from "@/components/ui/text";
 import { useKeyboardHeight } from "@/hooks/useKeyboardHeight";
 import { useThemeColors } from "@/hooks/useThemeColors";
+import { nativeOnlyProps } from "@/utils";
 import { IconButton } from "../Button/IconButton";
 
 type TextFieldProps = Omit<
@@ -138,7 +139,6 @@ export function TextField({
 				isDisabled={isDisabled}
 			>
 				<GSInputField
-					numberOfLines={1}
 					type={inputFieldType}
 					className={cn("text-lg", className)}
 					placeholderTextColor={colors.mutedForeground}
@@ -148,12 +148,16 @@ export function TextField({
 					onFocus={handleFocus}
 					onBlur={handleBlur}
 					keyboardType={resolvedKeyboardType}
+					{...nativeOnlyProps({ numberOfLines: 1 })}
 					{...props}
 				/>
 
 				{unit && (
 					<InputSlot>
-						<Text numberOfLines={1} className="text-lg mr-1 font-medium">
+						<Text
+							className="text-lg mr-1 font-medium"
+							{...nativeOnlyProps({ numberOfLines: 1 })}
+						>
 							{unit}
 						</Text>
 					</InputSlot>

@@ -15,6 +15,7 @@ import {
 	usePressFeedback,
 } from "@/hooks/usePressFeedback";
 import { useThemeColors } from "@/hooks/useThemeColors";
+import { nativeOnlyProps } from "@/utils";
 
 type ButtonProps = Omit<
 	ComponentProps<typeof GSButton>,
@@ -115,7 +116,10 @@ export function Button({
 							)
 						)}
 						{displayText && (
-							<ButtonText numberOfLines={1} className="text-lg font-semibold">
+							<ButtonText
+								className="text-lg font-semibold"
+								{...nativeOnlyProps({ numberOfLines: 1 })}
+							>
 								{displayText}
 							</ButtonText>
 						)}

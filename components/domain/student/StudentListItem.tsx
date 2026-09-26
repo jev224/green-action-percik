@@ -11,6 +11,7 @@ import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
 import { usePressFeedback } from "@/hooks/usePressFeedback";
 import { useThemeColors } from "@/hooks/useThemeColors";
+import { nativeOnlyProps } from "@/utils";
 import type { StudentData } from "./types";
 
 interface StudentListItemProps {
@@ -20,6 +21,22 @@ interface StudentListItemProps {
 	className?: string;
 	noOffset?: boolean;
 }
+
+const WEBKIT_STYLE_KEYS = [
+	"-webkit-text-fill-color",
+	"-webkit-text-stroke-color",
+	"-webkit-text-stroke-width",
+	"-webkit-appearance",
+	"-webkit-tap-highlight-color",
+] as const;
+
+const omitWebkitStyle = <T extends object>(style: T): T => {
+	for (const key of WEBKIT_STYLE_KEYS) {
+		delete style[key as keyof T];
+	}
+	return style;
+};
+
 export const StudentListItem = memo(function StudentListItem({
 	selected = false,
 	student,
@@ -29,14 +46,16 @@ export const StudentListItem = memo(function StudentListItem({
 }: StudentListItemProps) {
 	const { name, grade, point, photoUrl } = student;
 
-	const containerStyle = useResolveClassNames(
-		`h-24 items-center justify-center rounded-lg ${
-			noOffset ? "" : "-ml-4 -mr-4"
-		}`,
+	const containerStyle = omitWebkitStyle(
+		useResolveClassNames(
+			`h-24 items-center justify-center rounded-lg ${
+				noOffset ? "" : "-ml-4 -mr-4"
+			}`,
+		),
 	);
 
-	const selectedBackgroundStyle = useResolveClassNames(
-		"absolute inset-0 rounded-lg bg-primary",
+	const selectedBackgroundStyle = omitWebkitStyle(
+		useResolveClassNames("absolute inset-0 rounded-lg bg-primary"),
 	);
 
 	const { colors } = useThemeColors();
@@ -93,7 +112,13 @@ export const StudentListItem = memo(function StudentListItem({
 								/>
 
 								<Box className="flex-1 w-[80%]">
-									<Heading numberOfLines={1}>{name}</Heading>
+									<Heading
+										{...nativeOnlyProps({
+											numberOfLines: 1,
+										})}
+									>
+										{name}
+									</Heading>
 									{grade && <Text>{grade}</Text>}
 								</Box>
 							</HStack>
@@ -123,7 +148,13 @@ export const StudentListItem = memo(function StudentListItem({
 						/>
 
 						<Box className="flex-1">
-							<Heading numberOfLines={1}>{name}</Heading>
+							<Heading
+								{...nativeOnlyProps({
+									numberOfLines: 1,
+								})}
+							>
+								{name}
+							</Heading>
 							{grade && <Text>{grade}</Text>}
 						</Box>
 

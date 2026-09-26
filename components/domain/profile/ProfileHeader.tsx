@@ -21,6 +21,7 @@ import { Box } from "@/components/ui/box";
 import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { nativeOnlyProps } from "@/utils";
 
 const PREVIEW_MAX_SIZE = 560;
 const PREVIEW_SIDE_OFFSET = 64;
@@ -146,14 +147,16 @@ export function ProfileHeader({
 					className={layout === "centered" ? "items-center mt-2" : undefined}
 				>
 					<Heading
-						numberOfLines={layout === "centered" ? 1 : 2}
-						adjustsFontSizeToFit
-						minimumFontScale={0.7}
 						className={cn(
 							layout === "centered" && "text-center",
 							layout === "row" && "w-[70%]",
 						)}
 						size={size === "lg" ? "2xl" : "xl"}
+						{...nativeOnlyProps({
+							minimumFontScale: 0.7,
+							adjustsFontSizeToFit: true,
+							numberOfLines: layout === "centered" ? 1 : 2,
+						})}
 					>
 						{name}
 					</Heading>

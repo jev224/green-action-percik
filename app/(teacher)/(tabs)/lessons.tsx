@@ -18,7 +18,6 @@ import {
 	SearchField,
 	SortSelect,
 } from "@/components/primitives";
-import { Fab } from "@/components/ui/fab";
 import { HStack } from "@/components/ui/hstack";
 import { Skeleton } from "@/components/ui/skeleton";
 import { VStack } from "@/components/ui/vstack";
@@ -109,19 +108,13 @@ export default function LessonsScreen() {
 				)
 			}
 			overlayComponent={
-				<Fab
-					className="p-0 background-transparent"
-					style={{ marginBottom: insets.bottom }}
-					size="sm"
-					placement="bottom right"
-				>
-					<Button
-						label="Materi Baru"
-						icon={Plus}
-						className="px-5 py-4 gap-0 rounded-full"
-						onPress={handleCreate}
-					/>
-				</Fab>
+				<Button
+					label="Materi Baru"
+					icon={Plus}
+					className="absolute px-5 py-4 gap-0 rounded-full"
+					style={{ bottom: insets.bottom + 24, right: insets.left + 16 }}
+					onPress={handleCreate}
+				/>
 			}
 			loadingComponent={
 				<ScrollView

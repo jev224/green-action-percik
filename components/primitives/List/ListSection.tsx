@@ -3,6 +3,7 @@ import { View } from "react-native";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
+import { nativeOnlyProps } from "@/utils";
 
 interface ListSectionProps {
 	title: string;
@@ -24,7 +25,7 @@ export function ListSection({
 	return (
 		<VStack className={className} space={space}>
 			<HStack space="sm">
-				<Heading size={size} numberOfLines={2}>
+				<Heading size={size} {...nativeOnlyProps({ numberOfLines: 1 })}>
 					{title}
 				</Heading>
 

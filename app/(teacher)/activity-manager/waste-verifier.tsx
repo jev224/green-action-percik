@@ -1,7 +1,6 @@
 import { Image } from "expo-image";
 import { Check, Coins, Info } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { ActivityIndicator } from "react-native";
 import { BackButton } from "@/components/domain";
 import {
 	BottomPanel,
@@ -10,6 +9,7 @@ import {
 	Modal,
 	Screen,
 	ScreenHeader,
+	Spinner,
 	StatCard,
 	TextField,
 } from "@/components/primitives";
@@ -212,7 +212,7 @@ export default function WasteVerificationScreen() {
 						<Box className="w-full h-64 bg-accent-foreground/20 rounded-md overflow-hidden">
 							{isPhotoLoading && (
 								<Center className="absolute w-full h-full">
-									<ActivityIndicator />
+									<Spinner />
 								</Center>
 							)}
 

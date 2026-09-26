@@ -5,7 +5,7 @@ import { useResolveClassNames } from "uniwind";
 import {
 	IconButton,
 	SearchField,
-	SmoothSelectPortal,
+	SmoothActionSheet,
 	type SortFieldOption,
 	SortSelect,
 	type SortState,
@@ -25,7 +25,6 @@ import { FlatList } from "@/components/ui/flat-list";
 import { HStack } from "@/components/ui/hstack";
 import { CheckIcon } from "@/components/ui/icon";
 import { Pressable } from "@/components/ui/pressable";
-import { Select } from "@/components/ui/select";
 import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
@@ -151,13 +150,13 @@ export function StudentMultiSelect({
 	const hasItem = (student: StudentData) => selectedIds.has(student.user_id);
 
 	return (
-		<Select onClose={() => setPortalOpen(false)}>
+		<>
 			<SelectedAvatarsPreview
 				selected={selected}
 				onPress={() => setPortalOpen(true)}
 			/>
 
-			<SmoothSelectPortal
+			<SmoothActionSheet
 				isOpen={isPortalOpen}
 				onClose={() => setPortalOpen(false)}
 				fullHeight
@@ -247,8 +246,8 @@ export function StudentMultiSelect({
 						/>
 					</View>
 				</VStack>
-			</SmoothSelectPortal>
-		</Select>
+			</SmoothActionSheet>
+		</>
 	);
 }
 

@@ -1,14 +1,20 @@
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
 import { ArrowDownWideNarrow } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
+import { Platform } from "react-native";
 import { useAnimatedStyle, withSpring } from "react-native-reanimated";
-
 import { AnimatedSelectTrigger } from "@/components/animation/animatedComponent";
 import { AnimationConfig } from "@/components/animation/presets";
-import { Select, SelectIcon, SelectItem } from "@/components/ui/select";
-
+import {
+	Select,
+	SelectContent,
+	SelectIcon,
+	SelectInput,
+	SelectItem,
+	SelectPortal,
+} from "@/components/ui/select";
 import { usePressFeedback } from "@/hooks/usePressFeedback";
-import { SmoothSelectPortal } from "./SmoothSelectPortal";
+import { SmoothActionSheet } from "../Layout/SmoothActionSheet";
 
 export type SortDirection = "asc" | "desc";
 
@@ -85,6 +91,43 @@ export function SortSelect<TField extends string>({
 		!!value &&
 		!(value.field === defaultField && value.direction === defaultDirection);
 
+	const selectItemsRender = (
+		<>
+			{defaultOption ? (
+				<>
+					<SelectItem
+						className="py-4"
+						label={defaultOption.ascLabel ?? `${defaultOption.label} (Naik)`}
+						value={`${defaultOption.field}-asc`}
+					/>
+					<SelectItem
+						className="py-4"
+						label={defaultOption.descLabel ?? `${defaultOption.label} (Turun)`}
+						value={`${defaultOption.field}-desc`}
+					/>
+				</>
+			) : (
+				<SelectItem className="py-4" label={noneLabel} value="none" />
+			)}
+
+			{otherOptions.map(({ field, label, ascLabel, descLabel }) => (
+				<React.Fragment key={field}>
+					<SelectItem
+						className="py-4"
+						label={ascLabel ?? `${label} (Naik)`}
+						value={`${field}-asc`}
+					/>
+
+					<SelectItem
+						className="py-4"
+						label={descLabel ?? `${label} (Turun)`}
+						value={`${field}-desc`}
+					/>
+				</React.Fragment>
+			))}
+		</>
+	);
+
 	return (
 		<Select
 			isFocused={isActive}
@@ -101,48 +144,27 @@ export function SortSelect<TField extends string>({
 				onPressIn={bind.onPressIn}
 				onPressOut={bind.onPressOut}
 			>
+				<SelectInput className="hidden" placeholder={"Urutkan"} />
+
 				<SelectIcon
 					className={cn("w-6 h-6", isActive && "text-primary")}
 					as={ArrowDownWideNarrow}
 				/>
 			</AnimatedSelectTrigger>
 
-			<SmoothSelectPortal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-				{defaultOption ? (
-					<>
-						<SelectItem
-							className="py-4"
-							label={defaultOption.ascLabel ?? `${defaultOption.label} (Naik)`}
-							value={`${defaultOption.field}-asc`}
-						/>
-						<SelectItem
-							className="py-4"
-							label={
-								defaultOption.descLabel ?? `${defaultOption.label} (Turun)`
-							}
-							value={`${defaultOption.field}-desc`}
-						/>
-					</>
-				) : (
-					<SelectItem className="py-4" label={noneLabel} value="none" />
-				)}
-
-				{otherOptions.map(({ field, label, ascLabel, descLabel }) => (
-					<React.Fragment key={field}>
-						<SelectItem
-							className="py-4"
-							label={ascLabel ?? `${label} (Naik)`}
-							value={`${field}-asc`}
-						/>
-
-						<SelectItem
-							className="py-4"
-							label={descLabel ?? `${label} (Turun)`}
-							value={`${field}-desc`}
-						/>
-					</React.Fragment>
-				))}
-			</SmoothSelectPortal>
+			{Platform.OS === "web" ? (
+				<SelectPortal>
+					<SelectContent>{selectItemsRender}</SelectContent>
+				</SelectPortal>
+			) : (
+				<SmoothActionSheet
+					isOpen={isOpen}
+					onClose={() => setIsOpen(false)}
+					selectPortal
+				>
+					{selectItemsRender}
+				</SmoothActionSheet>
+			)}
 		</Select>
 	);
 }

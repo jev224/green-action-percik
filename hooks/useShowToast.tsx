@@ -1,14 +1,14 @@
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
 import { addToast } from "@/components/primitives/Feedback/Toast/toastStack";
 import type { ToastOptions } from "@/components/primitives/Feedback/Toast/type";
 
-export function useShowToast() {
-	const toastIdRef = useRef(0);
+let toastIdIncrement = 0;
 
+export function useShowToast() {
 	const showToast = useCallback((options: ToastOptions) => {
 		addToast({
 			...options,
-			id: `${toastIdRef.current++}`,
+			id: `${toastIdIncrement++}`,
 			duration: options.duration ?? 3000,
 		});
 	}, []);

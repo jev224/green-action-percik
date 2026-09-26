@@ -46,14 +46,14 @@ async function loadSettings(): Promise<Settings> {
 	if (isLoaded) return cachedSettings;
 
 	try {
-		const settings = secureStorage.get();
+		const settings = await AsyncStorage.getItem(appInformation.storageKey);
 		if (settings) Object.assign(cachedSettings, JSON.parse(settings));
 	} catch {
-		console.error("Settings: Failed to retrieve settings from AsyncStorage.");
+		console.error("Settings: Failed to retrieve settings from AsyncStorage:");
 	}
 
 	try {
-		const securedSettings = SecureStore.getItem(appInformation.storageKey);
+		const securedSettings = secureStorage.get();
 		if (securedSettings)
 			Object.assign(cachedSettings, JSON.parse(securedSettings));
 	} catch {

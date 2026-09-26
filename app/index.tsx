@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, View } from "react-native";
-import { Button, Modal } from "@/components/primitives";
+import { View } from "react-native";
+import { Button, Modal, Spinner } from "@/components/primitives";
 import { useNavigation } from "@/hooks/useNavigation";
 import {
 	getProfileByRole,
@@ -58,7 +58,7 @@ export default function Index() {
 
 	return (
 		<View className="bg-background w-full flex-1 justify-center items-center">
-			<ActivityIndicator />
+			<Spinner />
 
 			<Modal
 				isOpen={errorMessage !== ""}

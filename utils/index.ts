@@ -1,8 +1,13 @@
 import NetInfo from "@react-native-community/netinfo";
+import { Platform } from "react-native";
 import { ServerError } from "@/services/ServerError";
 import type { ClassData } from "@/types";
 
 export const sumReduceFn = (sum: number, curr: number) => sum + curr;
+
+export function nativeOnlyProps<T extends object>(props: T): Partial<T> {
+	return Platform.OS !== "web" ? props : {};
+}
 
 export function getCurrentMonthDateRange() {
 	const now = new Date();

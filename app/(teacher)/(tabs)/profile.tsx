@@ -21,7 +21,7 @@ export default function ProfileScreen() {
 				key: "download",
 				label: "Download",
 				icon: Download,
-				onPress: () => navigateTo("/(teacher)/download"),
+				onPress: () => navigateTo("/(teacher)/export-data"),
 			},
 		],
 		[navigateTo],

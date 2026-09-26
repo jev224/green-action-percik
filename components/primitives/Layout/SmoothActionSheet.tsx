@@ -15,30 +15,33 @@ import {
 import { scheduleOnRN } from "react-native-worklets";
 import { cnBase } from "tailwind-variants";
 
-import {
-	AnimatedPressable,
-	AnimatedSelectContent,
-} from "@/components/animation/animatedComponent";
+import { AnimatedPressable } from "@/components/animation/animatedComponent";
 
 import { AnimationConfig } from "@/components/animation/presets";
 import { Box } from "@/components/ui/box";
-import { SelectPortal } from "@/components/ui/select";
+import { SelectContent, SelectPortal } from "@/components/ui/select";
+import {
+	Actionsheet,
+	ActionsheetContent,
+} from "@/components/ui/select/select-actionsheet";
 import { VStack } from "@/components/ui/vstack";
 
-interface SmoothSelectPortalProps {
+interface SmoothActionSheetProp {
 	isOpen: boolean;
 	onClose: () => void;
 	children: ReactNode;
 	fullHeight?: boolean;
 	scrollable?: boolean;
+	selectPortal?: boolean;
 }
-export const SmoothSelectPortal = ({
+export const SmoothActionSheet = ({
 	isOpen,
 	onClose,
 	children,
 	fullHeight,
+	selectPortal,
 	scrollable = true,
-}: SmoothSelectPortalProps) => {
+}: SmoothActionSheetProp) => {
 	const { height } = useWindowDimensions();
 
 	const [isOpenInternal, setIsOpenInternal] = useState(false);
@@ -142,55 +145,90 @@ export const SmoothSelectPortal = ({
 			translateY.value = withSpring(0, AnimationConfig.spring.snappy);
 		});
 
-	return (
+	const renderContent = (
+		<>
+			<Box className="absolute inset-0 -bottom-70 rounded-xl bg-background" />
+
+			<Box className="w-full p-2 items-center justify-center z-20">
+				<GestureDetector gesture={panGesture}>
+					<Box className="absolute -top-6 -bottom-6 px-8 items-center justify-center">
+						<EaseView animate={{ scale: isDragging ? 1.2 : 1 }}>
+							<Box className="w-14 h-2 bg-foreground/70 rounded-full" />
+						</EaseView>
+					</Box>
+				</GestureDetector>
+			</Box>
+
+			{scrollable ? (
+				<ScrollView className="w-full mt-2" style={{ maxHeight: height - 200 }}>
+					<VStack space="sm">{children}</VStack>
+				</ScrollView>
+			) : (
+				<View className="flex-1 w-full l mt-2">
+					<VStack space="sm">{children}</VStack>
+				</View>
+			)}
+		</>
+	);
+
+	const renderActionSheetContent = (
+		<>
+			<AnimatedPressable
+				className="absolute inset-0 bg-black/80"
+				onPress={onClose}
+				style={backdropAnimatedStyle}
+			/>
+			<AnimatedPressable
+				onPress={onClose}
+				style={menuAnimatedStyle}
+				className="h-full"
+			>
+				{selectPortal ? (
+					<SelectContent
+						className={cnBase(
+							"absolute bottom-0 left-[50%] right-0 -translate-x-[50%] p-3 bg-transparent max-w-180",
+							fullHeight && "min-h-[85%]",
+						)}
+						initial={{ y: 0 }}
+						animate={{ y: 0 }}
+						exit={{ y: 0 }}
+					>
+						{renderContent}
+					</SelectContent>
+				) : (
+					<ActionsheetContent
+						className={cnBase(
+							"absolute bottom-0 left-[50%] right-0 -translate-x-[50%] p-3 bg-transparent max-w-180",
+							fullHeight && "min-h-[85%]",
+						)}
+						initial={{ y: 0 }}
+						animate={{ y: 0 }}
+						exit={{ y: 0 }}
+					>
+						{renderContent}
+					</ActionsheetContent>
+				)}
+			</AnimatedPressable>
+		</>
+	);
+
+	return selectPortal ? (
 		<SelectPortal
 			className="pb-6"
 			isOpen={isOpenInternal}
 			onClose={onClose}
 			pointerEvents={isOpen ? "auto" : "box-none"}
 		>
-			<AnimatedPressable
-				className="absolute inset-0 bg-black/80"
-				onPress={onClose}
-				style={backdropAnimatedStyle}
-			/>
-
-			<AnimatedPressable onPress={onClose} style={menuAnimatedStyle}>
-				<AnimatedSelectContent
-					className={cnBase(
-						"absolute bottom-0 left-0 right-0 p-3 bg-transparent",
-						fullHeight && "min-h-[85%]",
-					)}
-					initial={{ y: 0 }}
-					animate={{ y: 0 }}
-					exit={{ y: 0 }}
-				>
-					<Box className="absolute inset-0 -bottom-70 rounded-xl bg-background" />
-
-					<Box className="w-full p-2 items-center justify-center z-20">
-						<GestureDetector gesture={panGesture}>
-							<Box className="absolute -top-6 -bottom-6 px-8 items-center justify-center">
-								<EaseView animate={{ scale: isDragging ? 1.2 : 1 }}>
-									<Box className="w-14 h-2 bg-foreground/70 rounded-full" />
-								</EaseView>
-							</Box>
-						</GestureDetector>
-					</Box>
-
-					{scrollable ? (
-						<ScrollView
-							className="w-full mt-2"
-							style={{ maxHeight: height - 200 }}
-						>
-							<VStack space="sm">{children}</VStack>
-						</ScrollView>
-					) : (
-						<View className="flex-1 w-full l mt-2">
-							<VStack space="sm">{children}</VStack>
-						</View>
-					)}
-				</AnimatedSelectContent>
-			</AnimatedPressable>
+			{renderActionSheetContent}
 		</SelectPortal>
+	) : (
+		<Actionsheet
+			className="pb-6"
+			isOpen={isOpenInternal}
+			onClose={onClose}
+			pointerEvents={isOpen ? "auto" : "box-none"}
+		>
+			{renderActionSheetContent}
+		</Actionsheet>
 	);
 };

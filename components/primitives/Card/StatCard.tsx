@@ -1,4 +1,5 @@
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
+import { Image } from "expo-image";
 import type { ComponentProps, ReactNode } from "react";
 import { type ImageSourcePropType, Pressable, View } from "react-native";
 import Animated, {
@@ -9,7 +10,6 @@ import Animated, {
 	withSpring,
 } from "react-native-reanimated";
 import { tv, type VariantProps } from "tailwind-variants";
-
 import { config } from "@/components/animation/config";
 import type {
 	SemanticColor,
@@ -17,8 +17,8 @@ import type {
 } from "@/components/styles/buildColorsVariants";
 import { Heading } from "@/components/ui/heading";
 import { Icon } from "@/components/ui/icon";
-import { Image } from "@/components/ui/image";
 import { VStack } from "@/components/ui/vstack";
+import { nativeOnlyProps } from "@/utils";
 import { SurfaceCard } from "./SurfaceCard";
 
 const statCardStyle = tv({
@@ -184,7 +184,11 @@ export function StatCard({
 									style={thumbnailAnimatedStyle}
 								>
 									{imageSource ? (
-										<Image className="w-full h-full" source={imageSource} />
+										<Image
+											style={{ position: "absolute", inset: 0 }}
+											contentFit="cover"
+											source={imageSource}
+										/>
 									) : (
 										<Icon
 											as={icon}
@@ -201,7 +205,9 @@ export function StatCard({
 									className={baseStyles.text({
 										className: styles.title(),
 									})}
-									numberOfLines={1}
+									{...nativeOnlyProps({
+										numberOfLines: 1,
+									})}
 								>
 									{title}
 								</Heading>
@@ -209,7 +215,9 @@ export function StatCard({
 									className={baseStyles.text({
 										className: styles.stats(),
 									})}
-									numberOfLines={1}
+									{...nativeOnlyProps({
+										numberOfLines: 1,
+									})}
 								>
 									{stats}
 								</Heading>

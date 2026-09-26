@@ -13,6 +13,7 @@ import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { useThemeColors } from "@/hooks/useThemeColors";
+import { nativeOnlyProps } from "@/utils";
 
 // --- Static fallback data -----------------------------------------------
 // Temporary local quote bank. Once quotes come from the DB/API, fetch them
@@ -35,7 +36,7 @@ interface QuoteCardProps {
 }
 
 export function QuoteCard({
-	quotesData,
+	quotesData = [{ quote: "", author: "" }],
 	intervalSeconds = 10,
 	color = "success",
 	innerDecoration,
@@ -145,8 +146,10 @@ export function QuoteCard({
 											className: "max-w-98",
 										})}
 										size="xl"
-										numberOfLines={4}
-										ellipsizeMode="tail"
+										{...nativeOnlyProps({
+											ellipsizeMode: "tail",
+											numberOfLines: 4,
+										})}
 									>
 										{quote}
 									</Heading>

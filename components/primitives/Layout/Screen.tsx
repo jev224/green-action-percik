@@ -9,11 +9,11 @@ import {
 } from "react-native-safe-area-context";
 import { Box } from "@/components/ui/box";
 import { Center } from "@/components/ui/center";
-import { Spinner } from "@/components/ui/spinner";
 import { VStack } from "@/components/ui/vstack";
 import { useKeyboardHeight } from "@/hooks/useKeyboardHeight";
 import { checkConnection, sleepAsync } from "@/utils";
 import ErrorState from "../Feedback/ErrorState";
+import { Spinner } from "../Feedback/Spinner";
 
 type ContentComponent<T> = ReactNode | ((data: NonNullable<T>) => ReactNode);
 
