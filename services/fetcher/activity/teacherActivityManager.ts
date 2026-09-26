@@ -90,6 +90,10 @@ export async function deleteWasteBank(id: number) {
 	}
 }
 
+export async function fetchUnpaidStudents() {
+	return await getPublicInfoValue("waste_price_multiplier_per_kg");
+}
+
 export async function fetchWastePhotoURL(photo: string) {
 	return await activityPhotos.getPrivateUrl(photo);
 }

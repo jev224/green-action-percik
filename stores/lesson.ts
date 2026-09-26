@@ -1,5 +1,10 @@
 import { create } from "zustand";
-import type { LessonContent } from "@/lib/supabase/database.types";
+
+export type LessonContent = {
+	id: string;
+	title: string;
+	explanation: string;
+};
 
 type Lesson =
 	| { mode: "create" }

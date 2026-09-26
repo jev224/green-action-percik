@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import type { Database } from "@/lib/supabase/database.types";
 
-export type ActivityType = "waste-bank" | "compost-activity";
+export type ActivityType = "waste-bank" | "compost-activity" | "pay-student";
 export type ClassData = Database["public"]["Tables"]["classes"]["Row"];
 export type WasteBankData = Database["public"]["Tables"]["waste_banks"]["Row"];
 export type FilterSection = "incompleted" | "completed";

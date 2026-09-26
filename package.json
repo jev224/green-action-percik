@@ -11,7 +11,8 @@
 		"web": "expo start --web",
 		"lint": "biome check .",
 		"lint:fix": "biome check --write .",
-		"format": "biome format --write ."
+		"format": "biome format --write .",
+		"gen:types": "dotenv -e .env.private -- sh -c 'npx supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > lib/supabase/database.types.ts'"
 	},
 	"dependencies": {
 		"@expo/html-elements": "^0.13.8",
@@ -66,7 +67,9 @@
 		"@babel/core": "^7.25.2",
 		"@biomejs/biome": "2.5.13",
 		"@types/react": "~19.2.2",
+		"dotenv-cli": "^11.0.0",
 		"react-native-svg-transformer": "^1.5.3",
+		"supabase": "^2.118.0",
 		"typescript": "~5.9.2"
 	}
 }
