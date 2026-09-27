@@ -1,8 +1,8 @@
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
 import { Check, Eye, EyeOff } from "lucide-react-native";
-import { type ComponentProps, useState } from "react";
+import { type ComponentProps, useEffect, useRef, useState } from "react";
 import type { BlurEvent, NativeSyntheticEvent } from "react-native";
-import { Keyboard, View } from "react-native";
+import { Dimensions, Keyboard, View } from "react-native";
 import Animated from "react-native-reanimated";
 import {
 	InputField as GSInputField,
@@ -13,9 +13,11 @@ import {
 import { Text } from "@/components/ui/text";
 import { useKeyboardHeight } from "@/hooks/useKeyboardHeight";
 import { useThemeColors } from "@/hooks/useThemeColors";
+import { useAvoidingViewStore } from "@/stores/avoidingView";
 import { nativeOnlyProps } from "@/utils";
 import { IconButton } from "../Button/IconButton";
 
+const AVOID_KEYBOARD_BOTTOM_OFFSET = 48;
 type TextFieldProps = Omit<
 	ComponentProps<typeof GSInputField>,
 	"onChangeText"
@@ -76,13 +78,18 @@ export function TextField({
 	const [internalValue, setInternalValue] = useState(value ?? "");
 	const [isFocused, setIsFocused] = useState(false);
 
-	const { visible: keyboardVisible } = useKeyboardHeight();
+	const inputRef = useRef<View>(null);
+	const inputBottomRef = useRef<number | null>(null);
+	const setOffset = useAvoidingViewStore((s) => s.setOffset);
+	const offset = useAvoidingViewStore((s) => s.offset);
+
+	const keyboard = useKeyboardHeight();
 
 	const isNumeric = isNumber || isDecimal;
 	// Only show the confirm button when THIS field is focused
 	// AND the keyboard is actually up (avoids flashing it for
 	// other fields, and avoids it lingering during the close animation).
-	const showConfirmButton = isNumeric && isFocused && keyboardVisible;
+	const showConfirmButton = isNumeric && isFocused && keyboard.visible;
 
 	const handleState = () => {
 		setShowPassword((showState) => !showState);
@@ -108,16 +115,9 @@ export function TextField({
 		}
 	};
 
-	const handleFocus = (e: NativeSyntheticEvent<FocusEvent>) => {
-		setIsFocused(true);
-		onFocus?.(e);
-	};
-
 	const handleBlur = (e: NativeSyntheticEvent<BlurEvent>) => {
 		setIsFocused(false);
-
 		if (isNumeric) commitClamp();
-
 		onBlur?.(e);
 	};
 
@@ -126,6 +126,37 @@ export function TextField({
 		Keyboard.dismiss();
 	};
 
+	const handleFocus = (e: NativeSyntheticEvent<FocusEvent>) => {
+		setIsFocused(true);
+		onFocus?.(e);
+
+		requestAnimationFrame(() => {
+			inputRef.current?.measure(
+				(_x, _y, _width, height, _pageX: number, pageY: number) => {
+					const screenHeight = Dimensions.get("window").height;
+					const inputBottom = screenHeight - pageY - height;
+					inputBottomRef.current = inputBottom;
+				},
+			);
+		});
+	};
+
+	useEffect(() => {
+		let screenOffset = 0;
+
+		if (keyboard.height && isFocused && inputBottomRef.current !== null) {
+			const inputBottom = inputBottomRef.current;
+			screenOffset = Math.max(
+				keyboard.height - inputBottom + AVOID_KEYBOARD_BOTTOM_OFFSET,
+				0,
+			);
+		}
+
+		if (offset !== screenOffset) {
+			setOffset(screenOffset);
+		}
+	}, [keyboard.height, isFocused]);
+
 	const inputFieldType = isPassword && !showPassword ? "password" : "text";
 
 	const resolvedKeyboardType =
@@ -133,7 +164,7 @@ export function TextField({
 		(isDecimal ? "decimal-pad" : isNumber ? "number-pad" : undefined);
 
 	return (
-		<View className="flex-row items-center gap-2">
+		<View className="flex-row items-center gap-2" ref={inputRef}>
 			<Input
 				className="flex-1 py-3 px-5 border-2 shadow-none pb-!8"
 				isDisabled={isDisabled}

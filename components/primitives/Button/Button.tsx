@@ -55,6 +55,7 @@ export function Button({
 	disabled,
 	iconClassName,
 	textClassName,
+	variant,
 	...props
 }: ButtonProps) {
 	const { colors } = useThemeColors();
@@ -77,6 +78,7 @@ export function Button({
 					"overflow-hidden py-2.5 px-8",
 					size !== "icon" && "min-w-24",
 					size === "cta" && "py-4",
+					variant === "secondary" && "bg-muted",
 					className,
 				)}
 				size={size === "cta" ? "sm" : size}
@@ -90,6 +92,7 @@ export function Button({
 					bind.onPressOut();
 					onPressOut?.(event);
 				}}
+				variant={variant}
 				{...props}
 			>
 				<EaseView
@@ -119,7 +122,11 @@ export function Button({
 						)}
 						{displayText && (
 							<ButtonText
-								className={cn("text-lg font-semibold", textClassName)}
+								className={cn(
+									"text-lg font-semibold",
+									variant === "secondary" && "text-foreground",
+									textClassName,
+								)}
 								numberOfLines={1}
 							>
 								{displayText}

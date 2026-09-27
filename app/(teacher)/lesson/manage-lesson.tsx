@@ -32,6 +32,7 @@ import { CloseIcon } from "@/components/ui/icon";
 import { VStack } from "@/components/ui/vstack";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useNavigation } from "@/hooks/useNavigation";
+import { useRefreshOnNavigate } from "@/hooks/useRefreshOnNavigate";
 import { useShowToast } from "@/hooks/useShowToast";
 import { useUserProfile } from "@/hooks/useUser";
 import {
@@ -54,6 +55,8 @@ const createEmptyBlock = (index: number): LessonContent => ({
 });
 
 export default function EditLessonScreen() {
+	useRefreshOnNavigate();
+
 	const { profile, isLoading } = useUserProfile();
 
 	const { useBackGuard, bypassGuard, goBack } = useNavigation();

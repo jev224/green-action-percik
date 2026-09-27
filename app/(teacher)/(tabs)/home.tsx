@@ -8,6 +8,7 @@ import {
 	Recycle,
 	Trash2,
 } from "lucide-react-native";
+import { RefreshControl } from "react-native";
 import { Greeting } from "@/components/domain";
 import {
 	ActionTile,
@@ -46,11 +47,12 @@ export default function HomeScreen() {
 			isError={isError}
 			data={data}
 			errorMessage={errorMessage}
-			onRefresh={refresh}
 			onTryAgain={refresh}
 			requiredInternet
-			isRefreshing={isRefreshing}
 			tabBarPadding
+			refreshControl={
+				<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />
+			}
 			contentComponent={({
 				stats: {
 					studentCount,

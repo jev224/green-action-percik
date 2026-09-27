@@ -116,6 +116,7 @@ export function QuoteCard({
 								stiffness: 120,
 								mass: 1,
 							}}
+							style={{ flex: 1 }}
 						>
 							<VStack space="md">
 								<EaseView
@@ -143,7 +144,8 @@ export function QuoteCard({
 								>
 									<Heading
 										className={styles.text({
-											className: "max-w-98",
+											className:
+												"w-[80%] max-w-98 wrap-break-word line-clamp-4 overflow-hidden",
 										})}
 										size="xl"
 										{...nativeOnlyProps({
@@ -167,8 +169,13 @@ export function QuoteCard({
 										}}
 									>
 										<Text
-											className={styles.text({ className: "w-[70%]" })}
+											className={styles.text({
+												className: "w-[70%] web:truncate",
+											})}
 											size="lg"
+											{...nativeOnlyProps({
+												numberOfLines: 1,
+											})}
 										>
 											~ {author}
 										</Text>

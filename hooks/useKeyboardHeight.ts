@@ -17,6 +17,7 @@ export function useKeyboardHeight() {
 		});
 		const hideSub = Keyboard.addListener(hideEvt, () => {
 			setHeight(0);
+
 			setVisible(false);
 		});
 

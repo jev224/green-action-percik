@@ -56,13 +56,13 @@ export default function LoginScreen() {
 	const [error, setError] = useState<string | null>(null);
 
 	const handleLogin = async () => {
-		setError(null);
-		setIsLoading(true);
-
 		if (!username.trim() || !password.trim()) {
 			setError("Username dan password wajib diisi");
 			return;
 		}
+
+		setError(null);
+		setIsLoading(true);
 
 		try {
 			const isOnline = await checkConnection();
@@ -113,6 +113,8 @@ export default function LoginScreen() {
 
 	return (
 		<Screen
+			scrollable
+			avoidKeyboard
 			headerComponent={<ScreenHeader title="Masuk" />}
 			contentComponent={
 				<>

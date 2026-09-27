@@ -15,25 +15,25 @@ export default function TabsLayout() {
 			tabConfigs={[
 				{
 					name: "home",
-					label: "Home",
+					label: "Rumah",
 					icon: Home,
 					activeIcon: House,
 				},
 				{
 					name: "students",
-					label: "Students",
+					label: "Siswa",
 					icon: Users,
 					activeIcon: Users,
 				},
 				{
 					name: "lessons",
-					label: "Lessons",
+					label: "Materi",
 					icon: Book,
 					activeIcon: BookOpen,
 				},
 				{
 					name: "profile",
-					label: "Me",
+					label: "Saya",
 					icon: User,
 					activeIcon: UserRound,
 				},

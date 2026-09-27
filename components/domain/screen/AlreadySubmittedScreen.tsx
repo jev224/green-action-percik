@@ -4,6 +4,7 @@ import { EaseView } from "react-native-ease";
 import { Button, Modal, Screen } from "@/components/primitives";
 import { Center } from "@/components/ui/center";
 import { Heading } from "@/components/ui/heading";
+import { HStack } from "@/components/ui/hstack";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
@@ -95,21 +96,20 @@ export const ActivitySubmittedScreen = ({
 						</VStack>
 					</VStack>
 
-					{onDelete && (
-						<Button
-							size="cta"
-							variant="destructive"
-							label="Hapus kegiatan"
-							isLoading={isLoading}
-							onPress={() => setShowDeleteModal(true)}
-						/>
-					)}
+					<HStack space="md">
+						{onDelete && (
+							<Button
+								fill
+								size="cta"
+								variant="secondary"
+								label="Hapus kegiatan"
+								isLoading={isLoading}
+								onPress={() => setShowDeleteModal(true)}
+							/>
+						)}
 
-					<Button
-						size="cta"
-						label="Kembali ke halaman utama"
-						onPress={() => goBack()}
-					/>
+						<Button fill size="cta" label="Kembali" onPress={() => goBack()} />
+					</HStack>
 				</>
 			}
 		/>

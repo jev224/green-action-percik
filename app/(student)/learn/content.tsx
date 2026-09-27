@@ -32,8 +32,8 @@ import {
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
+import { useRefreshOnNavigate } from "@/hooks/useRefreshOnNavigate";
 import { useResultScreen } from "@/hooks/useResultScreen";
-
 import { useShowToast } from "@/hooks/useShowToast";
 import { useUserProfile } from "@/hooks/useUser";
 import { insertCompletedLesson } from "@/services/fetcher/lesson/completedLesson";
@@ -82,6 +82,8 @@ const CarouselCard = memo(function CarouselCard({
 });
 
 export default function LessonContentScreen() {
+	useRefreshOnNavigate();
+
 	const [isLoading, setLoading] = useState(false);
 	const { profile } = useUserProfile("student");
 

@@ -5,6 +5,7 @@ import {
 	Screen,
 	ScreenHeader,
 } from "@/components/primitives";
+import { useRefreshOnNavigate } from "@/hooks/useRefreshOnNavigate";
 import { BackButton } from "../nav/BackButton";
 import { ActivitySubmittedScreen } from "./AlreadySubmittedScreen";
 
@@ -29,6 +30,8 @@ export function ActivitySubmissionScreen({
 	onSubmit,
 	children,
 }: Props) {
+	useRefreshOnNavigate();
+
 	if (submitted) {
 		return (
 			<ActivitySubmittedScreen

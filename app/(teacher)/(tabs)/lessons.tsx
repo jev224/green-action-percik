@@ -1,6 +1,6 @@
 import { BookImage, Plus } from "lucide-react-native";
 import { memo, useCallback } from "react";
-import { FlatList, ScrollView, View } from "react-native";
+import { FlatList, RefreshControl, ScrollView, View } from "react-native";
 
 import Animated from "react-native-reanimated";
 import {
@@ -73,8 +73,6 @@ export default function LessonsScreen() {
 			isLoading={isLoading}
 			isError={isError}
 			relativeErrorPos
-			onRefresh={refresh}
-			isRefreshing={isRefreshing}
 			errorMessage={errorMessage}
 			onTryAgain={refresh}
 			requiredInternet
@@ -103,6 +101,9 @@ export default function LessonsScreen() {
 						className="overflow-visible"
 						renderItem={renderItem}
 						keyExtractor={(lesson) => String(lesson.id)}
+						refreshControl={
+							<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />
+						}
 					/>
 				) : (
 					<EmptyState message="Tidak ada materi pembalajaran." />

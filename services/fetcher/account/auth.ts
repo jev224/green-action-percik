@@ -15,14 +15,6 @@ export const authenticate = async (username: string, password: string) => {
 		password,
 	});
 
-	if (!data.user) {
-		throw new ServerError({
-			status: 500,
-			message: "Sign-in succeeded but no user was returned",
-			ui_message: "Terjadi kendala saat login. Coba lagi ya",
-		});
-	}
-
 	if (error) {
 		switch (error.code) {
 			case "invalid_credentials":
@@ -76,6 +68,14 @@ export const authenticate = async (username: string, password: string) => {
 					ui_message: "Terjadi kendala saat login. Coba lagi ya",
 				});
 		}
+	}
+
+	if (!data.user) {
+		throw new ServerError({
+			status: 500,
+			message: "Sign-in succeeded but no user was returned",
+			ui_message: "Terjadi kendala saat login. Coba lagi ya",
+		});
 	}
 
 	return data.user;

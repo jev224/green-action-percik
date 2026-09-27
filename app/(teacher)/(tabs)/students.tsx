@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { RefreshControl } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { type StudentData, StudentList } from "@/components/domain";
 import {
@@ -49,9 +50,7 @@ export default function StudentsScreen() {
 		<Screen
 			isLoading={isLoading}
 			isError={isError}
-			onRefresh={refresh}
 			relativeErrorPos
-			isRefreshing={isRefreshing}
 			errorMessage={errorMessage}
 			onTryAgain={refresh}
 			requiredInternet
@@ -74,7 +73,13 @@ export default function StudentsScreen() {
 			}
 			contentComponent={
 				results.length > 0 ? (
-					<StudentList data={results} onPressStudent={handlePressStudent} />
+					<StudentList
+						refreshControl={
+							<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />
+						}
+						data={results}
+						onPressStudent={handlePressStudent}
+					/>
 				) : (
 					<EmptyState message="Tidak ada siswa" />
 				)

@@ -1,3 +1,4 @@
+import type { FlatListProps } from "react-native";
 import Animated from "react-native-reanimated";
 import {
 	contentEnterTransition,
@@ -10,6 +11,7 @@ import type { StudentData } from "./types";
 
 interface StudentListProps {
 	data: StudentData[];
+	refreshControl?: FlatListProps<StudentData>["refreshControl"];
 	onPressStudent?: (student: StudentData) => void;
 }
 

@@ -7,6 +7,7 @@ import {
 	Sprout,
 	Trash2,
 } from "lucide-react-native";
+import { RefreshControl } from "react-native";
 import {
 	GlowDecoration,
 	GlowOrb,
@@ -59,12 +60,13 @@ export default function HomeScreen() {
 			data={data}
 			isLoading={isLoading}
 			isError={isError}
-			isRefreshing={isRefreshing}
 			errorMessage={errorMessage}
-			onRefresh={refresh}
 			onTryAgain={refresh}
 			requiredInternet
 			tabBarPadding
+			refreshControl={
+				<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />
+			}
 			contentComponent={({
 				organizationPhotos,
 				motivations,

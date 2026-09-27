@@ -57,7 +57,7 @@ export default function Index() {
 	}, []);
 
 	return (
-		<View className="bg-background w-full flex-1 justify-center items-center">
+		<View className="bg-background w-full h-full flex-1 justify-center items-center">
 			<Spinner />
 
 			<Modal

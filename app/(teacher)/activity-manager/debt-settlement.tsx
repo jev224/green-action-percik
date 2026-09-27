@@ -5,15 +5,18 @@ import { Center } from "@/components/ui/center";
 import { Heading } from "@/components/ui/heading";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useNavigation } from "@/hooks/useNavigation";
+import { useRefreshOnNavigate } from "@/hooks/useRefreshOnNavigate";
 import { useShowToast } from "@/hooks/useShowToast";
 import {
 	fetchUnpaidStudentWaste,
 	payAllUnpaidStudentWaste,
 } from "@/services/fetcher/activity/teacherActivityManager";
 import { useActivityManagerStore } from "@/stores/activityManager";
-import { formatPrice, normalizeError } from "@/utils";
+import { formatPrice, nativeOnlyProps, normalizeError } from "@/utils";
 
 export default function DebtSettlementScreen() {
+	useRefreshOnNavigate();
+
 	const { goBack } = useNavigation();
 	const showToast = useShowToast();
 
@@ -100,9 +103,17 @@ export default function DebtSettlementScreen() {
 			contentComponent={
 				<>
 					<Center className="flex-1">
-						<Center className="w-[70%] max-w-98 aspect-square rounded-full bg-primary/10">
-							<Center className="w-[82%] h-[82%] rounded-full bg-card border-8 border-primary/20">
-								<Heading size="4xl">{`Rp${formatPrice(totalDebt)}`}</Heading>
+						<Center className="w-full max-w-98 aspect-square rounded-full bg-primary/10">
+							<Center className="w-[85%] h-[85%] px-4! rounded-full bg-card border-8 border-primary/20">
+								<Heading
+									size="4xl"
+									className="web:truncate web:text-[clamp(1.5rem,12vw,2.5rem)]"
+									{...nativeOnlyProps({
+										minimumFontScale: 0.5,
+										adjustsFontSizeToFit: true,
+										numberOfLines: 1,
+									})}
+								>{`Rp${formatPrice(totalDebt)}`}</Heading>
 							</Center>
 						</Center>
 					</Center>

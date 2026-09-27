@@ -20,7 +20,7 @@ export function TextAreaField({
 	return (
 		<Animated.View className="min-h-32 max-h-52 flex-none">
 			<Textarea
-				className="h-full rounded-md px-2 py-1 border-2 font-medium"
+				className="h-full rounded-md px-2 py-1 border-2 font-medium web:outline-none"
 				isDisabled={isDisabled}
 			>
 				<TextareaInput

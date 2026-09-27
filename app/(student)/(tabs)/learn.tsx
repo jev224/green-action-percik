@@ -1,6 +1,6 @@
 import { LeafyGreen } from "lucide-react-native";
 import { memo, useCallback } from "react";
-import { FlatList } from "react-native";
+import { FlatList, RefreshControl } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
 import {
@@ -76,11 +76,9 @@ export default function LearningScreen() {
 		<Screen
 			isLoading={isLoading}
 			isError={isError}
-			isRefreshing={isRefreshing}
 			errorMessage={errorMessage}
 			relativeErrorPos
 			onTryAgain={refresh}
-			onRefresh={refresh}
 			requiredInternet
 			tabBarPadding
 			headerComponent={
@@ -108,6 +106,9 @@ export default function LearningScreen() {
 			contentComponent={
 				results.length > 0 ? (
 					<FlatList
+						refreshControl={
+							<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />
+						}
 						data={results}
 						showsVerticalScrollIndicator={false}
 						className="overflow-visible"

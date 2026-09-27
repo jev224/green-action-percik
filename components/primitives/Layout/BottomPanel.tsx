@@ -8,6 +8,7 @@ const bottomPanelStyle = tv({
 	variants: {
 		variant: {
 			ghost: "bg-transparent border-0",
+			background: "bg-background border-0",
 			solid: "bg-muted",
 		},
 	},

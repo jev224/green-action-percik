@@ -11,220 +11,204 @@
      • Web:    selector matches html.dark directly, no nesting issues
      • Native: ProcessorBuilder recognises :where(.dark) → theme-scoped vars  */
 @layer theme {
-	:where(.light, .light *) {
-		--radius: 1.2rem;
+  :where(.light, .light *) {
+    --radius: 1.2rem;
 
-		--primary: 34 168 108;
-		--primary-foreground: 250 250 245;
-		--card: 249 254 245;
-		--secondary: 222 231 214;
-		--secondary-foreground: 22 34 26;
-		--background: 238 242 238;
-		--popover: 249 254 245;
-		--popover-foreground: 22 34 26;
-		--muted: 220 229 222;
-		--muted-foreground: 90 110 95;
-		--destructive: 231 0 11;
-		--destructive-foreground: 250 250 250;
-		--foreground: 22 34 26;
-		--border: 204 212 198;
-		--input: 206 218 198;
-		--ring: 64 150 102;
-		--accent: 180 210 179;
-		--accent-foreground: 30 48 36;
-		--success: 34 168 108;
-		--success-foreground: 255 255 255;
-		--info: 42 130 214;
-		--info-foreground: 250 250 250;
-		--warning: 235 158 24;
-		--warning-foreground: 255 255 255;
-		--organic: 141 168 45;
-		--organic-foreground: 255 255 255;
-		--inorganic: 56 130 214;
-		--inorganic-foreground: 255 255 255;
-		--compost: 173 110 40;
-		--compost-foreground: 255 255 255;
-		--garden: 96 168 62;
-		--garden-foreground: 255 255 255;
-	}
+    --primary: 34 168 108;
+    --primary-foreground: 250 250 245;
+    --card: 249 254 245;
+    --secondary: 222 231 214;
+    --secondary-foreground: 22 34 26;
+    --background: 238 242 238;
+    --popover: 249 254 245;
+    --popover-foreground: 22 34 26;
+    --muted: 220 229 222;
+    --muted-foreground: 90 110 95;
+    --destructive: 231 0 11;
+    --destructive-foreground: 250 250 250;
+    --foreground: 22 34 26;
+    --border: 204 212 198;
+    --input: 206 218 198;
+    --ring: 64 150 102;
+    --accent: 180 210 179;
+    --accent-foreground: 30 48 36;
+    --success: 34 168 108;
+    --success-foreground: 255 255 255;
+    --info: 42 130 214;
+    --info-foreground: 250 250 250;
+    --warning: 235 158 24;
+    --warning-foreground: 255 255 255;
+    --organic: 141 168 45;
+    --organic-foreground: 255 255 255;
+    --inorganic: 56 130 214;
+    --inorganic-foreground: 255 255 255;
+    --compost: 173 110 40;
+    --compost-foreground: 255 255 255;
+    --garden: 96 168 62;
+    --garden-foreground: 255 255 255;
+  }
 
-	@media (prefers-color-scheme: light) {
-		:root:not(:where(.light, .light *, .dark, .dark *)) {
-			:where(.light, .light *) {
-				--primary: 34 168 108;
-				--primary-foreground: 250 250 245;
-				--card: 249 254 245;
-				--secondary: 222 231 214;
-				--secondary-foreground: 22 34 26;
-				--background: 238 242 238;
-				--popover: 249 254 245;
-				--popover-foreground: 22 34 26;
-				--muted: 220 229 222;
-				--muted-foreground: 90 110 95;
-				--destructive: 231 0 11;
-				--destructive-foreground: 250 250 250;
-				--foreground: 22 34 26;
-				--border: 204 212 198;
-				--input: 206 218 198;
-				--ring: 64 150 102;
-				--accent: 180 210 179;
-				--accent-foreground: 30 48 36;
-				--success: 34 168 108;
-				--success-foreground: 255 255 255;
-				--info: 42 130 214;
-				--info-foreground: 250 250 250;
-				--warning: 235 158 24;
-				--warning-foreground: 255 255 255;
-				--organic: 141 168 45;
-				--organic-foreground: 255 255 255;
-				--inorganic: 56 130 214;
-				--inorganic-foreground: 255 255 255;
-				--compost: 173 110 40;
-				--compost-foreground: 255 255 255;
-				--garden: 96 168 62;
-				--garden-foreground: 255 255 255;
-			}
-		}
-	}
+  @media (prefers-color-scheme: light) {
+    :root:not(:where(.light, .light *, .dark, .dark *)) {
+      :where(.light, .light *) {
+        --primary: 34 168 108;
+        --primary-foreground: 250 250 245;
+        --card: 249 254 245;
+        --secondary: 222 231 214;
+        --secondary-foreground: 22 34 26;
+        --background: 238 242 238;
+        --popover: 249 254 245;
+        --popover-foreground: 22 34 26;
+        --muted: 220 229 222;
+        --muted-foreground: 90 110 95;
+        --destructive: 231 0 11;
+        --destructive-foreground: 250 250 250;
+        --foreground: 22 34 26;
+        --border: 204 212 198;
+        --input: 206 218 198;
+        --ring: 64 150 102;
+        --accent: 180 210 179;
+        --accent-foreground: 30 48 36;
+        --success: 34 168 108;
+        --success-foreground: 255 255 255;
+        --info: 42 130 214;
+        --info-foreground: 250 250 250;
+        --warning: 235 158 24;
+        --warning-foreground: 255 255 255;
+        --organic: 141 168 45;
+        --organic-foreground: 255 255 255;
+        --inorganic: 56 130 214;
+        --inorganic-foreground: 255 255 255;
+        --compost: 173 110 40;
+        --compost-foreground: 255 255 255;
+        --garden: 96 168 62;
+        --garden-foreground: 255 255 255;
+      }
+    }
+  }
 
-	:where(.dark, .dark *) {
-		--radius: 1.2rem;
+  :where(.dark, .dark *) {
+    --radius: 1.2rem;
 
-		--primary: 62 166 101;
-		--primary-foreground: 12 42 25;
-		--secondary: 31 66 45;
-		--secondary-foreground: 177 224 191;
-		--accent: 37 78 51;
-		--accent-foreground: 128 205 153;
-		--success: 71 174 104;
-		--success-foreground: 10 40 23;
-		--info: 91 145 201;
-		--info-foreground: 12 28 48;
-		--warning: 224 173 67;
-		--warning-foreground: 52 37 10;
-		--destructive: 224 91 91;
-		--destructive-foreground: 54 15 15;
-		--organic: 93 172 99;
-		--organic-foreground: 13 40 21;
-		--inorganic: 93 145 194;
-		--inorganic-foreground: 14 31 47;
-		--compost: 177 153 76;
-		--compost-foreground: 43 35 13;
-		--garden: 76 169 101;
-		--garden-foreground: 11 40 20;
-		--card: 27 33 28;
-		--background: 17 21 18;
-		--popover: 29 35 30;
-		--popover-foreground: 232 241 234;
-		--muted: 40 47 41;
-		--muted-foreground: 157 171 161;
-		--foreground: 235 242 236;
-		--border: 60 68 60;
-		--input: 60 68 60;
-		--ring: 72 177 105;
-	}
+    --primary: 62 166 101;
+    --primary-foreground: 12 42 25;
+    --secondary: 31 66 45;
+    --secondary-foreground: 177 224 191;
+    --accent: 37 78 51;
+    --accent-foreground: 128 205 153;
+    --success: 71 174 104;
+    --success-foreground: 10 40 23;
+    --info: 91 145 201;
+    --info-foreground: 12 28 48;
+    --warning: 224 173 67;
+    --warning-foreground: 52 37 10;
+    --destructive: 224 91 91;
+    --destructive-foreground: 54 15 15;
+    --organic: 93 172 99;
+    --organic-foreground: 13 40 21;
+    --inorganic: 93 145 194;
+    --inorganic-foreground: 14 31 47;
+    --compost: 177 153 76;
+    --compost-foreground: 43 35 13;
+    --garden: 76 169 101;
+    --garden-foreground: 11 40 20;
+    --card: 27 33 28;
+    --background: 17 21 18;
+    --popover: 29 35 30;
+    --popover-foreground: 232 241 234;
+    --muted: 40 47 41;
+    --muted-foreground: 157 171 161;
+    --foreground: 235 242 236;
+    --border: 60 68 60;
+    --input: 60 68 60;
+    --ring: 72 177 105;
+  }
 
-	@media (prefers-color-scheme: dark) {
-		:root:not(:where(.light, .light *, .dark, .dark *)) {
-			--primary: 62 166 101;
-			--primary-foreground: 12 42 25;
-			--secondary: 31 66 45;
-			--secondary-foreground: 177 224 191;
-			--accent: 37 78 51;
-			--accent-foreground: 128 205 153;
-			--success: 71 174 104;
-			--success-foreground: 10 40 23;
-			--info: 91 145 201;
-			--info-foreground: 12 28 48;
-			--warning: 224 173 67;
-			--warning-foreground: 52 37 10;
-			--destructive: 224 91 91;
-			--destructive-foreground: 54 15 15;
-			--organic: 93 172 99;
-			--organic-foreground: 13 40 21;
-			--inorganic: 93 145 194;
-			--inorganic-foreground: 14 31 47;
-			--compost: 177 153 76;
-			--compost-foreground: 43 35 13;
-			--garden: 76 169 101;
-			--garden-foreground: 11 40 20;
-			--card: 27 33 28;
-			--background: 17 21 18;
-			--popover: 29 35 30;
-			--popover-foreground: 232 241 234;
-			--muted: 40 47 41;
-			--muted-foreground: 157 171 161;
-			--foreground: 235 242 236;
-			--border: 60 68 60;
-			--input: 60 68 60;
-			--ring: 72 177 105;
-		}
-	}
+  @media (prefers-color-scheme: dark) {
+    :root:not(:where(.light, .light *, .dark, .dark *)) {
+      --primary: 62 166 101;
+      --primary-foreground: 12 42 25;
+      --secondary: 31 66 45;
+      --secondary-foreground: 177 224 191;
+      --accent: 37 78 51;
+      --accent-foreground: 128 205 153;
+      --success: 71 174 104;
+      --success-foreground: 10 40 23;
+      --info: 91 145 201;
+      --info-foreground: 12 28 48;
+      --warning: 224 173 67;
+      --warning-foreground: 52 37 10;
+      --destructive: 224 91 91;
+      --destructive-foreground: 54 15 15;
+      --organic: 93 172 99;
+      --organic-foreground: 13 40 21;
+      --inorganic: 93 145 194;
+      --inorganic-foreground: 14 31 47;
+      --compost: 177 153 76;
+      --compost-foreground: 43 35 13;
+      --garden: 76 169 101;
+      --garden-foreground: 11 40 20;
+      --card: 27 33 28;
+      --background: 17 21 18;
+      --popover: 29 35 30;
+      --popover-foreground: 232 241 234;
+      --muted: 40 47 41;
+      --muted-foreground: 157 171 161;
+      --foreground: 235 242 236;
+      --border: 60 68 60;
+      --input: 60 68 60;
+      --ring: 72 177 105;
+    }
+  }
 }
 
 /* ─── Tailwind v4 color mappings ─────────────────────────────────
    Maps the theme CSS variables above to Tailwind color utilities.
    bg-primary → rgb(var(--primary)), text-foreground → rgb(var(--foreground)), etc. */
 @theme inline {
-	--color-primary: rgb(var(--primary));
-	--color-primary-foreground: rgb(var(--primary-foreground));
-	--color-secondary: rgb(var(--secondary));
-	--color-secondary-foreground: rgb(var(--secondary-foreground));
-	--color-accent: rgb(var(--accent));
-	--color-accent-foreground: rgb(var(--accent-foreground));
-	--color-success: rgb(var(--success));
-	--color-success-foreground: rgb(var(--success-foreground));
-	--color-info: rgb(var(--info));
-	--color-info-foreground: rgb(var(--info-foreground));
-	--color-warning: rgb(var(--warning));
-	--color-warning-foreground: rgb(var(--warning-foreground));
-	--color-destructive: rgb(var(--destructive));
-	--color-destructive-foreground: rgb(var(--destructive-foreground));
-	--color-organic: rgb(var(--organic));
-	--color-organic-foreground: rgb(var(--organic-foreground));
-	--color-inorganic: rgb(var(--inorganic));
-	--color-inorganic-foreground: rgb(var(--inorganic-foreground));
-	--color-compost: rgb(var(--compost));
-	--color-compost-foreground: rgb(var(--compost-foreground));
-	--color-garden: rgb(var(--garden));
-	--color-garden-foreground: rgb(var(--garden-foreground));
-	--color-card: rgb(var(--card));
-	--color-background: rgb(var(--background));
-	--color-popover: rgb(var(--popover));
-	--color-popover-foreground: rgb(var(--popover-foreground));
-	--color-muted: rgb(var(--muted));
-	--color-muted-foreground: rgb(var(--muted-foreground));
-	--color-foreground: rgb(var(--foreground));
-	--color-border: rgb(var(--border));
-	--color-input: rgb(var(--input));
-	--color-ring: rgb(var(--ring));
+  --color-primary: rgb(var(--primary));
+  --color-primary-foreground: rgb(var(--primary-foreground));
+  --color-secondary: rgb(var(--secondary));
+  --color-secondary-foreground: rgb(var(--secondary-foreground));
+  --color-accent: rgb(var(--accent));
+  --color-accent-foreground: rgb(var(--accent-foreground));
+  --color-success: rgb(var(--success));
+  --color-success-foreground: rgb(var(--success-foreground));
+  --color-info: rgb(var(--info));
+  --color-info-foreground: rgb(var(--info-foreground));
+  --color-warning: rgb(var(--warning));
+  --color-warning-foreground: rgb(var(--warning-foreground));
+  --color-destructive: rgb(var(--destructive));
+  --color-destructive-foreground: rgb(var(--destructive-foreground));
+  --color-organic: rgb(var(--organic));
+  --color-organic-foreground: rgb(var(--organic-foreground));
+  --color-inorganic: rgb(var(--inorganic));
+  --color-inorganic-foreground: rgb(var(--inorganic-foreground));
+  --color-compost: rgb(var(--compost));
+  --color-compost-foreground: rgb(var(--compost-foreground));
+  --color-garden: rgb(var(--garden));
+  --color-garden-foreground: rgb(var(--garden-foreground));
+  --color-card: rgb(var(--card));
+  --color-background: rgb(var(--background));
+  --color-popover: rgb(var(--popover));
+  --color-popover-foreground: rgb(var(--popover-foreground));
+  --color-muted: rgb(var(--muted));
+  --color-muted-foreground: rgb(var(--muted-foreground));
+  --color-foreground: rgb(var(--foreground));
+  --color-border: rgb(var(--border));
+  --color-input: rgb(var(--input));
+  --color-ring: rgb(var(--ring));
 
-	--radius-xs: calc(var(--radius) - 6px);
-	--radius-sm: calc(var(--radius) - 4px);
-	--radius-md: calc(var(--radius) - 2px);
-	--radius-lg: var(--radius);
-	--radius-xl: calc(var(--radius) + 4px);
-	--radius-2xl: calc(var(--radius) + 8px);
-	--radius-3xl: calc(var(--radius) + 12px);
-	--radius-4xl: calc(var(--radius) + 16px);
+  --radius-xs: calc(var(--radius) - 6px);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
 }
 
-/* Disable the default fade out effect on the old content */
-::view-transition-old(root) {
-	animation: none;
-}
-
-/* Make new content wipe in from the right */
-::view-transition-new(root) {
-	animation: wipe-in 0.6s ease-out forwards;
-}
-
-/* Animation wiping in the new content */
-@keyframes wipe-in {
-	from {
-		clip-path: inset(0 0 0 100%);
-	}
-	to {
-		clip-path: inset(0 0 0 0);
-	}
+body {
+  background-color: rgb(var(--background));
 }

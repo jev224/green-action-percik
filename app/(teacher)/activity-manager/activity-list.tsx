@@ -1,6 +1,6 @@
 import { GraduationCap, PiggyBank, Recycle } from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { FlatList } from "react-native";
+import { FlatList, RefreshControl } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import {
 	ActionTile,
@@ -219,8 +219,6 @@ export default function ActivityListScreen() {
 		<Screen
 			isLoading={isLoading}
 			isError={isError}
-			onRefresh={refresh}
-			isRefreshing={isRefreshing}
 			errorMessage={errorMessage}
 			onTryAgain={refresh}
 			requiredInternet
@@ -246,6 +244,9 @@ export default function ActivityListScreen() {
 			contentComponent={
 				filteredResults.length > 0 ? (
 					<FlatList
+						refreshControl={
+							<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />
+						}
 						data={filteredResults}
 						showsVerticalScrollIndicator={false}
 						className="overflow-visible"

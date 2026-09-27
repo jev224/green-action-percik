@@ -1,9 +1,11 @@
+import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type {
 	ProfileByRole,
 	UserRole,
 } from "@/services/fetcher/account/profile";
-import { normalizeError } from "@/utils";
+import { normalizeError, sleepAsync } from "@/utils";
+import { clearRefresh, shouldRefresh } from "./useRefreshOnNavigate";
 import type { useUserProfile } from "./useUser";
 
 interface UseAsyncDataResult<T> {
@@ -112,8 +114,11 @@ export function useAsyncData<T, R extends UserRole = UserRole>(
 	// RefreshControl spinner instead of being swapped for a loading state.
 	const refresh = useCallback(async () => {
 		setIsRefreshing(true);
+		setIsLoading(true);
 		setIsError(false);
 		setError(null);
+
+		await sleepAsync(200);
 
 		try {
 			if (userProfileRef.current?.isError) {
@@ -135,9 +140,19 @@ export function useAsyncData<T, R extends UserRole = UserRole>(
 		} finally {
 			if (isMountedRef.current) {
 				setIsRefreshing(false);
+				setIsLoading(false);
 			}
 		}
 	}, []);
+
+	useFocusEffect(
+		useCallback(() => {
+			if (shouldRefresh) {
+				clearRefresh();
+				refresh();
+			}
+		}, [refresh]),
+	);
 
 	return {
 		data,

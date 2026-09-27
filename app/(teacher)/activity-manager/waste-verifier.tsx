@@ -9,6 +9,7 @@ import {
 	Modal,
 	Screen,
 	ScreenHeader,
+	Spacer,
 	Spinner,
 	StatCard,
 	TextField,
@@ -27,6 +28,7 @@ import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useNavigation } from "@/hooks/useNavigation";
+import { useRefreshOnNavigate } from "@/hooks/useRefreshOnNavigate";
 import { useShowToast } from "@/hooks/useShowToast";
 import {
 	deleteWasteBank,
@@ -40,6 +42,8 @@ import { formatPrice, normalizeError } from "@/utils";
 const WASTE_PRICE_MULTIPLIER_FALLBACK = 3000;
 
 export default function WasteVerifierScreen() {
+	useRefreshOnNavigate();
+
 	const selectedWaste = useActivityManagerStore((s) => s.selectedWaste);
 	const sourceSection = useActivityManagerStore((s) => s.sourceSection);
 	const isEditing = sourceSection === "completed";
@@ -130,6 +134,7 @@ export default function WasteVerifierScreen() {
 	return (
 		<Screen
 			requiredInternet
+			scrollable
 			headerComponent={
 				<ScreenHeader
 					title={isEditing ? "Ubah data sampah" : "Verifikasi bank sampah"}
@@ -189,7 +194,7 @@ export default function WasteVerifierScreen() {
 						}
 					/>
 
-					<BottomPanel variant="ghost">
+					<BottomPanel variant="background">
 						<HStack space="md">
 							<Button
 								label="Tolak"
@@ -294,6 +299,8 @@ export default function WasteVerifierScreen() {
 							onChangeText={setWeight}
 						/>
 					</ListSection>
+
+					<Spacer height={108} />
 				</>
 			}
 		/>

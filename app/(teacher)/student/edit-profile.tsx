@@ -9,6 +9,7 @@ import {
 	SelectField,
 	TextField,
 } from "@/components/primitives";
+import { useRefreshOnNavigate } from "@/hooks/useRefreshOnNavigate";
 
 const CLASS_OPTIONS = [
 	{ label: "10-A", value: "10-A" },
@@ -19,6 +20,8 @@ const CLASS_OPTIONS = [
 ];
 
 export default function EditStudentProfileScreen() {
+	useRefreshOnNavigate();
+
 	const [name, setName] = useState("Ahmad");
 	const [nis, setNis] = useState("20240021");
 	const [className, setClassName] = useState("10-A");

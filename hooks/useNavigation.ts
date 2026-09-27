@@ -27,7 +27,8 @@ export function useNavigation() {
 		if (router.canDismiss()) {
 			router.dismissAll();
 		}
-		router.replace(href);
+
+		router.push(href);
 	};
 
 	const getHomeRoute = (): Href => {
@@ -41,11 +42,10 @@ export function useNavigation() {
 
 	const navigateToFeedback = (href: Href) => {
 		if (router.canDismiss()) {
-			router.dismissAll();
+			router.dismissTo(href);
+		} else {
+			router.replace(href);
 		}
-
-		router.replace(getHomeRoute());
-		router.push(href);
 	};
 
 	const navigateToHome = () => resetTo(getHomeRoute());
