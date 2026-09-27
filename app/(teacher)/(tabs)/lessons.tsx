@@ -1,9 +1,8 @@
 import { BookImage, Plus } from "lucide-react-native";
 import { memo, useCallback } from "react";
-import { FlatList, ScrollView } from "react-native";
+import { FlatList, ScrollView, View } from "react-native";
 
 import Animated from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
 	contentEnterTransition,
 	contentExitTransition,
@@ -24,9 +23,10 @@ import { VStack } from "@/components/ui/vstack";
 import { useLessons } from "@/hooks/useLessons";
 import { useNavigation } from "@/hooks/useNavigation";
 import { useLessonStore } from "@/stores/lesson";
+import { useTabBarHeightStore } from "@/stores/tabBarHeight";
 
 export default function LessonsScreen() {
-	const insets = useSafeAreaInsets();
+	const tabBarHeight = useTabBarHeightStore((s) => s.height);
 
 	const { navigateTo } = useNavigation();
 	const createLesson = useLessonStore((state) => state.createLesson);
@@ -78,6 +78,7 @@ export default function LessonsScreen() {
 			errorMessage={errorMessage}
 			onTryAgain={refresh}
 			requiredInternet
+			tabBarPadding
 			headerComponent={
 				<>
 					<ScreenHeader title="Kelola Materi" />
@@ -108,13 +109,17 @@ export default function LessonsScreen() {
 				)
 			}
 			overlayComponent={
-				<Button
-					label="Materi Baru"
-					icon={Plus}
-					className="absolute px-5 py-4 gap-0 rounded-full"
-					style={{ bottom: insets.bottom + 24, right: insets.left + 16 }}
-					onPress={handleCreate}
-				/>
+				<View
+					className="absolute right-8"
+					style={{ bottom: tabBarHeight + 24 }}
+				>
+					<Button
+						label="Materi Baru"
+						icon={Plus}
+						className="px-5 py-4 gap-0 rounded-full"
+						onPress={handleCreate}
+					/>
+				</View>
 			}
 			loadingComponent={
 				<ScrollView

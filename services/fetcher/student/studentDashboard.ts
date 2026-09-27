@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { ServerError } from "@/services/ServerError";
 import { getCurrentMonthDateRange } from "@/utils";
+import { fetchUnpaidStudentWaste } from "../activity/teacherActivityManager";
 
 const DEFAULT_TARGETS = {
 	wasteWeightTarget: 160,
@@ -13,16 +14,14 @@ export async function fetchStudentStatistics(userId: string) {
 
 	const [
 		studentPointRes,
-		claimablePriceRes,
+		claimablePrice,
 		wasteWeightRes,
 		gardenActivityRes,
 		compostRes,
 	] = await Promise.all([
 		supabase.from("students").select("points").eq("user_id", userId).single(),
 
-		supabase.rpc("get_unpaid_student_waste_total", {
-			p_student_id: userId,
-		}),
+		fetchUnpaidStudentWaste(userId),
 
 		supabase.rpc("get_monthly_waste_weight", {
 			p_start: start,
@@ -47,14 +46,12 @@ export async function fetchStudentStatistics(userId: string) {
 
 	if (
 		studentPointRes.error ||
-		claimablePriceRes.error ||
 		wasteWeightRes.error ||
 		gardenActivityRes.error ||
 		compostRes.error
 	) {
 		const failedQueries = [
 			studentPointRes.error && "Student data",
-			claimablePriceRes.error && "Claimable waste price",
 			wasteWeightRes.error && "waste bank",
 			gardenActivityRes.error && "garden activity",
 			compostRes.error && "compost activity",
@@ -71,7 +68,7 @@ export async function fetchStudentStatistics(userId: string) {
 
 	return {
 		studentPoints: studentPointRes.data.points,
-		claimablePrice: claimablePriceRes.data ?? 0,
+		claimablePrice: claimablePrice ?? 0,
 		wasteWeightTotal: wasteWeightRes.data ?? 0,
 		gardenActivityCount: gardenActivityRes.count ?? 0,
 		compostActivityCount: compostRes.count ?? 0,

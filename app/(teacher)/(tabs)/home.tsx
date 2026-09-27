@@ -3,6 +3,7 @@ import {
 	BrushCleaning,
 	Bubbles,
 	Coins,
+	CoinsIcon,
 	GraduationCap,
 	Recycle,
 	Trash2,
@@ -49,6 +50,7 @@ export default function HomeScreen() {
 			onTryAgain={refresh}
 			requiredInternet
 			isRefreshing={isRefreshing}
+			tabBarPadding
 			contentComponent={({
 				stats: {
 					studentCount,
@@ -131,6 +133,18 @@ export default function HomeScreen() {
 								thumbnailPosition="right"
 								onPress={() => {
 									setActivityType("waste-bank");
+									navigateTo("/(teacher)/activity-manager/activity-list");
+								}}
+							/>
+
+							<ActionTile
+								title="Lunasi siswa"
+								description="Catat uang yang sudah diberikan ke siswa"
+								icon={CoinsIcon}
+								variant="solid"
+								thumbnailPosition="right"
+								onPress={() => {
+									setActivityType("debt-settlement");
 									navigateTo("/(teacher)/activity-manager/activity-list");
 								}}
 							/>

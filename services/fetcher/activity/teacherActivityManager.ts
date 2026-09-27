@@ -1,3 +1,4 @@
+import type { PostgrestFilterBuilder } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 import type { Database } from "@/lib/supabase/database.types";
 import { ServerError } from "@/services/ServerError";
@@ -100,4 +101,138 @@ export async function fetchWastePhotoURL(photo: string) {
 
 export async function fetchWastePriceMultiplier() {
 	return await getPublicInfoValue("waste_price_multiplier_per_kg");
+}
+
+export async function fetchAllUnpaidStudentsWaste() {
+	const { error, data } = await supabase.rpc(
+		"students_with_unpaid_waste_banks",
+	);
+
+	if (error) {
+		throw new ServerError({
+			status: 500,
+			message: `Failed to fetch ALL unpaid student waste: ${error.message}`,
+			ui_message: `Terjadi kesalahan. Coba lagi ya${error.message}`,
+		});
+	}
+
+	return data;
+}
+
+export async function fetchUnpaidStudentWaste(studentId: string) {
+	const { error, data } = await supabase.rpc("get_unpaid_student_waste_total", {
+		p_student_id: studentId,
+	});
+
+	if (error) {
+		throw new ServerError({
+			status: 500,
+			message: `Failed to fetch unpaid student waste: ${error.message}`,
+			ui_message: "Terjadi kesalahan. Coba lagi ya",
+		});
+	}
+
+	return data;
+}
+
+export async function payAllUnpaidStudentWaste(studentId: string) {
+	const { error } = await supabase
+		.from("waste_banks")
+		.update({ paid: true })
+		.eq("student_id", studentId);
+
+	if (error) {
+		throw new ServerError({
+			status: 500,
+			message: `Failed to PAY unpaid student waste: ${error.message}`,
+			ui_message: "Terjadi kesalahan. Coba lagi ya",
+		});
+	}
+}
+
+export function applyDateRange<
+	// biome-ignore lint/suspicious/noExplicitAny: Supabase query builder generics
+	T extends PostgrestFilterBuilder<any, any, any, any>,
+>(query: T, start?: Date, end?: Date) {
+	if (start) {
+		query = query.gte("created_at", start.toISOString());
+	}
+
+	if (end) {
+		query = query.lte("created_at", end.toISOString());
+	}
+
+	return query;
+}
+
+export async function fetchAllCompostActivities(start?: Date, end?: Date) {
+	let query = supabase.from("compost_activities").select("*");
+
+	query = applyDateRange(query, start, end);
+
+	const { error, data } = await query;
+
+	if (error) {
+		throw new ServerError({
+			status: 500,
+			message: `Failed to fetch all compost activities: ${error.message}`,
+			ui_message: "Daftar kegiatan kompos belum bisa dimuat. Coba lagi ya",
+		});
+	}
+
+	return data ?? [];
+}
+
+export async function fetchAllCompostParticipants(start?: Date, end?: Date) {
+	let query = supabase.from("compost_participants").select("*");
+
+	query = applyDateRange(query, start, end);
+
+	const { error, data } = await query;
+
+	if (error) {
+		throw new ServerError({
+			status: 500,
+			message: `Failed to fetch all compost participants: ${error.message}`,
+			ui_message:
+				"Daftar peserta kegiatan kompos belum bisa dimuat. Coba lagi ya",
+		});
+	}
+
+	return data ?? [];
+}
+export async function fetchAllWasteBanks(start?: Date, end?: Date) {
+	let query = supabase.from("waste_banks").select("*");
+
+	query = applyDateRange(query, start, end);
+
+	const { error, data } = await query;
+
+	if (error) {
+		throw new ServerError({
+			status: 500,
+			message: `Failed to fetch all waste banks: ${error.message}`,
+			ui_message: "Daftar bank sampah belum bisa dimuat. Coba lagi ya",
+		});
+	}
+
+	return data ?? [];
+}
+
+export async function fetchAllGardenActivities(start?: Date, end?: Date) {
+	let query = supabase.from("garden_activities").select("*");
+
+	query = applyDateRange(query, start, end);
+
+	const { error, data } = await query;
+
+	if (error) {
+		throw new ServerError({
+			status: 500,
+			message: `Failed to fetch all garden activities: ${error.message}`,
+			ui_message: "Daftar kegiatan kebun belum bisa dimuat. Coba lagi ya",
+		});
+	}
+
+	return data ?? [];
 }

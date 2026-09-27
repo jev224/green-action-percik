@@ -162,9 +162,7 @@ export function StatCard({
 				>
 					{(baseStyles) => (
 						<>
-							{innerDecoration && (
-								<View className="absolute inset-0">{innerDecoration}</View>
-							)}
+							{innerDecoration}
 
 							{/* Only mounts (and only captures touches) when there's actually
               something to animate — previously this always sat over the

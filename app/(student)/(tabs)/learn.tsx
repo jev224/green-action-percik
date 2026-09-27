@@ -82,6 +82,7 @@ export default function LearningScreen() {
 			onTryAgain={refresh}
 			onRefresh={refresh}
 			requiredInternet
+			tabBarPadding
 			headerComponent={
 				<>
 					<ScreenHeader title="Belajar" />
@@ -114,19 +115,26 @@ export default function LearningScreen() {
 						keyExtractor={(lesson) => String(lesson.id)}
 					/>
 				) : segmentedControlValue === "incompleted" ? (
-					<>
-						<Heading size="5xl" className="self-center mt-8 -mb-8 py-1">
+					<Animated.View
+						entering={contentEnterTransition}
+						exiting={contentExitTransition}
+					>
+						<Heading size="5xl" className="self-center mt-8 -mb-8 py-1 -z-10">
 							😎👏
 						</Heading>
 						<EmptyState message="Kamu telah menyelesaikan semua materi pembelajaran." />
-					</>
+					</Animated.View>
 				) : (
-					<>
-						<Heading size="5xl" className="self-center mt-8 -mb-8 py-1">
+					<Animated.View
+						entering={contentEnterTransition}
+						exiting={contentExitTransition}
+					>
+						<Heading size="5xl" className="self-center mt-8 -mb-8 py-1 -z-10">
 							😕
 						</Heading>
+
 						<EmptyState message="Tidak ada materi pembalajaran yang kamu selesaikan." />
-					</>
+					</Animated.View>
 				)
 			}
 			loadingComponent={

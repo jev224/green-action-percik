@@ -55,6 +55,7 @@ export default function StudentsScreen() {
 			errorMessage={errorMessage}
 			onTryAgain={refresh}
 			requiredInternet
+			tabBarPadding
 			headerComponent={
 				<>
 					<ScreenHeader title="Kelola Siswa" />

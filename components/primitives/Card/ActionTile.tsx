@@ -193,7 +193,9 @@ export function ActionTile({
 						<HStack className="justify-between items-center">
 							<Heading
 								size="md"
-								className={baseStyles.text({ className: styles.title() })}
+								className={baseStyles.text({
+									className: styles.title({ class: "web:truncate" }),
+								})}
 								{...nativeOnlyProps({
 									numberOfLines: thumbnailPosition === "top" ? 2 : 1,
 								})}

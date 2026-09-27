@@ -1,3 +1,4 @@
+import { Platform } from "react-native";
 import {
 	Easing,
 	type EntryAnimationsValues,
@@ -161,12 +162,12 @@ export const ProfileMenuGlideIn = (values: EntryAnimationsValues) => {
 	};
 };
 
-const _layoutEasing = Easing.bezier(0.39, 0.06, 0.07, 0.99);
+const layoutEasing = Easing.bezier(0.39, 0.06, 0.07, 0.99);
 
-export const contentLayoutTransition = LinearTransition.springify()
-	.damping(25)
-	.stiffness(280)
-	.mass(0.8);
+export const contentLayoutTransition =
+	Platform.OS === "web"
+		? LinearTransition.easing(layoutEasing).duration(500)
+		: LinearTransition.springify().damping(25).stiffness(280).mass(0.8);
 
 export const contentEnterTransition = FadeInDown.easing(Easing.out(Easing.ease))
 	.duration(260)

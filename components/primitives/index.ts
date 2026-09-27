@@ -40,4 +40,5 @@ export { Spacer } from "./Layout/Spacer";
 export type { ListItemData } from "./List/List";
 export { List } from "./List/List";
 export { ListSection } from "./List/ListSection";
+export { NavigationTabsLayout } from "./Tabs/TabsLayout";
 export { GradientHeading } from "./Typography/AnimatedGradientHeading";

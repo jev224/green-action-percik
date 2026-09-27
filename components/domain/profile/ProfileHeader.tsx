@@ -130,8 +130,10 @@ export function ProfileHeader({
 		<>
 			<Box
 				className={cn(
-					"items-center gap-2",
-					layout === "centered" ? "justify-center p-7" : "flex-row py-4 gap-6",
+					"shrink-0  items-center gap-2 h-fit",
+					layout === "centered"
+						? "justify-center p-7 pb-4"
+						: "flex-row py-4 gap-6",
 				)}
 			>
 				<Pressable ref={avatarRef} onPress={openPreview}>

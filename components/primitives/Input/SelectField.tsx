@@ -54,12 +54,13 @@ export function SelectField({
 			initialLabel={initialValue}
 			onValueChange={onValueChange}
 			onClose={() => setIsOpen(false)}
+			className={cn(inList && "shrink max-w-[60%]")}
 		>
 			<SelectTrigger
 				className={cn(
 					"rounded-md justify-between py-4",
 					inList &&
-						"p-0 -mr-4 gap-2.5 border-0 ring-0 w-fit" +
+						"p-0 translate-x-4 gap-2.5 border-0 ring-0 w-fit" +
 							"data-[focus=true]:border-0 data-[focus=true]:ring-0 " +
 							"data-[hover=true]:border-0 data-[active=true]:border-0",
 					className,
@@ -98,7 +99,7 @@ export function SelectField({
 				>
 					{options.map((opt) => (
 						<SelectItem
-							className="py-4 bg-amber-400"
+							className="py-4"
 							key={opt.value}
 							label={inList ? truncateText(opt.label, 16) : opt.label}
 							value={opt.value}

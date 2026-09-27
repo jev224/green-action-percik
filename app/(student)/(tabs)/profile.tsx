@@ -18,6 +18,7 @@ export default function ProfileScreen() {
 			data={profile}
 			onTryAgain={revalidate}
 			requiredInternet
+			tabBarPadding
 			contentComponent={({ name, class: classData, nis, photoUrl }) => (
 				<>
 					<ProfileHeader

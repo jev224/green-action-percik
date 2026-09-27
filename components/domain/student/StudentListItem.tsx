@@ -113,13 +113,14 @@ export const StudentListItem = memo(function StudentListItem({
 
 								<Box className="flex-1 w-[80%]">
 									<Heading
+										className="web:truncate"
 										{...nativeOnlyProps({
 											numberOfLines: 1,
 										})}
 									>
 										{name}
 									</Heading>
-									{grade && <Text>{grade}</Text>}
+									{grade && <Text className="web:truncate">{grade}</Text>}
 								</Box>
 							</HStack>
 						</EaseView>
@@ -132,7 +133,13 @@ export const StudentListItem = memo(function StudentListItem({
 									...EaseTranstionConfig.spring.snappy,
 								}}
 							>
-								<Heading className="text-primary font-semibold" size="lg">
+								<Heading
+									className="text-primary font-semibold web:truncate"
+									size="lg"
+									{...nativeOnlyProps({
+										numberOfLines: 1,
+									})}
+								>
 									{point} Poin
 								</Heading>
 							</EaseView>
@@ -149,17 +156,24 @@ export const StudentListItem = memo(function StudentListItem({
 
 						<Box className="flex-1">
 							<Heading
+								className="web:truncate"
 								{...nativeOnlyProps({
 									numberOfLines: 1,
 								})}
 							>
 								{name}
 							</Heading>
-							{grade && <Text>{grade}</Text>}
+							{grade && <Text className="web:truncate">{grade}</Text>}
 						</Box>
 
 						{point !== null && (
-							<Heading className="text-primary font-semibold" size="lg">
+							<Heading
+								className="text-primary font-semibold web:truncate"
+								size="lg"
+								{...nativeOnlyProps({
+									numberOfLines: 1,
+								})}
+							>
 								{point} Poin
 							</Heading>
 						)}

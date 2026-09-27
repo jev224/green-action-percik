@@ -32,7 +32,7 @@ interface LessonStore {
 	clearLessonContentData: () => void;
 }
 
-export const useLessonStore = create<LessonStore>((set) => ({
+export const useLessonStore = create<LessonStore>()((set) => ({
 	lesson: { mode: "create" },
 	lessonContentData: null,
 	setLessonContentData: (id, title, contents) =>

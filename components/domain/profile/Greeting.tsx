@@ -19,7 +19,7 @@ import { Cloud1, Leaf4, Spark2 } from "@/constants/Assets";
 import { useNavigation } from "@/hooks/useNavigation";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { logout } from "@/services/fetcher/account/auth";
-import { randomBetween, truncateText } from "@/utils";
+import { nativeOnlyProps, randomBetween, truncateText } from "@/utils";
 
 interface GreetingProps {
 	name: string;
@@ -47,8 +47,21 @@ export function Greeting({ name, info, imageSource }: GreetingProps) {
 	return (
 		<HStack className="justify-between items-center">
 			<VStack className="flex-1">
-				<Heading size="xl">Halo, {truncateText(name, 12)} 🖐</Heading>
-				{info && <Text>{info}</Text>}
+				<Heading
+					size="xl"
+					className="web:truncate"
+					{...nativeOnlyProps({ numberOfLines: 1 })}
+				>
+					Halo, {truncateText(name, 12)} 🖐
+				</Heading>
+				{info && (
+					<Text
+						className="web:truncate"
+						{...nativeOnlyProps({ numberOfLines: 1 })}
+					>
+						{info}
+					</Text>
+				)}
 			</VStack>
 
 			<Menu

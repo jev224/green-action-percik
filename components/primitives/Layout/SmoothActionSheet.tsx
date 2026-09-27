@@ -181,33 +181,35 @@ export const SmoothActionSheet = ({
 			<AnimatedPressable
 				onPress={onClose}
 				style={menuAnimatedStyle}
-				className="h-full"
+				className="h-full items-center"
 			>
-				{selectPortal ? (
-					<SelectContent
-						className={cnBase(
-							"absolute bottom-0 left-[50%] right-0 -translate-x-[50%] p-3 bg-transparent max-w-180",
-							fullHeight && "min-h-[85%]",
-						)}
-						initial={{ y: 0 }}
-						animate={{ y: 0 }}
-						exit={{ y: 0 }}
-					>
-						{renderContent}
-					</SelectContent>
-				) : (
-					<ActionsheetContent
-						className={cnBase(
-							"absolute bottom-0 left-[50%] right-0 -translate-x-[50%] p-3 bg-transparent max-w-180",
-							fullHeight && "min-h-[85%]",
-						)}
-						initial={{ y: 0 }}
-						animate={{ y: 0 }}
-						exit={{ y: 0 }}
-					>
-						{renderContent}
-					</ActionsheetContent>
-				)}
+				<View className="h-full w-full max-w-180">
+					{selectPortal ? (
+						<SelectContent
+							className={cnBase(
+								"absolute bottom-0 left-0 right-0 p-3 bg-transparent",
+								fullHeight && "min-h-[85%]",
+							)}
+							initial={{ y: 0 }}
+							animate={{ y: 0 }}
+							exit={{ y: 0 }}
+						>
+							{renderContent}
+						</SelectContent>
+					) : (
+						<ActionsheetContent
+							className={cnBase(
+								"absolute bottom-0 left-0 right-0 p-3 bg-transparent",
+								fullHeight && "min-h-[85%]",
+							)}
+							initial={{ y: 0 }}
+							animate={{ y: 0 }}
+							exit={{ y: 0 }}
+						>
+							{renderContent}
+						</ActionsheetContent>
+					)}
+				</View>
 			</AnimatedPressable>
 		</>
 	);

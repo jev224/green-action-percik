@@ -208,3 +208,23 @@
 	--radius-3xl: calc(var(--radius) + 12px);
 	--radius-4xl: calc(var(--radius) + 16px);
 }
+
+/* Disable the default fade out effect on the old content */
+::view-transition-old(root) {
+	animation: none;
+}
+
+/* Make new content wipe in from the right */
+::view-transition-new(root) {
+	animation: wipe-in 0.6s ease-out forwards;
+}
+
+/* Animation wiping in the new content */
+@keyframes wipe-in {
+	from {
+		clip-path: inset(0 0 0 100%);
+	}
+	to {
+		clip-path: inset(0 0 0 0);
+	}
+}

@@ -11,6 +11,7 @@ import { Box } from "@/components/ui/box";
 import { Center } from "@/components/ui/center";
 import { VStack } from "@/components/ui/vstack";
 import { useKeyboardHeight } from "@/hooks/useKeyboardHeight";
+import { useTabBarHeightStore } from "@/stores/tabBarHeight";
 import { checkConnection, sleepAsync } from "@/utils";
 import ErrorState from "../Feedback/ErrorState";
 import { Spinner } from "../Feedback/Spinner";
@@ -21,6 +22,7 @@ interface ScreenProps<T = undefined> {
 	isLoading?: boolean;
 	isError?: boolean;
 	data?: T;
+	tabBarPadding?: boolean;
 	avoidKeyboard?: boolean;
 	relativeErrorPos?: boolean;
 	overlayComponent?: ReactNode;
@@ -43,6 +45,7 @@ export function Screen<T = undefined>({
 	isLoading,
 	isError,
 	data,
+	tabBarPadding,
 	avoidKeyboard,
 	relativeErrorPos,
 	space = "2xl",
@@ -62,6 +65,8 @@ export function Screen<T = undefined>({
 	const keyboard = useKeyboardHeight();
 	const [hasInternet, setInternet] = useState(true);
 	const [internetLoading, setInternetLoading] = useState(true);
+
+	const tabBarHeight = useTabBarHeightStore((s) => s.height);
 
 	const insets = useSafeAreaInsets();
 	const isContentFn = typeof contentComponent === "function";
@@ -110,6 +115,9 @@ export function Screen<T = undefined>({
 
 	const contentStyle = {
 		flex: shouldScroll ? undefined : 1,
+		paddingBottom: tabBarPadding
+			? tabBarHeight - insets.bottom
+			: Math.max(insets.bottom, 24),
 	};
 
 	const checkInternet = async () => {

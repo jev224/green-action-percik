@@ -65,6 +65,7 @@ export default function StatsiticScreen() {
 			onTryAgain={refresh}
 			onRefresh={refresh}
 			requiredInternet
+			tabBarPadding
 			contentComponent={({
 				stats: {
 					wasteWeightTotal,

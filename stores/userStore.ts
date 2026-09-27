@@ -1,4 +1,5 @@
 // stores/userProfile.ts
+
 import { create } from "zustand";
 import type {
 	ProfileByRole,
@@ -14,7 +15,7 @@ type InternalStore = {
 	setRoleStore: (input: UserRole) => void;
 };
 
-const useInternalUserStore = create<InternalStore>((set) => ({
+const useInternalUserStore = create<InternalStore>()((set) => ({
 	userStore: null,
 	roleStore: null,
 	setUserStore: (input) => set({ userStore: input }),

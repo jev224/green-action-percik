@@ -78,7 +78,7 @@ export const ActivitySubmittedScreen = ({
 								<Center className="w-[50%] max-w-38 aspect-square rounded-full bg-success ring-8 ring-success/50">
 									<Icon
 										as={Check}
-										className="size-[70%] text-success-foreground"
+										className="w-[70%] h-[70%] text-success-foreground"
 									/>
 								</Center>
 							</Center>

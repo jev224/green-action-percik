@@ -13,6 +13,7 @@ import { AnimationConfig } from "@/components/animation/presets";
 import { Icon } from "@/components/ui/icon";
 import { usePressFeedback } from "@/hooks/usePressFeedback";
 import { useThemeColors } from "@/hooks/useThemeColors";
+import { nativeOnlyProps } from "@/utils";
 
 export interface ListItemData {
 	key: string;
@@ -82,7 +83,7 @@ function ListRow({ item }: { item: ListItemData }) {
 	const content = (
 		<Animated.View
 			className={cn(
-				"flex-row items-center gap-3 p-5",
+				"flex-row items-center gap-3 p-5 relative",
 				item.disabled && "opacity-40",
 			)}
 			style={animatedStyle}
@@ -90,9 +91,15 @@ function ListRow({ item }: { item: ListItemData }) {
 			{item.icon && (
 				<Icon as={item.icon} className={cn("h-5 w-5 shrink-0", iconColor)} />
 			)}
-			<Text className={cn("text-lg font-medium flex-1", textColor)}>
+			<Text
+				className={cn("text-lg font-medium flex-1 web:truncate", textColor)}
+				{...nativeOnlyProps({
+					numberOfLines: 1,
+				})}
+			>
 				{item.label}
 			</Text>
+
 			{item.trailing ??
 				(item.onPress && (
 					<Icon as={ChevronRight} className="h-4 w-4 text-foreground/40" />

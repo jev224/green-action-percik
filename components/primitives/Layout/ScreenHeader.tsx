@@ -25,7 +25,9 @@ export function ScreenHeader({
 		<HStack className="w-full min-h-8 justify-between">
 			{leftComponent}
 			<Center className="absolute inset-0 -z-10">
-				<Heading size="lg">{title && truncateText(title, 20)}</Heading>
+				<Heading size="lg" className="web:truncate">
+					{title && truncateText(title, 20)}
+				</Heading>
 			</Center>
 			<Box />
 			{rightComponent}

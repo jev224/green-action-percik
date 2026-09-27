@@ -15,13 +15,14 @@ import {
 	usePressFeedback,
 } from "@/hooks/usePressFeedback";
 import { useThemeColors } from "@/hooks/useThemeColors";
-import { nativeOnlyProps } from "@/utils";
 
 type ButtonProps = Omit<
 	ComponentProps<typeof GSButton>,
 	"children" | "size"
 > & {
 	iconClassName?: string;
+	textClassName?: string;
+
 	/** Shorthand — skip writing <ButtonText> yourself. */
 	label?: string;
 	/** Shorthand — skip writing <ButtonIcon> yourself. */
@@ -53,6 +54,7 @@ export function Button({
 	isDisabled,
 	disabled,
 	iconClassName,
+	textClassName,
 	...props
 }: ButtonProps) {
 	const { colors } = useThemeColors();
@@ -117,8 +119,8 @@ export function Button({
 						)}
 						{displayText && (
 							<ButtonText
-								className="text-lg font-semibold"
-								{...nativeOnlyProps({ numberOfLines: 1 })}
+								className={cn("text-lg font-semibold", textClassName)}
+								numberOfLines={1}
 							>
 								{displayText}
 							</ButtonText>

@@ -1,4 +1,4 @@
-import { GraduationCap, Recycle } from "lucide-react-native";
+import { GraduationCap, PiggyBank, Recycle } from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FlatList } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -18,12 +18,14 @@ import { useFuzzySearch } from "@/hooks/useFuzzySearch";
 import { useNavigation } from "@/hooks/useNavigation";
 import { useShowToast } from "@/hooks/useShowToast";
 import {
+	fetchAllUnpaidStudentsWaste,
 	fetchCompostActivities,
 	fetchWasteBanks,
 } from "@/services/fetcher/activity/teacherActivityManager";
 import {
 	type ClassData,
 	type FilterSection,
+	type StudentData,
 	useActivityManagerStore,
 	type WasteBankData,
 } from "@/stores/activityManager";
@@ -47,12 +49,32 @@ type WasteCardData = {
 	data: WasteBankData;
 };
 
-type ActivityCardData = CompostCardData | WasteCardData;
+type DebtSettlementCardData = {
+	type: "debt-settlement";
+	id: number;
+	title: string;
+	description: string;
+	completed: boolean;
+	data: StudentData;
+};
+
+type ActivityCardData =
+	| CompostCardData
+	| WasteCardData
+	| DebtSettlementCardData;
 
 const FILTER_OPTIONS: SegmentedControlOption<FilterSection>[] = [
 	{ label: "Belum Selesai", value: "incompleted" },
 	{ label: "Selesai", value: "completed" },
-] as const;
+];
+
+const CARD_ICONS: Record<ActivityCardData["type"], typeof GraduationCap> = {
+	"compost-activity": GraduationCap,
+	"waste-bank": Recycle,
+	"debt-settlement": PiggyBank,
+};
+
+const SKELETON_PLACEHOLDERS = Array.from({ length: 10 }, (_, index) => index);
 
 async function toCompostCards(): Promise<CompostCardData[]> {
 	const activities = await fetchCompostActivities();
@@ -71,13 +93,28 @@ async function toCompostCards(): Promise<CompostCardData[]> {
 async function toWasteCards(): Promise<WasteCardData[]> {
 	const wasteBanks = await fetchWasteBanks();
 
-	return wasteBanks.map((wasteData) => ({
+	return wasteBanks.map((wasteBank) => ({
 		type: "waste-bank",
-		id: wasteData.id,
-		title: wasteData.student.name,
-		description: `${wasteData.category} • ${formatDate(wasteData.created_at)}`,
-		completed: wasteData.weight !== 0,
-		data: wasteData,
+		id: wasteBank.id,
+		title: wasteBank.student.name,
+		description: `${wasteBank.category} • ${formatDate(wasteBank.created_at)}`,
+		completed: wasteBank.weight !== 0,
+		data: wasteBank,
+	}));
+}
+
+// NOTE: field names below (debtAmount / isSettled) are guesses — adjust to
+// whatever StudentData actually exposes.
+async function toDebtSettlementCards(): Promise<DebtSettlementCardData[]> {
+	const students = await fetchAllUnpaidStudentsWaste();
+
+	return students.map((student) => ({
+		type: "debt-settlement",
+		id: student.id,
+		title: student.name,
+		description: "Belum lunas",
+		completed: false,
+		data: student,
 	}));
 }
 
@@ -89,6 +126,9 @@ export default function ActivityListScreen() {
 	const activityType = useActivityManagerStore((s) => s.activityType);
 	const setSelectedClass = useActivityManagerStore((s) => s.setSelectedClass);
 	const setSelectedWaste = useActivityManagerStore((s) => s.setSelectedWaste);
+	const setSelectedStudent = useActivityManagerStore(
+		(s) => s.setSelectedStudent,
+	);
 	const setSourceSection = useActivityManagerStore((s) => s.setSourceSection);
 
 	const { goBack, navigateTo } = useNavigation();
@@ -97,56 +137,75 @@ export default function ActivityListScreen() {
 	const { data, isLoading, isError, refresh, errorMessage, isRefreshing } =
 		useAsyncData<ActivityCardData[] | null>(
 			async () => {
-				if (activityType === "compost-activity") return toCompostCards();
-				if (activityType === "waste-bank") return toWasteCards();
-				return null;
+				switch (activityType) {
+					case "compost-activity":
+						return toCompostCards();
+					case "waste-bank":
+						return toWasteCards();
+					case "debt-settlement":
+						return toDebtSettlementCards();
+					default:
+						return null;
+				}
 			},
 			undefined,
 			[activityType],
 		);
 
-	const searched = useFuzzySearch(
+	const searchResults = useFuzzySearch(
 		data ?? [],
 		["title", "description"],
 		searchQuery,
 	);
 
-	const results = useMemo(
+	const filteredResults = useMemo(
 		() =>
-			searched.filter(({ completed }) =>
+			searchResults.filter(({ completed }) =>
 				filterStatus === "completed" ? completed : !completed,
 			),
-		[searched, filterStatus],
+		[searchResults, filterStatus],
 	);
 
-	const handlePress = useCallback(
-		(cardData: ActivityCardData) => {
+	const handleCardPress = useCallback(
+		(card: ActivityCardData) => {
 			setSourceSection(filterStatus);
 
-			if (cardData.type === "compost-activity") {
-				setSelectedClass(cardData.data);
-				navigateTo("/(teacher)/activity-manager/compost-submission");
-			}
-
-			if (cardData.type === "waste-bank") {
-				setSelectedWaste(cardData.data);
-				navigateTo("/(teacher)/activity-manager/waste-verifier");
+			switch (card.type) {
+				case "compost-activity":
+					setSelectedClass(card.data);
+					navigateTo("/(teacher)/activity-manager/compost-submission");
+					break;
+				case "waste-bank":
+					setSelectedWaste(card.data);
+					navigateTo("/(teacher)/activity-manager/waste-verifier");
+					break;
+				case "debt-settlement":
+					setSelectedStudent(card.data);
+					navigateTo("/(teacher)/activity-manager/debt-settlement");
+					break;
 			}
 		},
-		[filterStatus, setSelectedClass, setSelectedWaste, setSourceSection],
+		[
+			filterStatus,
+			navigateTo,
+			setSelectedClass,
+			setSelectedStudent,
+			setSelectedWaste,
+			setSourceSection,
+		],
 	);
 
-	const renderItem = useCallback(
+	const renderCard = useCallback(
 		({ item }: { item: ActivityCardData }) => (
 			<ActionTile
 				className="mb-4 shadow-none"
-				icon={item.type === "compost-activity" ? GraduationCap : Recycle}
+				icon={CARD_ICONS[item.type]}
 				title={item.title}
 				description={item.description}
-				onPress={() => handlePress(item)}
+				onPress={() => handleCardPress(item)}
 			/>
 		),
-		[handlePress],
+		[handleCardPress],
 	);
 
 	useEffect(() => {
@@ -154,7 +213,7 @@ export default function ActivityListScreen() {
 			showToast({ title: "Data tidak valid" });
 			goBack();
 		}
-	}, [activityType]);
+	}, [activityType, goBack, showToast]);
 
 	return (
 		<Screen
@@ -175,21 +234,23 @@ export default function ActivityListScreen() {
 						className="flex-none"
 					/>
 
-					<SegmentedControl
-						options={FILTER_OPTIONS}
-						value={filterStatus}
-						onChange={setFilterStatus}
-					/>
+					{activityType !== "debt-settlement" && (
+						<SegmentedControl
+							options={FILTER_OPTIONS}
+							value={filterStatus}
+							onChange={setFilterStatus}
+						/>
+					)}
 				</>
 			}
 			contentComponent={
-				results.length > 0 ? (
+				filteredResults.length > 0 ? (
 					<FlatList
-						data={results}
+						data={filteredResults}
 						showsVerticalScrollIndicator={false}
 						className="overflow-visible"
-						renderItem={renderItem}
-						keyExtractor={(data) => String(data.id)}
+						renderItem={renderCard}
+						keyExtractor={(item) => String(item.id)}
 					/>
 				) : (
 					<EmptyState message="Tidak ada data." />
@@ -201,9 +262,8 @@ export default function ActivityListScreen() {
 					className="overflow-visible"
 				>
 					<VStack space="md">
-						{Array.from({ length: 10 }, (_, i) => (
-							// biome-ignore lint/suspicious/noArrayIndexKey: static placeholder list, never reordered or mutated
-							<Skeleton key={i} className="h-32" />
+						{SKELETON_PLACEHOLDERS.map((key) => (
+							<Skeleton key={key} className="h-32" />
 						))}
 					</VStack>
 				</ScrollView>
