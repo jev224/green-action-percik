@@ -4,9 +4,11 @@ import {
 	BrushCleaning,
 	Bubbles,
 	Recycle,
+	ShieldAlert,
 	Sprout,
 	Trash2,
 } from "lucide-react-native";
+import { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 import {
 	GlowDecoration,
@@ -16,8 +18,10 @@ import {
 import { Greeting, PhotoCard, QuoteCard } from "@/components/domain";
 import {
 	ActionTile,
+	Button,
 	HomeCarousel,
 	ListSection,
+	Modal,
 	Screen,
 	StatCard,
 } from "@/components/primitives";
@@ -35,6 +39,8 @@ import { fetchStudentStatistics } from "@/services/fetcher/student/studentDashbo
 import { parseProfileInfo } from "@/utils";
 
 export default function HomeScreen() {
+	const [passwordDialogShown, setPasswordDialogShown] = useState(false);
+
 	const { navigateTo } = useNavigation();
 
 	const userProfile = useUserProfile("student");
@@ -50,6 +56,12 @@ export default function HomeScreen() {
 				},
 			userProfile,
 		);
+
+	useEffect(() => {
+		if (userProfile.profile?.is_default_password) {
+			setPasswordDialogShown(true);
+		}
+	}, [userProfile.profile?.is_default_password]);
 
 	const { colors, scheme } = useThemeColors();
 	const isDark = scheme === "dark";
@@ -277,6 +289,32 @@ export default function HomeScreen() {
 						<Skeleton className="h-24" />
 					</VStack>
 				</>
+			}
+			overlayComponent={
+				<Modal
+					vertical
+					icon={ShieldAlert}
+					title="Perbarui Kata Sandi"
+					description="Kata sandi Anda masih menggunakan NIS. Demi keamanan akun, silakan perbarui kata sandi Anda dengan kata sandi baru. Jika Anda lupa kata sandi, Anda dapat menghubungi admin kapan saja untuk mendapatkan bantuan."
+					isOpen={passwordDialogShown}
+					onClose={() => setPasswordDialogShown(false)}
+					contentComponent={
+						<>
+							<Button
+								label="Perbarui sekarang"
+								variant="default"
+								fill
+								onPress={() => navigateTo("/profile/change-password")}
+							/>
+							<Button
+								label="Nanti Saja"
+								variant="secondary"
+								fill
+								onPress={() => setPasswordDialogShown(false)}
+							/>
+						</>
+					}
+				/>
 			}
 		/>
 	);

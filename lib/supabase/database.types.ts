@@ -308,6 +308,7 @@ export type Database = {
 					class_id: number;
 					created_at: string;
 					id: number;
+					is_default_password: boolean;
 					name: string;
 					nis: number;
 					photo: string | null;
@@ -319,6 +320,7 @@ export type Database = {
 					class_id: number;
 					created_at?: string;
 					id?: number;
+					is_default_password?: boolean;
 					name: string;
 					nis: number;
 					photo?: string | null;
@@ -330,6 +332,7 @@ export type Database = {
 					class_id?: number;
 					created_at?: string;
 					id?: number;
+					is_default_password?: boolean;
 					name?: string;
 					nis?: number;
 					photo?: string | null;
@@ -437,6 +440,7 @@ export type Database = {
 				Args: { p_student_id?: string };
 				Returns: number;
 			};
+			mark_password_changed: { Args: never; Returns: undefined };
 			student_uploaded_today: {
 				Args: { p_activity_folder: string; p_student_id: string };
 				Returns: boolean;
@@ -447,6 +451,7 @@ export type Database = {
 					class_id: number;
 					created_at: string;
 					id: number;
+					is_default_password: boolean;
 					name: string;
 					nis: number;
 					photo: string | null;

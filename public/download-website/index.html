@@ -6,17 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
-    <script>
-      try {
-        var t = localStorage.getItem("theme");
-        if (!t)
-          t = matchMedia("(prefers-color-scheme:dark)").matches
-            ? "dark"
-            : "light";
-        document.documentElement.dataset.theme = t;
-      } catch (e) {}
-    </script>
-    <title>Adiwiyata — Pengolahan Sampah</title>
+    <title>Download aplikasi</title>
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
       * {
@@ -36,6 +26,7 @@
         --muted: 220 229 222;
         --muted-foreground: 90 110 95;
         --foreground: 22 34 26;
+        --shine: 28 168 164;
         --border: 204 212 198;
         --ring: 64 150 102;
         --accent: 180 210 179;
@@ -46,7 +37,7 @@
         --inorganic: 56 130 214;
         --compost: 173 110 40;
         --garden: 96 168 62;
-        --shadow: 34 90 55;
+        --shadow: 0 0 0;
         color-scheme: light;
       }
       /* dark: explicit choice, or system preference when no choice is set */
@@ -60,6 +51,7 @@
         --muted: 40 47 41;
         --muted-foreground: 157 171 161;
         --foreground: 235 242 236;
+        --shine: 235 242 236;
         --border: 60 68 60;
         --ring: 72 177 105;
         --accent: 37 78 51;
@@ -83,6 +75,7 @@
           --muted: 40 47 41;
           --muted-foreground: 157 171 161;
           --foreground: 235 242 236;
+          --shine: 235 242 236;
           --border: 60 68 60;
           --ring: 72 177 105;
           --accent: 37 78 51;
@@ -96,6 +89,7 @@
           --shadow: 0 0 0;
         }
       }
+
       html {
         scroll-behavior: smooth;
       }
@@ -155,18 +149,16 @@
         font-size: 17px;
         letter-spacing: 0.02em;
       }
-      .brand-icon svg {
-        width: 22px;
-        height: 22px;
-        color: #fff;
-      }
+
       .brand-icon {
+        position: relative;
         width: 42px;
         height: 42px;
         display: grid;
         place-items: center;
         font-size: 21px;
         border-radius: 14px;
+        overflow: hidden;
         background: linear-gradient(
           145deg,
           rgb(var(--garden)),
@@ -175,6 +167,14 @@
         box-shadow:
           0 8px 20px rgb(var(--primary) / 0.3),
           inset 0 1px 1px rgb(255 255 255/0.5);
+      }
+
+      .brand-icon img {
+        position: absolute;
+        width: 100%;
+        object-fit: cover;
+        inset: 0;
+        z-index: 20;
       }
       .nav-badge {
         padding: 9px 14px;
@@ -189,6 +189,7 @@
       .hero {
         width: min(1180px, calc(100% - 30px));
         margin: 64px auto 0;
+        padding: 0 clamp(16px, 6vw, 48px);
         min-height: 600px;
         display: grid;
         grid-template-columns: 1.1fr 0.9fr;
@@ -216,11 +217,11 @@
       }
       h1 {
         font-size: clamp(42px, 6vw, 80px);
-        letter-spacing: -3px;
+        letter-spacing: -4px;
         margin: 22px 0;
         background: linear-gradient(
           135deg,
-          rgb(var(--foreground)),
+          rgb(var(--shine)),
           rgb(var(--primary)) 60%,
           rgb(var(--garden))
         );
@@ -327,14 +328,31 @@
         align-items: center;
         gap: 8px;
       }
+
       .platforms {
         margin-top: 18px;
-        font-size: 13px;
+        font-size: 16px;
         font-weight: 600;
         color: rgb(var(--muted-foreground));
         display: flex;
         gap: 16px;
         flex-wrap: wrap;
+      }
+
+      .platforms .icon {
+        display: grid;
+        place-items: center;
+        padding: 6px;
+        border-radius: 10px;
+        background: rgb(var(--secondary));
+        color: rgb(var(--accent-foreground));
+        border: 1px solid rgb(var(--border));
+      }
+
+      .platforms .icon svg {
+        width: 14px;
+        height: 14px;
+        fill: currentColor;
       }
 
       /* ===== Phone ===== */
@@ -345,120 +363,56 @@
         align-items: center;
       }
       .phone {
-        width: 320px;
-        height: 520px;
-        padding: 12px;
+        width: min(320px, 100%);
+        padding: 8px;
         border-radius: 44px;
         transform: rotate(3deg);
         transition: transform 0.15s;
-        background: linear-gradient(
-          145deg,
-          rgb(var(--card) / 0.9),
-          rgb(var(--secondary) / 0.7)
-        );
+        background: black;
         border: 1px solid rgb(var(--border));
         box-shadow:
           0 35px 80px rgb(var(--shadow) / 0.22),
           inset 0 1px 2px rgb(255 255 255/0.5);
       }
       .screen {
-        height: 100%;
+        position: relative;
         border-radius: 34px;
-        padding: 24px 18px;
         overflow: hidden;
-        background: linear-gradient(
-          160deg,
-          rgb(var(--card)),
-          rgb(var(--background))
-        );
+        line-height: 0;
       }
-      .island {
-        width: 96px;
+      .dynamic-island {
+        position: absolute;
+        top: 6px;
+        left: 50%;
+        transform: translateX(-50%);
         height: 26px;
-        border-radius: 30px;
-        margin: -6px auto 22px;
-        background: rgb(var(--foreground));
+        width: 78px;
+        border-radius: 99px;
+        background: black;
+        border: 2px solid rgba(65, 65, 65, 0.4);
       }
-      .screen small {
-        font-size: 12px;
-        font-weight: 700;
-        color: rgb(var(--muted-foreground));
-      }
-      .screen h2 {
-        font-size: 28px;
-        line-height: 1.05;
-        margin: 5px 0 18px;
-      }
-      .cats {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-      }
-      .cat {
-        padding: 14px 12px;
-        border-radius: 20px;
-        color: #fff;
-        font-size: 13px;
-        font-weight: 700;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
-      .cat svg {
-        width: 24px;
-        height: 24px;
-      }
-      .cat b {
-        font-weight: 800;
-      }
-      .cat em {
-        font-style: normal;
-        font-size: 11px;
-        opacity: 0.85;
-        font-weight: 500;
-      }
-      .c-organic {
-        background: rgb(var(--organic));
-      }
-      .c-inorganic {
-        background: rgb(var(--inorganic));
-      }
-      .c-compost {
-        background: rgb(var(--compost));
-      }
-      .c-garden {
-        background: rgb(var(--garden));
-      }
-      .prog {
-        margin-top: 16px;
-        padding: 14px;
-        border-radius: 20px;
-        background: rgb(var(--card));
-        border: 1px solid rgb(var(--border));
-      }
-      .prog p {
-        font-size: 12px;
-        font-weight: 700;
-        display: flex;
-        justify-content: space-between;
-      }
-      .bar {
-        height: 9px;
-        border-radius: 20px;
-        margin-top: 9px;
-        background: rgb(var(--primary) / 0.15);
-        overflow: hidden;
-      }
-      .bar span {
+      /* height follows the image */
+      .shot {
         display: block;
-        width: 76%;
-        height: 100%;
-        border-radius: inherit;
-        background: linear-gradient(
-          90deg,
-          rgb(var(--primary)),
-          rgb(var(--garden))
-        );
+        width: 100%;
+        height: auto;
+      }
+      .shot-dark {
+        display: none;
+      }
+      :root[data-theme="dark"] .shot-light {
+        display: none;
+      }
+      :root[data-theme="dark"] .shot-dark {
+        display: block;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) .shot-light {
+          display: none;
+        }
+        :root:not([data-theme="light"]) .shot-dark {
+          display: block;
+        }
       }
       .float {
         position: absolute;
@@ -590,6 +544,7 @@
         width: 18px;
         height: 18px;
       }
+
       .close {
         display: grid;
         place-items: center;
@@ -610,6 +565,7 @@
       }
       .sheet .sub {
         margin-top: 6px;
+        margin-bottom: -4px;
         font-size: 14px;
         line-height: 1.6;
         color: rgb(var(--muted-foreground));
@@ -625,18 +581,21 @@
         counter-reset: s;
         display: grid;
         gap: 12px;
-        margin: 0 0 20px;
+        margin-top: 12px;
       }
       .steps li {
         counter-increment: s;
-        display: flex;
-        gap: 12px;
+        position: relative;
+        padding-left: 38px;
+        min-height: 26px;
         font-size: 14px;
-        line-height: 1.55;
+        line-height: 1.6;
       }
       .steps li::before {
         content: counter(s);
-        flex: none;
+        position: absolute;
+        left: 0;
+        top: 0;
         width: 26px;
         height: 26px;
         border-radius: 50%;
@@ -656,7 +615,7 @@
         gap: 10px;
         align-items: flex-start;
         padding: 12px 14px;
-        margin-bottom: 18px;
+        margin-top: 16px;
         border-radius: 14px;
         font-size: 13px;
         line-height: 1.55;
@@ -675,6 +634,7 @@
         justify-content: center;
         gap: 9px;
         padding: 15px 18px;
+        margin-top: 16px;
         border-radius: var(--radius);
         text-decoration: none;
         font:
@@ -810,7 +770,6 @@
         }
         .phone {
           width: 270px;
-          height: 450px;
         }
         .float {
           font-size: 10px;
@@ -841,14 +800,22 @@
   <body>
     <nav>
       <div class="brand">
-        <div class="brand-icon"><i data-lucide="sprout"></i></div>
+        <div class="brand-icon">
+          <img src="./logo-transparent.png" aria-label="logo" />
+        </div>
+
         ADIWIYATA
       </div>
       <div class="nav-right">
         <div class="nav-badge">
           <i data-lucide="recycle"></i>Peduli Lingkungan
         </div>
-        <button class="theme-toggle" id="themeToggle" aria-label="Ganti tema">
+        <button
+          type="button"
+          class="theme-toggle"
+          id="themeToggle"
+          aria-label="Ganti tema"
+        >
           <i data-lucide="sun" class="sun"></i
           ><i data-lucide="moon" class="moon"></i>
         </button>
@@ -864,7 +831,12 @@
           sekolah yang bersih, hijau, sehat, dan berkelanjutan.
         </p>
         <div class="buttons">
-          <button class="btn-main" id="openDl" aria-haspopup="dialog">
+          <button
+            type="button"
+            class="btn-main"
+            id="openDl"
+            aria-haspopup="dialog"
+          >
             <i data-lucide="download"></i>Download Aplikasi
           </button>
           <a href="#fitur" class="btn-sec"
@@ -872,36 +844,45 @@
           ></a>
         </div>
         <div class="platforms">
-          <span><i data-lucide="bot"></i>Android</span
-          ><span><i data-lucide="apple"></i>iOS</span>
+          <span>
+            <div class="icon">
+              <svg
+                role="img"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <title>Android</title>
+                <path
+                  d="M18.4395 5.5586c-.675 1.1664-1.352 2.3318-2.0274 3.498-.0366-.0155-.0742-.0286-.1113-.043-1.8249-.6957-3.484-.8-4.42-.787-1.8551.0185-3.3544.4643-4.2597.8203-.084-.1494-1.7526-3.021-2.0215-3.4864a1.1451 1.1451 0 0 0-.1406-.1914c-.3312-.364-.9054-.4859-1.379-.203-.475.282-.7136.9361-.3886 1.5019 1.9466 3.3696-.0966-.2158 1.9473 3.3593.0172.031-.4946.2642-1.3926 1.0177C2.8987 12.176.452 14.772 0 18.9902h24c-.119-1.1108-.3686-2.099-.7461-3.0683-.7438-1.9118-1.8435-3.2928-2.7402-4.1836a12.1048 12.1048 0 0 0-2.1309-1.6875c.6594-1.122 1.312-2.2559 1.9649-3.3848.2077-.3615.1886-.7956-.0079-1.1191a1.1001 1.1001 0 0 0-.8515-.5332c-.5225-.0536-.9392.3128-1.0488.5449zm-.0391 8.461c.3944.5926.324 1.3306-.1563 1.6503-.4799.3197-1.188.0985-1.582-.4941-.3944-.5927-.324-1.3307.1563-1.6504.4727-.315 1.1812-.1086 1.582.4941zM7.207 13.5273c.4803.3197.5506 1.0577.1563 1.6504-.394.5926-1.1038.8138-1.584.4941-.48-.3197-.5503-1.0577-.1563-1.6504.4008-.6021 1.1087-.8106 1.584-.4941z"
+                />
+              </svg>
+            </div>
+            Android</span
+          >
+          <span>
+            <div class="icon">
+              <svg
+                role="img"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <title>Apple</title>
+                <path
+                  d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"
+                />
+              </svg>
+            </div>
+            iOS</span
+          >
         </div>
       </section>
 
       <section class="visual" aria-hidden="true">
         <div class="phone">
           <div class="screen">
-            <div class="island"></div>
-            <small>ADIWIYATA</small>
-            <h2>Waste<br />Management</h2>
-            <div class="cats">
-              <div class="cat c-organic">
-                <i data-lucide="leaf"></i><b>Organik</b><em>Sisa makanan</em>
-              </div>
-              <div class="cat c-inorganic">
-                <i data-lucide="package"></i><b>Anorganik</b
-                ><em>Plastik, kertas</em>
-              </div>
-              <div class="cat c-compost">
-                <i data-lucide="shovel"></i><b>Kompos</b><em>Pupuk alami</em>
-              </div>
-              <div class="cat c-garden">
-                <i data-lucide="trees"></i><b>Kebun</b><em>Sekolah hijau</em>
-              </div>
-            </div>
-            <div class="prog">
-              <p><span>Sekolah Hijau</span><span>76%</span></p>
-              <div class="bar"><span></span></div>
-            </div>
+            <div class="dynamic-island"></div>
+            <img class="shot shot-light" src="preview-light.png" alt="" />
+            <img class="shot shot-dark" src="preview-dark.png" alt="" />
           </div>
         </div>
         <div class="float f1"><i data-lucide="sprout"></i>Eco School</div>
@@ -948,14 +929,17 @@
       aria-labelledby="dlTitle"
     >
       <div class="sheet">
-        <button class="close" id="closeDl" aria-label="Tutup">
+        <button type="button" class="close" id="closeDl" aria-label="Tutup">
           <i data-lucide="x"></i>
         </button>
-        <h2 id="dlTitle">Unduh aplikasi Adiwiyata</h2>
-        <p class="sub" id="dlSub"></p>
 
         <!-- ANDROID -->
         <div class="panel" id="p-android">
+          <h2 id="dlTitle">Pasang di Android</h2>
+          <p class="sub" id="dlSub">
+            Ikuti langkah berikut untuk memasang aplikasi.
+          </p>
+
           <ol class="steps">
             <li>
               Ketuk <b>Unduh APK</b> di bawah. Jika muncul peringatan, pilih
@@ -979,43 +963,39 @@
             >
           </div>
           <div class="actions">
-            <a class="act" id="apkLink" download
-              ><i data-lucide="download"></i>Unduh APK</a
+            <a class="act" download href="download.apk"
+              ><i data-lucide="download"></i> Unduh APK</a
             >
           </div>
         </div>
 
         <!-- IOS -->
         <div class="panel" id="p-ios">
-          <ol class="steps">
-            <li>
-              Ketuk <b>Buka TestFlight</b>. Jika belum punya, pasang
-              <b>TestFlight</b> dari App Store.
-            </li>
-            <li>Ketuk <b>Terima</b>, lalu <b>Instal</b> Adiwiyata.</li>
-            <li>Buka aplikasi dari layar utama.</li>
-          </ol>
-          <div class="note">
-            <i data-lucide="info"></i
-            ><span
-              >iOS tidak bisa memasang file langsung dari web, jadi aplikasi
-              dibagikan lewat TestFlight.</span
-            >
-          </div>
-          <div class="actions">
-            <a class="act" id="tfLink" target="_blank" rel="noopener"
-              ><i data-lucide="send"></i>Buka TestFlight</a
-            >
-          </div>
-          <div class="divider">atau tanpa instal</div>
+          <h2 id="dlTitle">Pasang di iPhone</h2>
+          <p class="sub" id="dlSub">
+            iOS punya cara pemasangan yang berbeda dari Android.
+          </p>
+
           <ol class="steps">
             <li>Buka halaman ini di <b>Safari</b>.</li>
             <li>Ketuk tombol <b>Bagikan</b> (kotak dengan panah ke atas).</li>
             <li>Pilih <b>Tambah ke Layar Utama</b>, lalu <b>Tambah</b>.</li>
           </ol>
+
+          <div class="actions">
+            <button type="button" class="act" onclick="closeOverlay()">
+              <i data-lucide="thumbs-up"></i>Sudah
+            </button>
+          </div>
         </div>
+
         <!-- DESKTOP / OTHER -->
         <div class="panel" id="p-other">
+          <h2 id="dlTitle">Buka di ponselmu</h2>
+          <p class="sub" id="dlSub">
+            Perangkat ini tidak bisa memasang aplikasi
+          </p>
+
           <div class="note">
             <i data-lucide="smartphone"></i
             ><span
@@ -1024,8 +1004,8 @@
             >
           </div>
           <div class="actions">
-            <button class="act" id="copyLink" type="button">
-              <i data-lucide="link"></i><span>Salin tautan halaman</span>
+            <button type="button" class="act" onclick="closeOverlay()">
+              Mengerti
             </button>
           </div>
         </div>
@@ -1035,31 +1015,10 @@
     <script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
     <script>
       if (window.lucide) lucide.createIcons();
-      /* ===== CONFIG: replace with your real links ===== */
-      const LINKS = {
-        apk: "adiwiyata.apk", // file APK on your server
-        testflight: "https://testflight.apple.com/join/XXXXXXXX",
-      };
-      apkLink.href = LINKS.apk;
-      tfLink.href = LINKS.testflight;
 
       const overlay = document.getElementById("overlay");
       let lastFocus;
 
-      const COPY = {
-        android: {
-          t: "Pasang di Android",
-          s: "Ikuti langkah berikut untuk memasang aplikasi.",
-        },
-        ios: {
-          t: "Pasang di iPhone",
-          s: "iOS punya cara pemasangan yang berbeda dari Android.",
-        },
-        other: {
-          t: "Buka di ponselmu",
-          s: "Perangkat ini tidak bisa memasang aplikasi.",
-        },
-      };
       function detect() {
         const ua = navigator.userAgent;
         if (/Android/i.test(ua)) return "android";
@@ -1070,13 +1029,12 @@
           return "ios";
         return "other";
       }
+
       function showPlatform(name) {
-        document
-          .querySelectorAll(".panel")
-          .forEach((p) => p.classList.toggle("active", p.id === `p-${name}`));
-        dlTitle.textContent = COPY[name].t;
-        dlSub.textContent = COPY[name].s;
+        for (const panel of document.querySelectorAll(".panel"))
+          panel.classList.toggle("active", panel.id === `p-${name}`);
       }
+
       function openDl() {
         lastFocus = document.activeElement;
         showPlatform(detect());
@@ -1084,30 +1042,25 @@
         document.body.classList.add("locked");
         closeDl.focus();
       }
+
       function closeOverlay() {
         overlay.classList.remove("open");
         document.body.classList.remove("locked");
         lastFocus?.focus();
       }
+
       document.getElementById("openDl").addEventListener("click", openDl);
+
       closeDl.addEventListener("click", closeOverlay);
+
       overlay.addEventListener("click", (e) => {
         if (e.target === overlay) closeOverlay();
       });
-      copyLink.addEventListener("click", async () => {
-        const label = copyLink.querySelector("span");
-        try {
-          await navigator.clipboard.writeText(location.href);
-          label.textContent = "Tautan disalin";
-        } catch (e) {
-          label.textContent = "Salin dari address bar";
-        }
-        setTimeout(() => (label.textContent = "Salin tautan halaman"), 2000);
-      });
+
       document.addEventListener("keydown", (e) => {
-        if (!overlay.classList.contains("open")) return;
         if (e.key === "Escape") closeOverlay();
         if (e.key === "Tab") {
+          console.log("TAB");
           // keep focus inside the dialog
           const f = [...overlay.querySelectorAll("button,a[href]")].filter(
             (x) => x.offsetParent,
@@ -1130,9 +1083,6 @@
       const themeBtn = document.getElementById("themeToggle");
       function applyTheme(t) {
         root.dataset.theme = t;
-        try {
-          localStorage.setItem("theme", t);
-        } catch (e) {}
         themeBtn.setAttribute(
           "aria-label",
           t === "dark" ? "Ganti ke tema terang" : "Ganti ke tema gelap",
@@ -1179,15 +1129,15 @@
       });
 
       /* smooth scroll + phone parallax (desktop only) */
-      document.querySelectorAll('a[href^="#"]').forEach((a) =>
+      for (const a of document.querySelectorAll('a[href^="#"]'))
         a.addEventListener("click", (e) => {
           const t = document.querySelector(a.getAttribute("href"));
           if (t) {
             e.preventDefault();
             t.scrollIntoView({ behavior: "smooth" });
           }
-        }),
-      );
+        });
+
       const phone = document.querySelector(".phone");
       if (matchMedia("(hover:hover) and (min-width:851px)").matches) {
         document.addEventListener("mousemove", (e) => {

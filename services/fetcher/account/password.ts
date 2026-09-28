@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { getUserData } from "./profile";
 
 type ChangePasswordResult = {
 	isSuccessful: boolean;
@@ -10,6 +11,7 @@ export const changePassword = async (
 	newPassword: string,
 	confirmation: string,
 ): Promise<ChangePasswordResult> => {
+	// Validate input
 	if (!oldPassword) {
 		return {
 			isSuccessful: false,
@@ -24,6 +26,13 @@ export const changePassword = async (
 		};
 	}
 
+	if (newPassword === oldPassword) {
+		return {
+			isSuccessful: false,
+			validationErrorMessage: "Password baru harus berbeda dari password lama",
+		};
+	}
+
 	if (newPassword !== confirmation) {
 		return {
 			isSuccessful: false,
@@ -31,18 +40,25 @@ export const changePassword = async (
 		};
 	}
 
-	const { data: userData, error: userError } = await supabase.auth.getUser();
+	// Get current user
+	const {
+		data: { user },
+		error: userError,
+	} = await supabase.auth.getUser();
 
-	if (userError || !userData.user?.email) {
+	if (userError || !user?.email) {
 		return {
 			isSuccessful: false,
 			validationErrorMessage: "Gagal mendapatkan data pengguna",
 		};
 	}
 
+	// Get user role before changing the password
+	const userData = await getUserData();
+
 	// Verify old password
 	const { error: signInError } = await supabase.auth.signInWithPassword({
-		email: userData.user.email,
+		email: user.email,
 		password: oldPassword,
 	});
 
@@ -59,10 +75,25 @@ export const changePassword = async (
 	});
 
 	if (updateError) {
+		console.error("Update password error:", updateError.message);
+
 		return {
 			isSuccessful: false,
-			validationErrorMessage: updateError.message,
+			validationErrorMessage: "Gagal memperbarui password, mohon coba lagi.",
 		};
+	}
+
+	// Mark the student as having set a custom password
+	if (userData?.role === "student") {
+		const { error: markPasswordError } = await supabase.rpc(
+			"mark_password_changed",
+		);
+
+		if (markPasswordError) {
+			// The password was already changed successfully.
+			// Don't report the whole operation as failed.
+			console.error("Mark default password error:", markPasswordError.message);
+		}
 	}
 
 	return {
