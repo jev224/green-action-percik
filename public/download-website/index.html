@@ -7,6 +7,14 @@
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
     <title>Download aplikasi</title>
+    <script>
+      /* Match the browser theme before first paint (avoids a flash) */
+      document.documentElement.dataset.theme = matchMedia(
+        "(prefers-color-scheme: dark)",
+      ).matches
+        ? "dark"
+        : "light";
+    </script>
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
       * {
@@ -349,7 +357,7 @@
         border: 1px solid rgb(var(--border));
       }
 
-      .platforms .icon svg {
+      .icon svg {
         width: 14px;
         height: 14px;
         fill: currentColor;
@@ -606,6 +614,16 @@
         background: rgb(var(--secondary));
         color: rgb(var(--accent-foreground));
       }
+      .instructions-video {
+        display: block;
+        width: auto;
+        max-width: 100%;
+        max-height: min(360px, 45vh);
+        margin: 14px auto 0;
+        border-radius: 16px;
+        border: 1px solid rgb(var(--border));
+        background: rgb(var(--muted));
+      }
       .note svg {
         margin-top: 2px;
         color: rgb(var(--warning));
@@ -801,7 +819,10 @@
     <nav>
       <div class="brand">
         <div class="brand-icon">
-          <img src="./logo-transparent.png" aria-label="logo" />
+          <img
+            src="./download-website/logo-transparent.png"
+            aria-label="logo"
+          />
         </div>
 
         ADIWIYATA
@@ -881,8 +902,16 @@
         <div class="phone">
           <div class="screen">
             <div class="dynamic-island"></div>
-            <img class="shot shot-light" src="preview-light.png" alt="" />
-            <img class="shot shot-dark" src="preview-dark.png" alt="" />
+            <img
+              class="shot shot-light"
+              src="./download-website/preview-light.png"
+              alt=""
+            />
+            <img
+              class="shot shot-dark"
+              src="./download-website//preview-dark.png"
+              alt=""
+            />
           </div>
         </div>
         <div class="float f1"><i data-lucide="sprout"></i>Eco School</div>
@@ -976,6 +1005,27 @@
             iOS punya cara pemasangan yang berbeda dari Android.
           </p>
 
+          <video
+            class="instructions-video"
+            autoplay
+            loop
+            muted
+            playsinline
+            preload="none"
+            disablepictureinpicture
+            poster="./download-website/ios-poster.jpg"
+            aria-label="Video panduan pemasangan di iPhone"
+          >
+            <source
+              src="./download-website/ios-instructions.webm"
+              type="video/webm"
+            />
+            <source
+              src="/download-website/ios-instructions-compressed.mp4"
+              type="video/mp4"
+            />
+          </video>
+
           <ol class="steps">
             <li>Buka halaman ini di <b>Safari</b>.</li>
             <li>Ketuk tombol <b>Bagikan</b> (kotak dengan panah ke atas).</li>
@@ -1038,6 +1088,10 @@
       function openDl() {
         lastFocus = document.activeElement;
         showPlatform(detect());
+        document
+          .querySelector(".instructions-video")
+          ?.play()
+          .catch(() => {});
         overlay.classList.add("open");
         document.body.classList.add("locked");
         closeDl.focus();
@@ -1081,6 +1135,8 @@
       const root = document.documentElement;
       const reduced = matchMedia("(prefers-reduced-motion:reduce)").matches;
       const themeBtn = document.getElementById("themeToggle");
+      const media = matchMedia("(prefers-color-scheme: dark)");
+
       function applyTheme(t) {
         root.dataset.theme = t;
         themeBtn.setAttribute(
@@ -1088,7 +1144,13 @@
           t === "dark" ? "Ganti ke tema terang" : "Ganti ke tema gelap",
         );
       }
-      applyTheme(root.dataset.theme || "light");
+
+      // Always match the browser/system theme (nothing is saved)
+      applyTheme(media.matches ? "dark" : "light");
+      media.addEventListener("change", (e) => {
+        applyTheme(e.matches ? "dark" : "light");
+      });
+
       themeBtn.addEventListener("click", () => {
         const next = root.dataset.theme === "dark" ? "light" : "dark";
         if (reduced) {
