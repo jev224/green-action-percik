@@ -303,7 +303,6 @@ export default function HomeScreen() {
 							<Button
 								label="Perbarui sekarang"
 								variant="default"
-								fill
 								onPress={() => {
 									setPasswordDialogShown(false);
 									navigateTo("/profile/change-password");
@@ -312,7 +311,6 @@ export default function HomeScreen() {
 							<Button
 								label="Nanti Saja"
 								variant="secondary"
-								fill
 								onPress={() => setPasswordDialogShown(false)}
 							/>
 						</>
