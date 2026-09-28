@@ -62,6 +62,7 @@ export default function DebtSettlementScreen() {
 	return (
 		<Screen
 			requiredInternet
+			avoidKeyboard
 			isError={isError}
 			errorMessage={errorMessage}
 			onTryAgain={refresh}

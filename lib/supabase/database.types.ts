@@ -389,6 +389,7 @@ export type Database = {
 					photo: string | null;
 					price: number | null;
 					student_id: string;
+					updated_at: string;
 					weight: number | null;
 				};
 				Insert: {
@@ -399,6 +400,7 @@ export type Database = {
 					photo?: string | null;
 					price?: number | null;
 					student_id?: string;
+					updated_at?: string;
 					weight?: number | null;
 				};
 				Update: {
@@ -409,6 +411,7 @@ export type Database = {
 					photo?: string | null;
 					price?: number | null;
 					student_id?: string;
+					updated_at?: string;
 					weight?: number | null;
 				};
 				Relationships: [

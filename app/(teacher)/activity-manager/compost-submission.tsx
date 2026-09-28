@@ -99,9 +99,6 @@ export default function CompostSubmissionScreen() {
 		[profile, selectedClass],
 	);
 
-	const isByMe =
-		submittedInfo && profile && submittedInfo.submittedBy === profile.user_id;
-
 	useEffect(() => {
 		if (!selectedClass) goBack();
 	}, [selectedClass]);
@@ -115,12 +112,8 @@ export default function CompostSubmissionScreen() {
 			isLoading={isLoading}
 			submitted={!!submittedInfo?.submitted}
 			onSubmit={handleSubmit}
-			onDelete={isByMe ? handleDelete : undefined}
-			submittedMessage={
-				isByMe
-					? "Kamu sudah mengirim kegiatan kompos bulan ini. Hapus pengiriman jika ingin mengubahnya, atau kembali ke halaman utama."
-					: `Kegiatan kompos sudah kirim oleh ${submittedInfo?.submittedAuthor ?? "Seseorang"} pada bulan ini. Minta ${submittedInfo?.submittedAuthor ?? "dia"} jika ingin mengubah pengiriman, atau kembali ke halaman utama.`
-			}
+			onDelete={handleDelete}
+			submittedMessage={`Kegiatan kompos sudah kirim oleh ${submittedInfo?.submittedAuthor ?? "Seseorang"} pada bulan ini. Hapus pengiriman jika ingin mengubahnya, atau kembali ke halaman utama.`}
 		>
 			<ListSection title="Lokasi Kegiatan">
 				<SelectField

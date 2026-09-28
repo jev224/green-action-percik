@@ -11,6 +11,7 @@
 		"platforms": ["android", "web"],
 		"android": {
 			"package": "app.percik.greenaction",
+			"softwareKeyboardLayoutMode": "resize",
 			"predictiveBackGestureEnabled": true,
 			"permissions": ["android.permission.REQUEST_INSTALL_PACKAGES"],
 			"adaptiveIcon": {

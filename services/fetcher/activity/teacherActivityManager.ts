@@ -138,7 +138,7 @@ export async function fetchUnpaidStudentWaste(studentId: string) {
 export async function payAllUnpaidStudentWaste(studentId: string) {
 	const { error } = await supabase
 		.from("waste_banks")
-		.update({ paid: true })
+		.update({ paid: true, updated_at: new Date().toISOString() })
 		.eq("student_id", studentId);
 
 	if (error) {
