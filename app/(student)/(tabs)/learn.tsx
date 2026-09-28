@@ -24,11 +24,32 @@ import { HStack } from "@/components/ui/hstack";
 import { Skeleton } from "@/components/ui/skeleton";
 import { VStack } from "@/components/ui/vstack";
 import type { ThemeColors } from "@/constants/Colors";
-import { useLessons } from "@/hooks/useLessons";
+import { type LessonEmptyState, useLessons } from "@/hooks/useLessons";
 import { useNavigation } from "@/hooks/useNavigation";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { useUserProfile } from "@/hooks/useUser";
 import { useLessonStore } from "@/stores/lesson";
+
+const EMPTY_CONTENT: Record<
+	LessonEmptyState,
+	{ emoji?: string; message: string }
+> = {
+	"no-lessons": {
+		emoji: "📚",
+		message: "Belum ada materi pembelajaran.",
+	},
+	"not-found": {
+		message: "Materi pembelajaran tidak ditemukan.",
+	},
+	"all-completed": {
+		emoji: "😎👏",
+		message: "Kamu telah menyelesaikan semua materi pembelajaran.",
+	},
+	"none-completed": {
+		emoji: "😕",
+		message: "Belum ada materi pembelajaran yang kamu selesaikan.",
+	},
+};
 
 export default function LearningScreen() {
 	const { navigateTo } = useNavigation();
@@ -49,6 +70,7 @@ export default function LearningScreen() {
 		isError,
 		errorMessage,
 		results,
+		emptyState,
 		refresh,
 		isRefreshing,
 		sortDefaultDirection,
@@ -115,28 +137,9 @@ export default function LearningScreen() {
 						renderItem={renderItem}
 						keyExtractor={(lesson) => String(lesson.id)}
 					/>
-				) : segmentedControlValue === "incompleted" ? (
-					<Animated.View
-						entering={contentEnterTransition}
-						exiting={contentExitTransition}
-					>
-						<Heading size="5xl" className="self-center mt-8 -mb-8 py-1 -z-10">
-							😎👏
-						</Heading>
-						<EmptyState message="Kamu telah menyelesaikan semua materi pembelajaran." />
-					</Animated.View>
-				) : (
-					<Animated.View
-						entering={contentEnterTransition}
-						exiting={contentExitTransition}
-					>
-						<Heading size="5xl" className="self-center mt-8 -mb-8 py-1 -z-10">
-							😕
-						</Heading>
-
-						<EmptyState message="Tidak ada materi pembalajaran yang kamu selesaikan." />
-					</Animated.View>
-				)
+				) : emptyState ? (
+					<LessonEmpty key={emptyState} type={emptyState} />
+				) : null
 			}
 			loadingComponent={
 				<ScrollView
@@ -155,6 +158,28 @@ export default function LearningScreen() {
 		/>
 	);
 }
+
+const LessonEmpty = memo(function LessonEmpty({
+	type,
+}: {
+	type: LessonEmptyState;
+}) {
+	const { emoji, message } = EMPTY_CONTENT[type];
+
+	return (
+		<Animated.View
+			entering={contentEnterTransition}
+			exiting={contentExitTransition}
+		>
+			{emoji && (
+				<Heading size="5xl" className="self-center mt-8 -mb-8 py-1 -z-10">
+					{emoji}
+				</Heading>
+			)}
+			<EmptyState message={message} />
+		</Animated.View>
+	);
+});
 
 const LessonListItem = memo(function LessonListItem({
 	item,

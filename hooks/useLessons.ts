@@ -19,6 +19,12 @@ export interface LessonData {
 
 export type LessonSortField = "title" | "created";
 
+export type LessonEmptyState =
+	| "no-lessons"
+	| "not-found"
+	| "all-completed"
+	| "none-completed";
+
 export const LESSON_SORT_OPTIONS: SortFieldOption<LessonSortField>[] = [
 	{
 		field: "title",
@@ -68,16 +74,20 @@ export function useLessons(studentId?: string) {
 		errorMessage,
 		refresh,
 		isRefreshing,
-	} = useAsyncData(async () => ({
-		lessons: await fetchLessons(),
-		completed: studentId
-			? new Set<number>(
-					(await fetchCompletedLessonsData(studentId)).map(
-						({ lesson_id }) => lesson_id,
-					),
-				)
-			: new Set<number>(),
-	}));
+	} = useAsyncData(
+		async () => ({
+			lessons: await fetchLessons(),
+			completed: studentId
+				? new Set<number>(
+						(await fetchCompletedLessonsData(studentId)).map(
+							({ lesson_id }) => lesson_id,
+						),
+					)
+				: new Set<number>(),
+		}),
+		undefined,
+		[studentId],
+	);
 
 	const searched = useFuzzySearch(
 		data?.lessons ?? [],
@@ -103,7 +113,8 @@ export function useLessons(studentId?: string) {
 
 		if (!sort) return filtered;
 
-		let sorted = [];
+		// 2. sort
+		let sorted: LessonData[] = [];
 
 		switch (sort.field) {
 			case "title":
@@ -120,6 +131,17 @@ export function useLessons(studentId?: string) {
 		return sort.direction === "asc" ? sorted : sorted.reverse();
 	}, [searched, sort, segmentedControlValue, data?.completed, studentId]);
 
+	// Why the list is empty (null when there are results)
+	const emptyState = useMemo<LessonEmptyState | null>(() => {
+		if (results.length > 0) return null;
+		if (!data || data.lessons.length === 0) return "no-lessons";
+		if (searchQuery.trim()) return "not-found";
+
+		return segmentedControlValue === "incompleted"
+			? "all-completed"
+			: "none-completed";
+	}, [results.length, data, searchQuery, segmentedControlValue]);
+
 	return {
 		searchQuery,
 		setSearchQuery,
@@ -135,6 +157,7 @@ export function useLessons(studentId?: string) {
 		setSort,
 
 		results,
+		emptyState,
 
 		isLoading,
 		isError,

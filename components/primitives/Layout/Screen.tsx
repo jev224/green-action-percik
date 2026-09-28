@@ -136,6 +136,8 @@ export function Screen<T = undefined>({
 		</EaseView>
 	);
 
+	const offsetTop = Math.max(insets.top + 4, 8);
+
 	const checkInternet = async () => {
 		if (!requiredInternet) return;
 
@@ -171,7 +173,7 @@ export function Screen<T = undefined>({
 				{headerComponent && (
 					<VStack
 						className="z-10 -mb-4 pb-4 pt-6 px-8 shrink-0 bg-background"
-						style={{ paddingTop: insets.top }}
+						style={{ marginTop: offsetTop }}
 						space={space}
 					>
 						{headerComponent}
@@ -183,7 +185,7 @@ export function Screen<T = undefined>({
 						showsVerticalScrollIndicator={false}
 						contentContainerStyle={{
 							flexGrow: 1,
-							paddingTop: headerComponent ? 0 : insets.top,
+							paddingTop: headerComponent ? 0 : offsetTop,
 						}}
 						refreshControl={refreshControl}
 					>

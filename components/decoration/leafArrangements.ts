@@ -1,3 +1,4 @@
+import { Platform } from "react-native";
 import type { SvgProps } from "react-native-svg";
 import { Leaf1, Leaf2, Leaf3, Leaf4, Leaf5, Leaf6 } from "@/constants/Assets";
 import type { ColorToken } from "@/constants/Colors";
@@ -123,9 +124,8 @@ export const ACCENT_ARRANGEMENTS: Record<LeafPattern, LeafPlacement[]> = {
 	],
 };
 
-export const SHADOW_CONFIG = {
+const NATIVE_SHADOW = {
 	none: {},
-
 	sm: {
 		shadowColor: "#000",
 		shadowOffset: { width: 0, height: 2 },
@@ -133,7 +133,6 @@ export const SHADOW_CONFIG = {
 		shadowRadius: 3,
 		elevation: 2,
 	},
-
 	md: {
 		shadowColor: "#000",
 		shadowOffset: { width: 0, height: 4 },
@@ -141,7 +140,6 @@ export const SHADOW_CONFIG = {
 		shadowRadius: 5,
 		elevation: 4,
 	},
-
 	lg: {
 		shadowColor: "#000",
 		shadowOffset: { width: 0, height: 8 },
@@ -150,3 +148,14 @@ export const SHADOW_CONFIG = {
 		elevation: 5,
 	},
 } as const;
+
+const WEB_SHADOW = {
+	none: {},
+	sm: { filter: "drop-shadow(0px 2px 3px rgba(0,0,0,0.15))" },
+	md: { filter: "drop-shadow(0px 4px 5px rgba(0,0,0,0.2))" },
+	lg: { filter: "drop-shadow(0px 8px 6px rgba(0,0,0,0.3))" },
+} as const;
+
+export const SHADOW_CONFIG = (
+	Platform.OS === "web" ? WEB_SHADOW : NATIVE_SHADOW
+) as typeof NATIVE_SHADOW;
