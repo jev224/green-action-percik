@@ -133,6 +133,7 @@ export default function WasteVerifierScreen() {
 	return (
 		<Screen
 			requiredInternet
+			avoidKeyboard
 			scrollable
 			headerComponent={
 				<ScreenHeader
