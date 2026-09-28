@@ -184,22 +184,23 @@ export default function UpdaterScreen() {
 	return (
 		<Screen
 			requiredInternet
+			headerComponent={
+				<HStack className="items-center justify-between">
+					<Heading size="xl">
+						{isFinished
+							? "Pembaruan selesai"
+							: isInterrupted
+								? "Unduhan terhenti"
+								: isDownloading
+									? "Mengunduh pembaruan"
+									: "Pembaruan tersedia"}
+					</Heading>
+
+					<IconButton icon={XIcon} onPress={handleClose} />
+				</HStack>
+			}
 			contentComponent={
 				<>
-					<HStack className="items-center justify-between">
-						<Heading size="xl">
-							{isFinished
-								? "Pembaruan selesai"
-								: isInterrupted
-									? "Unduhan terhenti"
-									: isDownloading
-										? "Mengunduh pembaruan"
-										: "Pembaruan tersedia"}
-						</Heading>
-
-						<IconButton icon={XIcon} onPress={handleClose} />
-					</HStack>
-
 					<Center className="flex-1 gap-12">
 						<Center className="w-[70%] max-w-80 aspect-square rounded-full bg-primary/10">
 							<Center className="w-[82%] h-[82%] rounded-full bg-card border-8 border-primary/20">
