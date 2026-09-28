@@ -5,8 +5,11 @@ export function useResultScreen() {
 	const { navigateToFeedback } = useNavigation();
 	const { setResult } = useResultStore();
 
-	const showResult = ({ type, ...props }: ResultData) => {
-		setResult({ type, ...props });
+	const showResult = ({
+		type,
+		...props
+	}: ResultData & { type: "success" | "failed" }) => {
+		setResult(props);
 
 		if (type === "success") {
 			navigateToFeedback("/feedback/success");

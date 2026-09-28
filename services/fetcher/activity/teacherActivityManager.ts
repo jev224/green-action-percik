@@ -150,7 +150,7 @@ export async function payAllUnpaidStudentWaste(studentId: string) {
 	}
 }
 
-export function applyDateRange<
+function applyDateRange<
 	// biome-ignore lint/suspicious/noExplicitAny: Supabase query builder generics
 	T extends PostgrestFilterBuilder<any, any, any, any>,
 >(query: T, start?: Date, end?: Date) {

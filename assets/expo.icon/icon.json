@@ -1,13 +1,13 @@
 {
 	"fill": {
-		"automatic-gradient": "extended-srgb:0.00000,0.47843,1.00000,1.00000"
+		"automatic-gradient": "extended-srgb:0.18431,0.98039,0.54510,1.00000"
 	},
 	"groups": [
 		{
 			"layers": [
 				{
-					"image-name": "expo-symbol 2.svg",
-					"name": "expo-symbol 2",
+					"image-name": "green-action-icon.svg",
+					"name": "green-action-icon",
 					"position": {
 						"scale": 1,
 						"translation-in-points": [1.1008400065293245e-5, -16.046875]

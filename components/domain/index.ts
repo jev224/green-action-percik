@@ -7,7 +7,6 @@ export { LinkButton } from "./nav/LinkButton";
 export { Greeting } from "./profile/Greeting";
 export { ProfileHeader } from "./profile/ProfileHeader";
 export { ActivitySubmissionScreen } from "./screen/ActivitySubmissionScreen";
-export { ActivitySubmittedScreen } from "./screen/AlreadySubmittedScreen";
 export { StudentList } from "./student/StudentList";
 export { StudentListItem } from "./student/StudentListItem";
 export type { StudentData } from "./student/types";

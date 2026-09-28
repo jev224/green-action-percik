@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useResultScreen } from "@/hooks/useResultScreen";
 import { useShowToast } from "@/hooks/useShowToast";
 import { normalizeError } from "@/utils";
+import { refreshOnNextNavigate } from "./useRefreshOnNavigate";
 
 type BaseSubmittedInfo = { submitted: boolean };
 
@@ -55,6 +56,8 @@ export function useActivitySubmission<T extends BaseSubmittedInfo>(
 		try {
 			await submit();
 			showResult({ type: "success", ...successMessage });
+
+			refreshOnNextNavigate();
 		} catch (e) {
 			reportError(e, "Submission");
 		} finally {
@@ -76,6 +79,8 @@ export function useActivitySubmission<T extends BaseSubmittedInfo>(
 		try {
 			await deleteSubmission();
 			setSubmittedInfo(null);
+
+			refreshOnNextNavigate();
 		} catch (e) {
 			reportError(e, "Deletion");
 		} finally {

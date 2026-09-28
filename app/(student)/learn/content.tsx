@@ -32,7 +32,7 @@ import {
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
-import { useRefreshOnNavigate } from "@/hooks/useRefreshOnNavigate";
+import { refreshOnNextNavigate } from "@/hooks/useRefreshOnNavigate";
 import { useResultScreen } from "@/hooks/useResultScreen";
 import { useShowToast } from "@/hooks/useShowToast";
 import { useUserProfile } from "@/hooks/useUser";
@@ -82,8 +82,6 @@ const CarouselCard = memo(function CarouselCard({
 });
 
 export default function LessonContentScreen() {
-	useRefreshOnNavigate();
-
 	const [isLoading, setLoading] = useState(false);
 	const { profile } = useUserProfile("student");
 
@@ -170,6 +168,8 @@ export default function LessonContentScreen() {
 					subtitle: "Kamu sudah menyelesaikan materi pembelajaran keren!",
 					icon: BookCheck,
 				});
+
+				refreshOnNextNavigate();
 			} catch (e) {
 				const { uiMessage } = normalizeError(e, "Lesson reader");
 				showToast({ title: uiMessage });

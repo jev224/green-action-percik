@@ -379,12 +379,3 @@ export const DialogPopOut = (_values: ExitAnimationsValues) => {
 		},
 	};
 };
-
-export const AnimationNone = () => {
-	"worklet";
-
-	return {
-		initialValues: {},
-		animations: {},
-	};
-};

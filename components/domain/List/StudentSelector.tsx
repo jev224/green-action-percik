@@ -34,7 +34,7 @@ import type { fetchStudentsByClass } from "@/services/fetcher/student/studentQue
 import { StudentListItem } from "../student/StudentListItem";
 import type { StudentData } from "../student/types";
 
-export const STUDENT_SORT_OPTIONS: SortFieldOption<StudentSortField>[] = [
+const STUDENT_SORT_OPTIONS: SortFieldOption<StudentSortField>[] = [
 	{
 		field: "name",
 		label: "Nama",

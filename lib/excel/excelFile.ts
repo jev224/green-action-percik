@@ -9,7 +9,7 @@ import { fetchAllStudentClasses } from "@/services/fetcher/student/studentClass"
 import { fetchStudentsByClass } from "@/services/fetcher/student/studentQuery";
 import { parseClassName } from "@/utils";
 
-export type XLSLSheetFormat = {
+type XLSLSheetFormat = {
 	"No.": number;
 	"Nama Siswa": string;
 	NIS: number;

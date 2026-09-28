@@ -1,3 +1,5 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createJSONStorage, persist } from "expo-zustand-persist";
 import { create } from "zustand";
 import type { Database } from "@/lib/supabase/database.types";
 
@@ -5,6 +7,7 @@ export type ActivityType =
 	| "waste-bank"
 	| "compost-activity"
 	| "debt-settlement";
+
 export type StudentData = Database["public"]["Tables"]["students"]["Row"];
 export type ClassData = Database["public"]["Tables"]["classes"]["Row"];
 export type WasteBankData = Database["public"]["Tables"]["waste_banks"]["Row"];
@@ -42,15 +45,22 @@ const initialState = {
 >;
 
 export const useActivityManagerStore = create<ActivityManagerState>()(
-	(set) => ({
-		...initialState,
+	persist(
+		(set) => ({
+			...initialState,
 
-		setActivityType: (type) => set({ activityType: type }),
-		setSelectedClass: (data) => set({ selectedClass: data }),
-		setSelectedStudent: (data) => set({ selectedStudent: data }),
-		setSelectedWaste: (data) => set({ selectedWaste: data }),
-		setSourceSection: (section) => set({ sourceSection: section }),
+			setActivityType: (type) => set({ activityType: type }),
+			setSelectedClass: (data) => set({ selectedClass: data }),
+			setSelectedStudent: (data) => set({ selectedStudent: data }),
+			setSelectedWaste: (data) => set({ selectedWaste: data }),
+			setSourceSection: (section) => set({ sourceSection: section }),
 
-		reset: () => set(initialState),
-	}),
+			reset: () => set(initialState),
+		}),
+		{
+			name: "use-activity-manager-store",
+			version: 1,
+			storage: createJSONStorage(() => AsyncStorage),
+		},
+	),
 );

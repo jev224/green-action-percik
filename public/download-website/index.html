@@ -1,0 +1,1201 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <script>
+      try {
+        var t = localStorage.getItem("theme");
+        if (!t)
+          t = matchMedia("(prefers-color-scheme:dark)").matches
+            ? "dark"
+            : "light";
+        document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
+    <title>Adiwiyata — Pengolahan Sampah</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      /* ===== Palette (same tokens as the app: "R G B" triplets) ===== */
+      :root {
+        --radius: 1.2rem;
+        --primary: 34 168 108;
+        --primary-foreground: 250 250 245;
+        --card: 249 254 245;
+        --background: 238 242 238;
+        --secondary: 222 231 214;
+        --muted: 220 229 222;
+        --muted-foreground: 90 110 95;
+        --foreground: 22 34 26;
+        --border: 204 212 198;
+        --ring: 64 150 102;
+        --accent: 180 210 179;
+        --accent-foreground: 30 48 36;
+        --info: 42 130 214;
+        --warning: 235 158 24;
+        --organic: 141 168 45;
+        --inorganic: 56 130 214;
+        --compost: 173 110 40;
+        --garden: 96 168 62;
+        --shadow: 34 90 55;
+        color-scheme: light;
+      }
+      /* dark: explicit choice, or system preference when no choice is set */
+      :root[data-theme="dark"] {
+        color-scheme: dark;
+        --primary: 62 166 101;
+        --primary-foreground: 12 42 25;
+        --card: 27 33 28;
+        --background: 17 21 18;
+        --secondary: 31 66 45;
+        --muted: 40 47 41;
+        --muted-foreground: 157 171 161;
+        --foreground: 235 242 236;
+        --border: 60 68 60;
+        --ring: 72 177 105;
+        --accent: 37 78 51;
+        --accent-foreground: 128 205 153;
+        --info: 91 145 201;
+        --warning: 224 173 67;
+        --organic: 93 172 99;
+        --inorganic: 93 145 194;
+        --compost: 177 153 76;
+        --garden: 76 169 101;
+        --shadow: 0 0 0;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          color-scheme: dark;
+          --primary: 62 166 101;
+          --primary-foreground: 12 42 25;
+          --card: 27 33 28;
+          --background: 17 21 18;
+          --secondary: 31 66 45;
+          --muted: 40 47 41;
+          --muted-foreground: 157 171 161;
+          --foreground: 235 242 236;
+          --border: 60 68 60;
+          --ring: 72 177 105;
+          --accent: 37 78 51;
+          --accent-foreground: 128 205 153;
+          --info: 91 145 201;
+          --warning: 224 173 67;
+          --organic: 93 172 99;
+          --inorganic: 93 145 194;
+          --compost: 177 153 76;
+          --garden: 76 169 101;
+          --shadow: 0 0 0;
+        }
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: "Inter", system-ui, sans-serif;
+        min-height: 100vh;
+        color: rgb(var(--foreground));
+        background:
+          radial-gradient(
+            circle at 8% 8%,
+            rgb(var(--primary) / 0.18),
+            transparent 32%
+          ),
+          radial-gradient(
+            circle at 92% 18%,
+            rgb(var(--accent) / 0.55),
+            transparent 34%
+          ),
+          radial-gradient(
+            circle at 50% 100%,
+            rgb(var(--garden) / 0.16),
+            transparent 38%
+          ),
+          rgb(var(--background));
+        overflow-x: hidden;
+        padding-top: env(safe-area-inset-top, 0px);
+      }
+      body.locked {
+        overflow: hidden;
+      }
+      :focus-visible {
+        outline: 3px solid rgb(var(--ring));
+        outline-offset: 3px;
+      }
+
+      /* ===== Nav ===== */
+      nav {
+        width: min(1180px, calc(100% - 30px));
+        height: 68px;
+        margin: 18px auto 0;
+        padding: 10px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgb(var(--card) / 0.7);
+        backdrop-filter: blur(22px);
+        -webkit-backdrop-filter: blur(22px);
+        border: 1px solid rgb(var(--border) / 0.7);
+        border-radius: calc(var(--radius) + 8px);
+        box-shadow: 0 14px 40px rgb(var(--shadow) / 0.1);
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 800;
+        font-size: 17px;
+        letter-spacing: 0.02em;
+      }
+      .brand-icon svg {
+        width: 22px;
+        height: 22px;
+        color: #fff;
+      }
+      .brand-icon {
+        width: 42px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        font-size: 21px;
+        border-radius: 14px;
+        background: linear-gradient(
+          145deg,
+          rgb(var(--garden)),
+          rgb(var(--primary))
+        );
+        box-shadow:
+          0 8px 20px rgb(var(--primary) / 0.3),
+          inset 0 1px 1px rgb(255 255 255/0.5);
+      }
+      .nav-badge {
+        padding: 9px 14px;
+        border-radius: 14px;
+        background: rgb(var(--secondary));
+        color: rgb(var(--accent-foreground));
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      /* ===== Hero ===== */
+      .hero {
+        width: min(1180px, calc(100% - 30px));
+        margin: 64px auto 0;
+        min-height: 600px;
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 55px;
+        align-items: center;
+      }
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 14px;
+        border-radius: 50px;
+        font-size: 13px;
+        font-weight: 700;
+        background: rgb(var(--secondary));
+        color: rgb(var(--accent-foreground));
+        border: 1px solid rgb(var(--primary) / 0.25);
+      }
+      .tag span {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgb(var(--primary));
+        box-shadow: 0 0 0 5px rgb(var(--primary) / 0.16);
+      }
+      h1 {
+        font-size: clamp(42px, 6vw, 80px);
+        letter-spacing: -3px;
+        margin: 22px 0;
+        background: linear-gradient(
+          135deg,
+          rgb(var(--foreground)),
+          rgb(var(--primary)) 60%,
+          rgb(var(--garden))
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .hero p {
+        max-width: 560px;
+        font-size: 17px;
+        line-height: 1.75;
+        color: rgb(var(--muted-foreground));
+      }
+      .buttons {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-top: 30px;
+        flex-wrap: wrap;
+      }
+      .btn-main {
+        position: relative;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px 24px;
+        border: 0;
+        cursor: pointer;
+        font:
+          800 15px "Inter",
+          sans-serif;
+        color: rgb(var(--primary-foreground));
+        border-radius: var(--radius);
+        background: linear-gradient(
+          135deg,
+          rgb(var(--garden)),
+          rgb(var(--primary))
+        );
+        box-shadow:
+          0 14px 30px rgb(var(--primary) / 0.32),
+          inset 0 1px 1px rgb(255 255 255/0.45);
+        transition: 0.25s;
+      }
+      .btn-main:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 40px rgb(var(--primary) / 0.4);
+      }
+      .btn-main::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 70%;
+        height: 100%;
+        transform: skewX(-20deg);
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgb(255 255 255/0.35),
+          transparent
+        );
+        animation: shine 3.4s infinite;
+      }
+      @keyframes shine {
+        0% {
+          left: -100%;
+        }
+        50%,
+        100% {
+          left: 150%;
+        }
+      }
+      .btn-sec {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 16px 20px;
+        border-radius: var(--radius);
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 15px;
+        color: rgb(var(--accent-foreground));
+        background: rgb(var(--card) / 0.7);
+        border: 1px solid rgb(var(--border));
+        backdrop-filter: blur(14px);
+        transition: 0.25s;
+      }
+      .btn-sec:hover {
+        background: rgb(var(--card));
+        transform: translateY(-3px);
+      }
+      svg.lucide {
+        width: 1.15em;
+        height: 1.15em;
+        flex: none;
+        stroke-width: 2.2;
+      }
+      .nav-badge,
+      .tag,
+      .float,
+      .platforms span {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .platforms {
+        margin-top: 18px;
+        font-size: 13px;
+        font-weight: 600;
+        color: rgb(var(--muted-foreground));
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      /* ===== Phone ===== */
+      .visual {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .phone {
+        width: 320px;
+        height: 520px;
+        padding: 12px;
+        border-radius: 44px;
+        transform: rotate(3deg);
+        transition: transform 0.15s;
+        background: linear-gradient(
+          145deg,
+          rgb(var(--card) / 0.9),
+          rgb(var(--secondary) / 0.7)
+        );
+        border: 1px solid rgb(var(--border));
+        box-shadow:
+          0 35px 80px rgb(var(--shadow) / 0.22),
+          inset 0 1px 2px rgb(255 255 255/0.5);
+      }
+      .screen {
+        height: 100%;
+        border-radius: 34px;
+        padding: 24px 18px;
+        overflow: hidden;
+        background: linear-gradient(
+          160deg,
+          rgb(var(--card)),
+          rgb(var(--background))
+        );
+      }
+      .island {
+        width: 96px;
+        height: 26px;
+        border-radius: 30px;
+        margin: -6px auto 22px;
+        background: rgb(var(--foreground));
+      }
+      .screen small {
+        font-size: 12px;
+        font-weight: 700;
+        color: rgb(var(--muted-foreground));
+      }
+      .screen h2 {
+        font-size: 28px;
+        line-height: 1.05;
+        margin: 5px 0 18px;
+      }
+      .cats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .cat {
+        padding: 14px 12px;
+        border-radius: 20px;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 700;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .cat svg {
+        width: 24px;
+        height: 24px;
+      }
+      .cat b {
+        font-weight: 800;
+      }
+      .cat em {
+        font-style: normal;
+        font-size: 11px;
+        opacity: 0.85;
+        font-weight: 500;
+      }
+      .c-organic {
+        background: rgb(var(--organic));
+      }
+      .c-inorganic {
+        background: rgb(var(--inorganic));
+      }
+      .c-compost {
+        background: rgb(var(--compost));
+      }
+      .c-garden {
+        background: rgb(var(--garden));
+      }
+      .prog {
+        margin-top: 16px;
+        padding: 14px;
+        border-radius: 20px;
+        background: rgb(var(--card));
+        border: 1px solid rgb(var(--border));
+      }
+      .prog p {
+        font-size: 12px;
+        font-weight: 700;
+        display: flex;
+        justify-content: space-between;
+      }
+      .bar {
+        height: 9px;
+        border-radius: 20px;
+        margin-top: 9px;
+        background: rgb(var(--primary) / 0.15);
+        overflow: hidden;
+      }
+      .bar span {
+        display: block;
+        width: 76%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(
+          90deg,
+          rgb(var(--primary)),
+          rgb(var(--garden))
+        );
+      }
+      .float {
+        position: absolute;
+        padding: 12px 15px;
+        border-radius: 18px;
+        font-size: 12px;
+        font-weight: 700;
+        background: rgb(var(--card) / 0.8);
+        border: 1px solid rgb(var(--border));
+        backdrop-filter: blur(18px);
+        box-shadow: 0 15px 35px rgb(var(--shadow) / 0.14);
+        animation: floating 4.5s ease-in-out infinite;
+      }
+      .f1 {
+        top: 60px;
+        right: -24px;
+      }
+      .f2 {
+        bottom: 100px;
+        left: -44px;
+        animation-delay: 1s;
+      }
+      .f3 {
+        bottom: 24px;
+        right: -6px;
+        animation-delay: 2s;
+      }
+      @keyframes floating {
+        50% {
+          transform: translateY(-12px);
+        }
+      }
+
+      /* ===== Features ===== */
+      .features {
+        width: min(1180px, calc(100% - 30px));
+        margin: 70px auto 90px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+      }
+      .feature {
+        padding: 26px;
+        border-radius: calc(var(--radius) + 8px);
+        background: rgb(var(--card) / 0.7);
+        border: 1px solid rgb(var(--border) / 0.8);
+        backdrop-filter: blur(20px);
+        box-shadow: 0 18px 45px rgb(var(--shadow) / 0.08);
+        transition: 0.3s;
+      }
+      .feature:hover {
+        transform: translateY(-6px);
+        background: rgb(var(--card));
+      }
+      .ficon svg {
+        width: 26px;
+        height: 26px;
+      }
+      .ficon {
+        width: 52px;
+        height: 52px;
+        display: grid;
+        place-items: center;
+        font-size: 25px;
+        border-radius: 17px;
+        margin-bottom: 16px;
+        color: #fff;
+      }
+      .feature:nth-child(1) .ficon {
+        background: rgb(var(--organic));
+      }
+      .feature:nth-child(2) .ficon {
+        background: rgb(var(--garden));
+      }
+      .feature:nth-child(3) .ficon {
+        background: rgb(var(--inorganic));
+      }
+      .feature h3 {
+        font-size: 17px;
+        margin-bottom: 8px;
+      }
+      .feature p {
+        font-size: 14px;
+        line-height: 1.7;
+        color: rgb(var(--muted-foreground));
+      }
+
+      /* ===== Download overlay ===== */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgb(var(--foreground) / 0.45);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+      }
+      .overlay.open {
+        display: flex;
+        animation: fade 0.2s ease;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+        }
+      }
+      .sheet {
+        position: relative;
+        width: min(520px, 100%);
+        max-height: calc(100% - 10px);
+        overflow-y: auto;
+        padding: 26px;
+        border-radius: calc(var(--radius) + 12px);
+        background: rgb(var(--card));
+        border: 1px solid rgb(var(--border));
+        box-shadow: 0 40px 90px rgb(0 0 0/0.3);
+        animation: pop 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+      }
+      @keyframes pop {
+        from {
+          transform: translateY(24px) scale(0.96);
+          opacity: 0;
+        }
+      }
+      .close svg {
+        width: 18px;
+        height: 18px;
+      }
+      .close {
+        display: grid;
+        place-items: center;
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        width: 36px;
+        height: 36px;
+        border: 0;
+        border-radius: 50%;
+        cursor: pointer;
+        background: rgb(var(--muted));
+        color: rgb(var(--foreground));
+      }
+      .sheet h2 {
+        font-size: 22px;
+        padding-right: 44px;
+      }
+      .sheet .sub {
+        margin-top: 6px;
+        font-size: 14px;
+        line-height: 1.6;
+        color: rgb(var(--muted-foreground));
+      }
+      .panel {
+        display: none;
+      }
+      .panel.active {
+        display: block;
+      }
+      .steps {
+        list-style: none;
+        counter-reset: s;
+        display: grid;
+        gap: 12px;
+        margin: 0 0 20px;
+      }
+      .steps li {
+        counter-increment: s;
+        display: flex;
+        gap: 12px;
+        font-size: 14px;
+        line-height: 1.55;
+      }
+      .steps li::before {
+        content: counter(s);
+        flex: none;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-size: 12px;
+        font-weight: 800;
+        background: rgb(var(--secondary));
+        color: rgb(var(--accent-foreground));
+      }
+      .note svg {
+        margin-top: 2px;
+        color: rgb(var(--warning));
+      }
+      .note {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 12px 14px;
+        margin-bottom: 18px;
+        border-radius: 14px;
+        font-size: 13px;
+        line-height: 1.55;
+        background: rgb(var(--warning) / 0.15);
+        border: 1px solid rgb(var(--warning) / 0.4);
+      }
+      .actions {
+        display: grid;
+        gap: 10px;
+      }
+      .act {
+        border: 0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 15px 18px;
+        border-radius: var(--radius);
+        text-decoration: none;
+        font:
+          800 15px "Inter",
+          sans-serif;
+        background: linear-gradient(
+          135deg,
+          rgb(var(--garden)),
+          rgb(var(--primary))
+        );
+        color: rgb(var(--primary-foreground));
+        box-shadow: 0 10px 24px rgb(var(--primary) / 0.3);
+      }
+      .act.alt {
+        background: rgb(var(--secondary));
+        color: rgb(var(--accent-foreground));
+        box-shadow: none;
+      }
+      .divider {
+        margin: 20px 0 14px;
+        font-size: 12px;
+        font-weight: 700;
+        color: rgb(var(--muted-foreground));
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .divider::before,
+      .divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: rgb(var(--border));
+      }
+
+      /* ===== Theme toggle ===== */
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .theme-toggle {
+        position: relative;
+        width: 44px;
+        height: 44px;
+        flex: none;
+        border-radius: 50%;
+        cursor: pointer;
+        background: rgb(var(--secondary));
+        color: rgb(var(--accent-foreground));
+        border: 1px solid rgb(var(--border));
+        transition: transform 0.2s;
+      }
+      .theme-toggle:hover {
+        transform: scale(1.06);
+      }
+      .theme-toggle svg {
+        position: absolute;
+        inset: 0;
+        margin: auto;
+        width: 20px;
+        height: 20px;
+        transition:
+          transform 0.5s cubic-bezier(0.3, 1.3, 0.5, 1),
+          opacity 0.3s;
+      }
+      .theme-toggle .moon {
+        transform: rotate(-90deg) scale(0.4);
+        opacity: 0;
+      }
+      :root[data-theme="dark"] .theme-toggle .sun {
+        transform: rotate(90deg) scale(0.4);
+        opacity: 0;
+      }
+      :root[data-theme="dark"] .theme-toggle .moon {
+        transform: none;
+        opacity: 1;
+      }
+      ::view-transition-old(root),
+      ::view-transition-new(root) {
+        animation: none;
+        mix-blend-mode: normal;
+      }
+      ::view-transition-old(root) {
+        z-index: 1;
+      }
+      ::view-transition-new(root) {
+        z-index: 2;
+      }
+      .theme-anim,
+      .theme-anim *,
+      .theme-anim *::before,
+      .theme-anim *::after {
+        transition:
+          background-color 0.45s ease,
+          color 0.45s ease,
+          border-color 0.45s ease,
+          box-shadow 0.45s ease;
+      }
+
+      /* ===== Responsive ===== */
+      @media (max-width: 850px) {
+        .hero {
+          grid-template-columns: 1fr;
+          text-align: center;
+          margin-top: 44px;
+          gap: 40px;
+          min-height: 0;
+        }
+        .hero p {
+          margin: auto;
+        }
+        .buttons,
+        .platforms {
+          justify-content: center;
+        }
+        .features {
+          grid-template-columns: 1fr;
+        }
+        .f1 {
+          right: 0;
+        }
+        .f2 {
+          left: 0;
+        }
+        h1 {
+          letter-spacing: -2px;
+        }
+      }
+      @media (max-width: 520px) {
+        .nav-badge {
+          display: none;
+        }
+        .phone {
+          width: 270px;
+          height: 450px;
+        }
+        .float {
+          font-size: 10px;
+          padding: 9px 11px;
+        }
+        .overlay {
+          align-items: flex-end;
+          padding: 0;
+        }
+        .sheet {
+          width: 100%;
+          border-radius: 28px 28px 0 0;
+          padding: 22px 20px calc(22px + env(safe-area-inset-bottom, 0px));
+          max-height: 90%;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none;
+          transition: none;
+        }
+        html {
+          scroll-behavior: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="brand">
+        <div class="brand-icon"><i data-lucide="sprout"></i></div>
+        ADIWIYATA
+      </div>
+      <div class="nav-right">
+        <div class="nav-badge">
+          <i data-lucide="recycle"></i>Peduli Lingkungan
+        </div>
+        <button class="theme-toggle" id="themeToggle" aria-label="Ganti tema">
+          <i data-lucide="sun" class="sun"></i
+          ><i data-lucide="moon" class="moon"></i>
+        </button>
+      </div>
+    </nav>
+
+    <main class="hero">
+      <section>
+        <div class="tag"><span></span>Program Adiwiyata</div>
+        <h1>Kelola Sampah.<br />Jaga Bumi.</h1>
+        <p>
+          Aplikasi edukasi pengolahan sampah untuk menciptakan lingkungan
+          sekolah yang bersih, hijau, sehat, dan berkelanjutan.
+        </p>
+        <div class="buttons">
+          <button class="btn-main" id="openDl" aria-haspopup="dialog">
+            <i data-lucide="download"></i>Download Aplikasi
+          </button>
+          <a href="#fitur" class="btn-sec"
+            >Pelajari<i data-lucide="chevron-down"></i
+          ></a>
+        </div>
+        <div class="platforms">
+          <span><i data-lucide="bot"></i>Android</span
+          ><span><i data-lucide="apple"></i>iOS</span>
+        </div>
+      </section>
+
+      <section class="visual" aria-hidden="true">
+        <div class="phone">
+          <div class="screen">
+            <div class="island"></div>
+            <small>ADIWIYATA</small>
+            <h2>Waste<br />Management</h2>
+            <div class="cats">
+              <div class="cat c-organic">
+                <i data-lucide="leaf"></i><b>Organik</b><em>Sisa makanan</em>
+              </div>
+              <div class="cat c-inorganic">
+                <i data-lucide="package"></i><b>Anorganik</b
+                ><em>Plastik, kertas</em>
+              </div>
+              <div class="cat c-compost">
+                <i data-lucide="shovel"></i><b>Kompos</b><em>Pupuk alami</em>
+              </div>
+              <div class="cat c-garden">
+                <i data-lucide="trees"></i><b>Kebun</b><em>Sekolah hijau</em>
+              </div>
+            </div>
+            <div class="prog">
+              <p><span>Sekolah Hijau</span><span>76%</span></p>
+              <div class="bar"><span></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="float f1"><i data-lucide="sprout"></i>Eco School</div>
+        <div class="float f2">
+          <i data-lucide="recycle"></i>Reduce • Reuse • Recycle
+        </div>
+        <div class="float f3"><i data-lucide="globe"></i>Save Earth</div>
+      </section>
+    </main>
+
+    <section class="features" id="fitur">
+      <div class="feature">
+        <div class="ficon"><i data-lucide="recycle"></i></div>
+        <h3>Pilah Sampah</h3>
+        <p>
+          Kenali dan pisahkan sampah organik, anorganik, dan jenis sampah
+          lainnya dengan benar.
+        </p>
+      </div>
+      <div class="feature">
+        <div class="ficon"><i data-lucide="sprout"></i></div>
+        <h3>Lingkungan Hijau</h3>
+        <p>
+          Bangun lingkungan sekolah yang bersih, asri, sehat, dan nyaman untuk
+          seluruh warga sekolah.
+        </p>
+      </div>
+      <div class="feature">
+        <div class="ficon"><i data-lucide="globe"></i></div>
+        <h3>Jaga Bumi</h3>
+        <p>
+          Kebiasaan kecil dalam mengelola sampah dapat menjadi langkah besar
+          untuk menjaga lingkungan.
+        </p>
+      </div>
+    </section>
+
+    <!-- DOWNLOAD OVERLAY -->
+    <div
+      class="overlay"
+      id="overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="dlTitle"
+    >
+      <div class="sheet">
+        <button class="close" id="closeDl" aria-label="Tutup">
+          <i data-lucide="x"></i>
+        </button>
+        <h2 id="dlTitle">Unduh aplikasi Adiwiyata</h2>
+        <p class="sub" id="dlSub"></p>
+
+        <!-- ANDROID -->
+        <div class="panel" id="p-android">
+          <ol class="steps">
+            <li>
+              Ketuk <b>Unduh APK</b> di bawah. Jika muncul peringatan, pilih
+              <b>Tetap unduh</b>.
+            </li>
+            <li>
+              Buka file <b>adiwiyata.apk</b> dari notifikasi atau folder
+              <b>Unduhan</b>.
+            </li>
+            <li>
+              Jika diminta, aktifkan <b>Izinkan dari sumber ini</b> di
+              Pengaturan, lalu kembali.
+            </li>
+            <li>Ketuk <b>Instal</b>, lalu <b>Buka</b> aplikasi.</li>
+          </ol>
+          <div class="note">
+            <i data-lucide="shield-check"></i
+            ><span
+              >File ini di luar Play Store, jadi Android akan meminta izin
+              instal. Unduh hanya dari halaman resmi sekolah.</span
+            >
+          </div>
+          <div class="actions">
+            <a class="act" id="apkLink" download
+              ><i data-lucide="download"></i>Unduh APK</a
+            >
+          </div>
+        </div>
+
+        <!-- IOS -->
+        <div class="panel" id="p-ios">
+          <ol class="steps">
+            <li>
+              Ketuk <b>Buka TestFlight</b>. Jika belum punya, pasang
+              <b>TestFlight</b> dari App Store.
+            </li>
+            <li>Ketuk <b>Terima</b>, lalu <b>Instal</b> Adiwiyata.</li>
+            <li>Buka aplikasi dari layar utama.</li>
+          </ol>
+          <div class="note">
+            <i data-lucide="info"></i
+            ><span
+              >iOS tidak bisa memasang file langsung dari web, jadi aplikasi
+              dibagikan lewat TestFlight.</span
+            >
+          </div>
+          <div class="actions">
+            <a class="act" id="tfLink" target="_blank" rel="noopener"
+              ><i data-lucide="send"></i>Buka TestFlight</a
+            >
+          </div>
+          <div class="divider">atau tanpa instal</div>
+          <ol class="steps">
+            <li>Buka halaman ini di <b>Safari</b>.</li>
+            <li>Ketuk tombol <b>Bagikan</b> (kotak dengan panah ke atas).</li>
+            <li>Pilih <b>Tambah ke Layar Utama</b>, lalu <b>Tambah</b>.</li>
+          </ol>
+        </div>
+        <!-- DESKTOP / OTHER -->
+        <div class="panel" id="p-other">
+          <div class="note">
+            <i data-lucide="smartphone"></i
+            ><span
+              >Aplikasi hanya bisa dipasang di ponsel Android atau iPhone. Buka
+              halaman ini dari ponselmu untuk melanjutkan.</span
+            >
+          </div>
+          <div class="actions">
+            <button class="act" id="copyLink" type="button">
+              <i data-lucide="link"></i><span>Salin tautan halaman</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+    <script>
+      if (window.lucide) lucide.createIcons();
+      /* ===== CONFIG: replace with your real links ===== */
+      const LINKS = {
+        apk: "adiwiyata.apk", // file APK on your server
+        testflight: "https://testflight.apple.com/join/XXXXXXXX",
+      };
+      apkLink.href = LINKS.apk;
+      tfLink.href = LINKS.testflight;
+
+      const overlay = document.getElementById("overlay");
+      let lastFocus;
+
+      const COPY = {
+        android: {
+          t: "Pasang di Android",
+          s: "Ikuti langkah berikut untuk memasang aplikasi.",
+        },
+        ios: {
+          t: "Pasang di iPhone",
+          s: "iOS punya cara pemasangan yang berbeda dari Android.",
+        },
+        other: {
+          t: "Buka di ponselmu",
+          s: "Perangkat ini tidak bisa memasang aplikasi.",
+        },
+      };
+      function detect() {
+        const ua = navigator.userAgent;
+        if (/Android/i.test(ua)) return "android";
+        if (
+          /iPhone|iPad|iPod/i.test(ua) ||
+          (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+        )
+          return "ios";
+        return "other";
+      }
+      function showPlatform(name) {
+        document
+          .querySelectorAll(".panel")
+          .forEach((p) => p.classList.toggle("active", p.id === `p-${name}`));
+        dlTitle.textContent = COPY[name].t;
+        dlSub.textContent = COPY[name].s;
+      }
+      function openDl() {
+        lastFocus = document.activeElement;
+        showPlatform(detect());
+        overlay.classList.add("open");
+        document.body.classList.add("locked");
+        closeDl.focus();
+      }
+      function closeOverlay() {
+        overlay.classList.remove("open");
+        document.body.classList.remove("locked");
+        lastFocus?.focus();
+      }
+      document.getElementById("openDl").addEventListener("click", openDl);
+      closeDl.addEventListener("click", closeOverlay);
+      overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) closeOverlay();
+      });
+      copyLink.addEventListener("click", async () => {
+        const label = copyLink.querySelector("span");
+        try {
+          await navigator.clipboard.writeText(location.href);
+          label.textContent = "Tautan disalin";
+        } catch (e) {
+          label.textContent = "Salin dari address bar";
+        }
+        setTimeout(() => (label.textContent = "Salin tautan halaman"), 2000);
+      });
+      document.addEventListener("keydown", (e) => {
+        if (!overlay.classList.contains("open")) return;
+        if (e.key === "Escape") closeOverlay();
+        if (e.key === "Tab") {
+          // keep focus inside the dialog
+          const f = [...overlay.querySelectorAll("button,a[href]")].filter(
+            (x) => x.offsetParent,
+          );
+          const first = f[0],
+            last = f[f.length - 1];
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      });
+
+      /* ===== Theme toggle ===== */
+      const root = document.documentElement;
+      const reduced = matchMedia("(prefers-reduced-motion:reduce)").matches;
+      const themeBtn = document.getElementById("themeToggle");
+      function applyTheme(t) {
+        root.dataset.theme = t;
+        try {
+          localStorage.setItem("theme", t);
+        } catch (e) {}
+        themeBtn.setAttribute(
+          "aria-label",
+          t === "dark" ? "Ganti ke tema terang" : "Ganti ke tema gelap",
+        );
+      }
+      applyTheme(root.dataset.theme || "light");
+      themeBtn.addEventListener("click", () => {
+        const next = root.dataset.theme === "dark" ? "light" : "dark";
+        if (reduced) {
+          applyTheme(next);
+          return;
+        }
+        if (!document.startViewTransition) {
+          // fallback: fade colors
+          root.classList.add("theme-anim");
+          applyTheme(next);
+          setTimeout(() => root.classList.remove("theme-anim"), 500);
+          return;
+        }
+        const r0 = themeBtn.getBoundingClientRect(); // circular reveal from the button
+        const x = r0.left + r0.width / 2,
+          y = r0.top + r0.height / 2;
+        const rad = Math.hypot(
+          Math.max(x, innerWidth - x),
+          Math.max(y, innerHeight - y),
+        );
+        document
+          .startViewTransition(() => applyTheme(next))
+          .ready.then(() =>
+            root.animate(
+              {
+                clipPath: [
+                  `circle(0 at ${x}px ${y}px)`,
+                  `circle(${rad}px at ${x}px ${y}px)`,
+                ],
+              },
+              {
+                duration: 650,
+                easing: "ease-in-out",
+                pseudoElement: "::view-transition-new(root)",
+              },
+            ),
+          );
+      });
+
+      /* smooth scroll + phone parallax (desktop only) */
+      document.querySelectorAll('a[href^="#"]').forEach((a) =>
+        a.addEventListener("click", (e) => {
+          const t = document.querySelector(a.getAttribute("href"));
+          if (t) {
+            e.preventDefault();
+            t.scrollIntoView({ behavior: "smooth" });
+          }
+        }),
+      );
+      const phone = document.querySelector(".phone");
+      if (matchMedia("(hover:hover) and (min-width:851px)").matches) {
+        document.addEventListener("mousemove", (e) => {
+          const x = (innerWidth / 2 - e.clientX) / 80,
+            y = (innerHeight / 2 - e.clientY) / 80;
+          phone.style.transform = `rotateY(${x}deg) rotateX(${y}deg) rotateZ(3deg)`;
+        });
+      }
+    </script>
+  </body>
+</html>

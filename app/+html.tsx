@@ -1,4 +1,3 @@
-import { useThemeColors } from "@/hooks/useThemeColors";
 import { ScrollViewStyleReset } from "expo-router/html";
 import type { PropsWithChildren } from "react";
 
@@ -7,35 +6,37 @@ import type { PropsWithChildren } from "react";
 // The contents of this function only run in Node.js environments and
 // do not have access to the DOM or browser APIs.
 export default function Root({ children }: PropsWithChildren) {
-  return (
-    <html lang="en">
-      <head>
-        <meta name="apple-mobile-web-app-capable" content="yes" />
+	return (
+		<html lang="en">
+			<head>
+				<meta name="mobile-web-app-capable" content="yes" />
 
-        <meta
-          name="apple-mobile-web-app-status-bar-style"
-          content="black-translucent"
-        />
+				<meta name="apple-mobile-web-app-title" content="Green Action" />
+				<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+				<meta
+					name="apple-mobile-web-app-status-bar-style"
+					content="black-translucent"
+				/>
 
-        <meta charSet="utf-8" />
-        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, shrink-to-fit=no"
-        />
+				<meta charSet="utf-8" />
+				<meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+				<meta
+					name="viewport"
+					content="width=device-width, initial-scale=1, shrink-to-fit=no"
+				/>
 
-        {/* Link the PWA manifest file. */}
-        <link rel="manifest" href="/manifest.json" />
+				{/* Link the PWA manifest file. */}
+				<link rel="manifest" href="/manifest.json" />
 
-        {/*
+				{/*
           Disable body scrolling on web. This makes ScrollView components work closer to how they do on native.
           However, body scrolling is often nice to have for mobile web. If you want to enable it, remove this line.
         */}
-        <ScrollViewStyleReset />
+				<ScrollViewStyleReset />
 
-        {/* Add any additional <head> elements that you want globally available on web... */}
-      </head>
-      <body>{children}</body>
-    </html>
-  );
+				{/* Add any additional <head> elements that you want globally available on web... */}
+			</head>
+			<body>{children}</body>
+		</html>
+	);
 }

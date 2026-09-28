@@ -82,6 +82,7 @@ export function useNavigation() {
 		navigateTo,
 		resetTo,
 		navigateToHome,
+		getHomeRoute,
 		navigateToFeedback,
 		useBackGuard,
 		bypassGuard,

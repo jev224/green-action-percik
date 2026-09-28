@@ -1,13 +1,15 @@
+import Constants from "expo-constants";
 import { useEffect, useState } from "react";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 import { Button, Modal, Spinner } from "@/components/primitives";
 import { useNavigation } from "@/hooks/useNavigation";
 import {
 	getProfileByRole,
 	getUserData,
 } from "@/services/fetcher/account/profile";
+import { getMinimumSupportedVersion } from "@/services/fetcher/client/clientUpdater";
 import { useUserStore } from "@/stores/userStore";
-import { checkConnection, normalizeError } from "@/utils";
+import { checkConnection, compareVersions, normalizeError } from "@/utils";
 
 export default function Index() {
 	const { setUserStore, setRoleStore } = useUserStore();
@@ -46,14 +48,39 @@ export default function Index() {
 		}
 	};
 
+	const initialize = async () => {
+		try {
+			if (Platform.OS === "android") {
+				const minimalVersion = await getMinimumSupportedVersion();
+				const currentVersion = Constants.expoConfig?.version;
+
+				let needsUpdate = false;
+
+				if (currentVersion && minimalVersion) {
+					const result = compareVersions(currentVersion, minimalVersion);
+					needsUpdate = result < 0;
+				}
+
+				if (needsUpdate) {
+					resetTo("/updater");
+					return;
+				}
+			}
+		} catch (e) {
+			console.warn("Version check failed", e);
+		}
+
+		await loadRole();
+	};
+
 	const handleRetry = () => {
 		setShowNetworkDialog(false);
 		setErrorMessage("");
-		setTimeout(loadRole, 2000);
+		setTimeout(initialize, 2000);
 	};
 
 	useEffect(() => {
-		loadRole();
+		initialize();
 	}, []);
 
 	return (

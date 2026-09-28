@@ -52,7 +52,7 @@ interface PaginationDotProps {
 	activeDotHeight: number;
 }
 
-export function Dot({
+function Dot({
 	index,
 	length,
 	progress,

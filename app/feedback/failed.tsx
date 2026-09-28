@@ -1,5 +1,5 @@
 import { XIcon } from "lucide-react-native";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { View } from "react-native";
 import { EaseView } from "react-native-ease";
 import { Button, Screen, Spacer } from "@/components/primitives";
@@ -9,25 +9,14 @@ import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { useNavigation } from "@/hooks/useNavigation";
-import { useShowToast } from "@/hooks/useShowToast";
 import { useResultStore } from "@/stores/result";
 
 export default function FailedScreen() {
-	const showToast = useShowToast();
 	const { navigateToHome } = useNavigation();
 
 	const [transitionFinished, setTransitionFinished] = useState(false);
 
-	const { type, title, subtitle, icon } = useResultStore().result ?? {};
-
-	useEffect(() => {
-		if (type !== "failed") {
-			if (title) showToast({ title });
-			navigateToHome();
-		}
-	}, [type]);
-
-	if (type !== "failed") return null;
+	const { title, subtitle, icon } = useResultStore().result ?? {};
 
 	return (
 		<Screen

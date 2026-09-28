@@ -1,3 +1,4 @@
+import { Platform } from "react-native";
 import { create } from "zustand";
 
 type TaskStatus = "idle" | "running" | "success" | "error";
@@ -34,6 +35,8 @@ export const useAsyncTaskStore = create<AsyncTaskState>((set, get) => ({
 		// Avoid starting the same task twice while it's already running
 		const existing = get().tasks[id];
 		if (existing?.status === "running") return;
+
+		setupPreventReloadListener();
 
 		set((state) => ({
 			tasks: {
@@ -81,6 +84,12 @@ export const useAsyncTaskStore = create<AsyncTaskState>((set, get) => ({
 					},
 				},
 			}));
+		} finally {
+			const stillRunning = Object.values(get().tasks).some(
+				(t) => t.status === "running",
+			);
+
+			if (!stillRunning) clearPreventReloadListener();
 		}
 	},
 
@@ -96,3 +105,40 @@ export const useAsyncTaskStore = create<AsyncTaskState>((set, get) => ({
 
 	reset: () => set({ tasks: {} }),
 }));
+
+// Prevent web browser for reloading if there's task
+const beforeUnload = (e: BeforeUnloadEvent) => {
+	if (Platform.OS !== "web") return;
+
+	e.preventDefault();
+	e.returnValue = "";
+};
+
+// Custom prompt: F5 / Ctrl+R / Cmd+R
+const onKeyDown = (e: KeyboardEvent) => {
+	if (Platform.OS !== "web") return;
+
+	const isReload =
+		e.key === "F5" || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "r");
+	if (!isReload) return;
+
+	e.preventDefault();
+	if (window.confirm("A task is still running. Reload anyway?")) {
+		window.removeEventListener("beforeunload", beforeUnload);
+		window.location.reload();
+	}
+};
+
+const setupPreventReloadListener = () => {
+	if (Platform.OS !== "web") return;
+
+	window.addEventListener("beforeunload", beforeUnload);
+	window.addEventListener("keydown", onKeyDown);
+};
+
+const clearPreventReloadListener = () => {
+	if (Platform.OS !== "web") return;
+
+	window.removeEventListener("beforeunload", beforeUnload);
+	window.removeEventListener("keydown", onKeyDown);
+};

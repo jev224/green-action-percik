@@ -1,3 +1,5 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createJSONStorage, persist } from "expo-zustand-persist";
 import { create } from "zustand";
 
 export type LessonContent = {
@@ -32,14 +34,23 @@ interface LessonStore {
 	clearLessonContentData: () => void;
 }
 
-export const useLessonStore = create<LessonStore>()((set) => ({
-	lesson: { mode: "create" },
-	lessonContentData: null,
-	setLessonContentData: (id, title, contents) =>
-		set({ lessonContentData: { id, title, contents } }),
-	clearLessonContentData: () => set({ lessonContentData: null }),
+export const useLessonStore = create<LessonStore>()(
+	persist(
+		(set) => ({
+			lesson: { mode: "create" },
+			lessonContentData: null,
+			setLessonContentData: (id, title, contents) =>
+				set({ lessonContentData: { id, title, contents } }),
+			clearLessonContentData: () => set({ lessonContentData: null }),
 
-	createLesson: () => set({ lesson: { mode: "create" } }),
-	editLesson: (id) => set({ lesson: { mode: "edit", id } }),
-	viewLesson: (id) => set({ lesson: { mode: "view", id } }),
-}));
+			createLesson: () => set({ lesson: { mode: "create" } }),
+			editLesson: (id) => set({ lesson: { mode: "edit", id } }),
+			viewLesson: (id) => set({ lesson: { mode: "view", id } }),
+		}),
+		{
+			name: "use-lesson-store",
+			version: 1,
+			storage: createJSONStorage(() => AsyncStorage),
+		},
+	),
+);

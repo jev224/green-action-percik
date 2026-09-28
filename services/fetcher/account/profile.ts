@@ -7,7 +7,7 @@ import type { StringKeys } from "@/types";
 
 export type UserRole = "teacher" | "student";
 
-export type ProfileByRoleBase<R extends UserRole> = R extends "teacher"
+type ProfileByRoleBase<R extends UserRole> = R extends "teacher"
 	? TeacherProfile
 	: StudentProfile;
 

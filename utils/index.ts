@@ -3,8 +3,6 @@ import { Platform } from "react-native";
 import { ServerError } from "@/services/ServerError";
 import type { ClassData } from "@/types";
 
-export const sumReduceFn = (sum: number, curr: number) => sum + curr;
-
 export function nativeOnlyProps<T extends object>(props: T): Partial<T> {
 	return Platform.OS !== "web" ? props : {};
 }
@@ -172,3 +170,16 @@ export function normalizeError(error: unknown, label: string): NormalizedError {
 		uiMessage: FALLBACK_UI_MESSAGE,
 	};
 }
+
+export const compareVersions = (v1: string, v2: string) => {
+	const parts1 = v1.split(".").map(Number);
+	const parts2 = v2.split(".").map(Number);
+
+	for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
+		const a = parts1[i] || 0;
+		const b = parts2[i] || 0;
+		if (a > b) return 1;
+		if (a < b) return -1;
+	}
+	return 0;
+};

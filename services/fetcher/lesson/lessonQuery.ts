@@ -17,7 +17,7 @@ export const TABLE_NAME =
 	"learning_lessons" satisfies keyof Database["public"]["Tables"];
 export const lessonPhotos = new PhotoStorage("lesson_photo");
 
-export const withPhoto = <T extends object, K extends StringKeys<T>>(
+const withPhoto = <T extends object, K extends StringKeys<T>>(
 	data: T,
 	photoProp: K,
 ) => ({

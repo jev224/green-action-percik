@@ -28,7 +28,7 @@ import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useNavigation } from "@/hooks/useNavigation";
-import { useRefreshOnNavigate } from "@/hooks/useRefreshOnNavigate";
+import { refreshOnNextNavigate } from "@/hooks/useRefreshOnNavigate";
 import { useShowToast } from "@/hooks/useShowToast";
 import {
 	deleteWasteBank,
@@ -42,8 +42,6 @@ import { formatPrice, normalizeError } from "@/utils";
 const WASTE_PRICE_MULTIPLIER_FALLBACK = 3000;
 
 export default function WasteVerifierScreen() {
-	useRefreshOnNavigate();
-
 	const selectedWaste = useActivityManagerStore((s) => s.selectedWaste);
 	const sourceSection = useActivityManagerStore((s) => s.sourceSection);
 	const isEditing = sourceSection === "completed";
@@ -108,6 +106,7 @@ export default function WasteVerifierScreen() {
 					: "Bank sampah berhasil diverifikasi",
 			});
 			goBack();
+			refreshOnNextNavigate();
 		} catch (e) {
 			const { uiMessage } = normalizeError(e, "Waste Bank Verify");
 			showToast({ title: uiMessage });

@@ -5,7 +5,7 @@ import { Center } from "@/components/ui/center";
 import { Heading } from "@/components/ui/heading";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useNavigation } from "@/hooks/useNavigation";
-import { useRefreshOnNavigate } from "@/hooks/useRefreshOnNavigate";
+import { refreshOnNextNavigate } from "@/hooks/useRefreshOnNavigate";
 import { useShowToast } from "@/hooks/useShowToast";
 import {
 	fetchUnpaidStudentWaste,
@@ -15,8 +15,6 @@ import { useActivityManagerStore } from "@/stores/activityManager";
 import { formatPrice, nativeOnlyProps, normalizeError } from "@/utils";
 
 export default function DebtSettlementScreen() {
-	useRefreshOnNavigate();
-
 	const { goBack } = useNavigation();
 	const showToast = useShowToast();
 
@@ -54,6 +52,7 @@ export default function DebtSettlementScreen() {
 			const { uiMessage } = normalizeError(e, "Pay unpaid student waste");
 			showToast({ title: uiMessage });
 		} finally {
+			refreshOnNextNavigate();
 			setSubmitting(false);
 		}
 	};

@@ -1,9 +1,7 @@
 import { getPublicInfoValue } from "./serverInformation";
 
 export async function getMinimumSupportedVersion() {
-	return (
-		parseInt(await getPublicInfoValue("minimum_supported_version"), 10) || 0
-	);
+	return await getPublicInfoValue("minimum_supported_version_android");
 }
 
 export async function getApplicationDownloadUrl() {

@@ -1,5 +1,7 @@
 // stores/userProfile.ts
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createJSONStorage, persist } from "expo-zustand-persist";
 import { create } from "zustand";
 import type {
 	ProfileByRole,
@@ -15,12 +17,21 @@ type InternalStore = {
 	setRoleStore: (input: UserRole) => void;
 };
 
-const useInternalUserStore = create<InternalStore>()((set) => ({
-	userStore: null,
-	roleStore: null,
-	setUserStore: (input) => set({ userStore: input }),
-	setRoleStore: (role) => set({ roleStore: role }),
-}));
+const useInternalUserStore = create<InternalStore>()(
+	persist(
+		(set) => ({
+			userStore: null,
+			roleStore: null,
+			setUserStore: (input) => set({ userStore: input }),
+			setRoleStore: (role) => set({ roleStore: role }),
+		}),
+		{
+			name: "use-user-store",
+			version: 1,
+			storage: createJSONStorage(() => AsyncStorage),
+		},
+	),
+);
 
 export function useUserStore<R extends UserRole>() {
 	const userStore = useInternalUserStore((s) => s.userStore);

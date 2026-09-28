@@ -7,7 +7,7 @@ import { getProfileByRole, type UserRole } from "../account/profile";
 
 export const compostPhotos = new PhotoStorage("compost_activity_photo");
 
-export const buildCompostPhotoPath = (
+const buildCompostPhotoPath = (
 	id: number,
 	classData: ClassData,
 	timestamptz: string,

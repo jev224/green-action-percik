@@ -1,6 +1,6 @@
 import { Image } from "expo-image";
 import { Check, Sprout } from "lucide-react-native";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { View } from "react-native";
 import { EaseView } from "react-native-ease";
 import { cnBase } from "tailwind-variants";
@@ -19,26 +19,15 @@ import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { animated } from "@/constants/Assets";
 import { useNavigation } from "@/hooks/useNavigation";
-import { useShowToast } from "@/hooks/useShowToast";
 import { useResultStore } from "@/stores/result";
 import { calculatePercentage, randomBetween } from "@/utils";
 
 export default function SuccessScreen() {
-	const showToast = useShowToast();
 	const { navigateToHome } = useNavigation();
 
 	const [transitionFinished, setTransitionFinished] = useState(false);
 
-	const { type, title, subtitle, icon, stats } = useResultStore().result ?? {};
-
-	useEffect(() => {
-		if (type !== "success") {
-			if (title) showToast({ title });
-			navigateToHome();
-		}
-	}, [type]);
-
-	if (type !== "success") return null;
+	const { title, subtitle, icon, stats } = useResultStore().result ?? {};
 
 	return (
 		<Screen

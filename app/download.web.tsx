@@ -24,7 +24,7 @@ export default function DownloadScreen() {
 	return (
 		<iframe
 			title="Download"
-			src="https://www.google.com"
+			src="./download-website/index.html"
 			style={{
 				width: "100vw",
 				height: "100vh",

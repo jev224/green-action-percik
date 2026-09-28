@@ -182,5 +182,3 @@ export const getChangedLessonFields = (
 
 	return changed;
 };
-
-export { fetchAllLessons, fetchLesson } from "./lessonQuery";
