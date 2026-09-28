@@ -10,6 +10,7 @@ import Svg, {
 } from "react-native-svg";
 
 import { useThemeColors } from "@/hooks/useThemeColors";
+import { DEVICE_TIER } from "@/lib/deviceTier";
 
 type GlowVariant = "corner" | "edges";
 
@@ -32,6 +33,8 @@ export const GlowDecoration = React.memo(function GlowDecoration({
 	className,
 }: GlowDecorationProps) {
 	const { colors } = useThemeColors();
+
+	if (DEVICE_TIER === "low") return null;
 
 	if (variant === "edges") {
 		const [leftColor, rightColor] = edgeColors ?? [
@@ -75,7 +78,7 @@ export const GlowDecoration = React.memo(function GlowDecoration({
 			<Svg width="100%" height="100%">
 				<Defs>
 					<RadialGradient id="cornerGlow">
-						<Stop offset="0" stopColor="transparent" stopOpacity={0} />
+						<Stop offset="0" stopColor={inner} stopOpacity={0} />
 						<Stop offset="0.6" stopColor={inner} stopOpacity={0.125} />
 						<Stop offset="1" stopColor={outer} stopOpacity={0.15} />
 					</RadialGradient>

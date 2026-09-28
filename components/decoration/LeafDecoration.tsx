@@ -1,6 +1,7 @@
 import React from "react";
 import { type ColorValue, View } from "react-native";
 import { useThemeColors } from "@/hooks/useThemeColors";
+import { DEVICE_TIER } from "@/lib/deviceTier";
 import {
 	ACCENT_ARRANGEMENTS,
 	CLUSTER_ARRANGEMENTS,
@@ -31,6 +32,8 @@ export const LeafDecoration = React.memo(function LeafDecoration({
 	const arrangements =
 		variant === "cluster" ? CLUSTER_ARRANGEMENTS : ACCENT_ARRANGEMENTS;
 
+	const effectiveShadow = DEVICE_TIER === "low" ? "none" : shadow;
+
 	const placements = arrangements[pattern];
 
 	return (
@@ -40,7 +43,7 @@ export const LeafDecoration = React.memo(function LeafDecoration({
 					// biome-ignore lint/suspicious/noArrayIndexKey: Static decorative elements
 					<View key={i} className={className}>
 						<Asset
-							style={SHADOW_CONFIG[shadow]}
+							style={SHADOW_CONFIG[effectiveShadow]}
 							width={size}
 							height={size}
 							color={colorKey ? colors[colorKey] : color}
