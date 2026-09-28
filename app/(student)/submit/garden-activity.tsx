@@ -7,6 +7,7 @@ import {
 	SelectField,
 	Spacer,
 } from "@/components/primitives";
+import { useActivityInfo } from "@/hooks/useActivityInfo";
 import { useActivitySubmission } from "@/hooks/useActivitySubmission";
 import { useUserProfile } from "@/hooks/useUser";
 import {
@@ -23,6 +24,12 @@ export default function CompostSubmissionScreen() {
 	const [activityPhotoUri, setActivityPhotoUri] = useState<string | null>(null);
 
 	const {
+		isLoading: activityInfoLoading,
+		locations,
+		types,
+	} = useActivityInfo(["locations", "types"]);
+
+	const {
 		initialLoading,
 		isLoading,
 		submittedInfo,
@@ -30,6 +37,8 @@ export default function CompostSubmissionScreen() {
 		handleSubmit,
 	} = useActivitySubmission(
 		{
+			isAnotherLoading: activityInfoLoading,
+
 			checkEnabled: !!profile,
 
 			checkSubmitted: async () => {
@@ -83,10 +92,7 @@ export default function CompostSubmissionScreen() {
 			<ListSection title="Jenis Kegiatan">
 				<SelectField
 					placeholder="Pilih Kegiatan"
-					options={[
-						{ label: "Menyiram tanaman", value: "Menyiram tanaman" },
-						{ label: "Memberi makan ikan", value: "Memberi makan ikan" },
-					]}
+					options={types}
 					value={activityType}
 					onValueChange={setActivityType}
 				/>
@@ -95,10 +101,7 @@ export default function CompostSubmissionScreen() {
 			<ListSection title="Lokasi Kegiatan">
 				<SelectField
 					placeholder="Pilih Lokasi"
-					options={[
-						{ label: "Pendopo", value: "pendopo" },
-						{ label: "Lapangan", value: "lapangan" },
-					]}
+					options={locations}
 					value={activityLocation}
 					onValueChange={setActivityLocation}
 				/>

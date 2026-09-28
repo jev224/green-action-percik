@@ -15,6 +15,7 @@ type Options<T extends BaseSubmittedInfo> = {
 	incompleteMessage?: string;
 	successMessage: { title: string; subtitle: string };
 	logLabel: string;
+	isAnotherLoading?: boolean;
 };
 
 export function useActivitySubmission<T extends BaseSubmittedInfo>(
@@ -27,6 +28,7 @@ export function useActivitySubmission<T extends BaseSubmittedInfo>(
 		incompleteMessage = "Yuk lengkapi semua kolom yang wajib diisi",
 		successMessage,
 		logLabel,
+		isAnotherLoading,
 	}: Options<T>,
 	deps: React.DependencyList,
 ) {
@@ -106,7 +108,7 @@ export function useActivitySubmission<T extends BaseSubmittedInfo>(
 
 	return {
 		isLoading,
-		initialLoading,
+		initialLoading: initialLoading || !!isAnotherLoading,
 		submittedInfo,
 		handleSubmit,
 		handleDelete,
