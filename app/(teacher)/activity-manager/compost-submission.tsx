@@ -75,7 +75,7 @@ export default function CompostSubmissionScreen() {
 				if (!activityPhotoUri) throw new Error("Missing activity photo");
 				if (!selectedClass) throw new Error("Class not found");
 				await submitCompostActivity(
-					"student",
+					"teacher",
 					profile.user_id,
 					selectedClass.id,
 					selectedClass,
@@ -102,6 +102,8 @@ export default function CompostSubmissionScreen() {
 	const isByMe =
 		submittedInfo && profile && submittedInfo.submittedBy === profile.user_id;
 
+	const isByTeacher = submittedInfo?.submittedByRole === "teacher";
+
 	useEffect(() => {
 		if (!selectedClass) goBack();
 	}, [selectedClass]);
@@ -119,7 +121,7 @@ export default function CompostSubmissionScreen() {
 			submittedMessage={
 				isByMe
 					? "Anda sudah mengirim kegiatan kompos bulan ini. Hapus pengiriman jika ingin mengubahnya, atau kembali ke halaman utama."
-					: `Kegiatan kompos sudah kirim oleh ${submittedInfo?.submittedAuthor ?? "Seseorang"} pada bulan ini. Hapus pengiriman jika ingin mengubahnya, atau kembali ke halaman utama.`
+					: `Kegiatan kompos sudah kirim oleh ${submittedInfo?.submittedAuthor ?? (isByTeacher ? "guru lain" : "siswa")} pada bulan ini. Hapus pengiriman jika ingin mengubahnya, atau kembali ke halaman utama.`
 			}
 		>
 			<ListSection title="Lokasi Kegiatan">

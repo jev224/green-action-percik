@@ -101,6 +101,8 @@ export default function CompostSubmissionScreen() {
 		userProfile.profile &&
 		submittedInfo.submittedBy === userProfile.profile.user_id;
 
+	const isByTeacher = submittedInfo?.submittedByRole === "teacher";
+
 	return (
 		<ActivitySubmissionScreen
 			title="Laporan Kompos"
@@ -112,7 +114,9 @@ export default function CompostSubmissionScreen() {
 			submittedMessage={
 				isByMe
 					? "Kamu sudah mengirim kegiatan kompos bulan ini. Hapus pengiriman jika ingin mengubahnya, atau kembali ke halaman utama."
-					: `Kegiatan kompos sudah kirim oleh ${submittedInfo?.submittedAuthor || "Seseorang"} pada bulan ini. Minta ${submittedInfo?.submittedAuthor || "dia"} atau kepada guru pembimbing jika ingin mengubah pengiriman, atau kembali ke halaman utama.`
+					: isByTeacher
+						? `Kegiatan kompos sudah kirim oleh ${submittedInfo?.submittedAuthor || "guru pembimbing anda"} pada bulan ini. Minta ${submittedInfo?.submittedAuthor || "guru pembimbing"} jika ingin mengubah pengiriman, atau kembali ke halaman utama.`
+						: `Kegiatan kompos sudah kirim oleh ${submittedInfo?.submittedAuthor || "teman anda"} pada bulan ini. Minta ${submittedInfo?.submittedAuthor || "teman anda"} atau kepada guru pembimbing jika ingin mengubah pengiriman, atau kembali ke halaman utama.`
 			}
 		>
 			<ListSection title="Lokasi Kegiatan">

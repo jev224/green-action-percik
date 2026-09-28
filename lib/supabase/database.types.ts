@@ -113,7 +113,7 @@ export type Database = {
 					created_at: string;
 					id: number;
 					photo: string | null;
-					submitted_by: string;
+					submitted_by: string | null;
 					submitted_by_role: string;
 				};
 				Insert: {
@@ -121,7 +121,7 @@ export type Database = {
 					created_at?: string;
 					id?: number;
 					photo?: string | null;
-					submitted_by?: string;
+					submitted_by?: string | null;
 					submitted_by_role: string;
 				};
 				Update: {
@@ -129,7 +129,7 @@ export type Database = {
 					created_at?: string;
 					id?: number;
 					photo?: string | null;
-					submitted_by?: string;
+					submitted_by?: string | null;
 					submitted_by_role?: string;
 				};
 				Relationships: [
@@ -139,13 +139,6 @@ export type Database = {
 						isOneToOne: false;
 						referencedRelation: "classes";
 						referencedColumns: ["id"];
-					},
-					{
-						foreignKeyName: "compost_activities_submitted_by_fkey";
-						columns: ["submitted_by"];
-						isOneToOne: false;
-						referencedRelation: "students";
-						referencedColumns: ["user_id"];
 					},
 				];
 			};

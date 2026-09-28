@@ -89,19 +89,26 @@ export async function isCompostActivitySubmitted(classId: number) {
 		});
 	}
 
-	if (data) {
+	if (data?.submitted_by) {
 		const profile = await getProfileByRole(
 			data.submitted_by,
 			data.submitted_by_role as UserRole,
 		);
 
-		profile.name;
-
 		return {
 			activityId: data?.id,
 			submitted: true as true,
 			submittedBy: data.submitted_by,
+			submittedByRole: data.submitted_by_role as UserRole,
 			submittedAuthor: profile.name,
+		};
+	}
+
+	if (data) {
+		return {
+			activityId: data?.id,
+			submitted: true as true,
+			submittedByRole: data.submitted_by_role as UserRole,
 		};
 	}
 

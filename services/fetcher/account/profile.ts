@@ -69,14 +69,14 @@ export async function getProfileByRole<R extends UserRole>(
 			throw new ServerError({
 				status: 404,
 				message: `Profile not found for user ${id} with role ${role}`,
-				ui_message: "Profil kamu belum ditemukan",
+				ui_message: "Profil tidak ditemukan",
 			});
 		}
 
 		throw new ServerError({
 			status: 500,
 			message: `Failed to fetch ${role} profile: ${dbError.message}`,
-			ui_message: "Profil kamu belum bisa dimuat. Coba lagi ya",
+			ui_message: "Profil tidak bisa dimuat. Coba lagi ya",
 		});
 	}
 
@@ -84,7 +84,7 @@ export async function getProfileByRole<R extends UserRole>(
 		throw new ServerError({
 			status: 500,
 			message: `Profile fetched with no data.`,
-			ui_message: "Profil kamu belum bisa dimuat. Coba lagi ya",
+			ui_message: "Profil tidak bisa dimuat. Coba lagi ya",
 		});
 	}
 
