@@ -6,30 +6,38 @@ import {
 } from "expo-router";
 import { useRef } from "react";
 import { getUserState } from "@/stores/userStore";
+import { createThrottle } from "@/utils";
+
+// One shared lock for all navigation actions (leading only, no trailing)
+const throttleNav = createThrottle(500);
 
 export function useNavigation() {
 	const navigation = useExpoNavigation();
 	const skipGuardRef = useRef(false);
 
-	const goBack = (fallbackHref?: Href) => {
+	const goBack = throttleNav((fallbackHref?: Href) => {
 		if (router.canGoBack()) {
 			router.back();
 		} else if (fallbackHref) {
 			router.navigate(fallbackHref);
 		}
-	};
+	});
 
-	const navigateTo = (href: Href) => {
+	const navigateTo = throttleNav((href: Href) => {
 		router.push(href);
-	};
+	});
 
-	const resetTo = (href: Parameters<typeof router.replace>[0]) => {
+	// Unthrottled internal version so navigateToHome doesn't get
+	// blocked by its own throttle window.
+	const resetToUnthrottled = (href: Parameters<typeof router.replace>[0]) => {
 		if (router.canDismiss()) {
 			router.dismissAll();
 		}
 
 		router.push(href);
 	};
+
+	const resetTo = throttleNav(resetToUnthrottled);
 
 	const getHomeRoute = (): Href => {
 		const userRole = getUserState().roleStore;
@@ -48,7 +56,7 @@ export function useNavigation() {
 		}
 	};
 
-	const navigateToHome = () => resetTo(getHomeRoute());
+	const navigateToHome = throttleNav(() => resetToUnthrottled(getHomeRoute()));
 
 	// Guards screen removal (back gesture, hardware back, header back
 	// button — they all funnel through this one listener). When blocked,

@@ -183,3 +183,67 @@ export const compareVersions = (v1: string, v2: string) => {
 	}
 	return 0;
 };
+
+// --------------------- THROTTLE ----------------------------------
+export const DEFAULT_THROTTLE_MS = 500;
+
+export type ThrottleOptions = {
+	// Also run once at the end of the window with the latest args
+	trailing?: boolean;
+};
+
+export type Throttled<Args extends unknown[]> = ((...args: Args) => void) & {
+	cancel: () => void;
+};
+
+// Returns a wrapper factory whose wrapped functions all share ONE lock.
+// Leading edge always runs; trailing is opt-in.
+export function createThrottle(
+	windowMs: number = DEFAULT_THROTTLE_MS,
+	{ trailing = false }: ThrottleOptions = {},
+) {
+	let lastCallAt = 0;
+	let timeoutId: ReturnType<typeof setTimeout> | null = null;
+	let pendingRun: (() => void) | null = null;
+
+	const cancel = () => {
+		if (timeoutId) clearTimeout(timeoutId);
+		timeoutId = null;
+		pendingRun = null;
+	};
+
+	return <Args extends unknown[]>(fn: (...args: Args) => void) => {
+		const throttled = (...args: Args) => {
+			const remaining = windowMs - (Date.now() - lastCallAt);
+
+			if (remaining <= 0) {
+				cancel();
+				lastCallAt = Date.now();
+				fn(...args);
+				return;
+			}
+
+			if (!trailing) return;
+
+			// Always keep the latest args for the trailing call
+			pendingRun = () => {
+				cancel();
+				lastCallAt = Date.now();
+				fn(...args);
+			};
+			if (!timeoutId) timeoutId = setTimeout(() => pendingRun?.(), remaining);
+		};
+
+		throttled.cancel = cancel;
+		return throttled as Throttled<Args>;
+	};
+}
+
+// Standalone throttle with its own independent lock.
+export function throttle<Args extends unknown[]>(
+	fn: (...args: Args) => void,
+	windowMs: number = DEFAULT_THROTTLE_MS,
+	options?: ThrottleOptions,
+) {
+	return createThrottle(windowMs, options)(fn);
+}
