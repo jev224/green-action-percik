@@ -163,6 +163,7 @@ export function StudentMultiSelect({
 				isOpen={isPortalOpen}
 				onClose={() => setPortalOpen(false)}
 				fullHeight
+				scrollable={false}
 			>
 				<VStack className="px-2" space="lg">
 					<HStack space="sm">
@@ -234,6 +235,7 @@ export function StudentMultiSelect({
 								overflow: "visible",
 								opacity: isLoading || errorMessage ? 0 : 255,
 								zIndex: isLoading || errorMessage ? 0 : 100,
+								flex: 1,
 							}}
 							keyExtractor={(student) => student.user_id}
 							renderItem={({ item }) => (

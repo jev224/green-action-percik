@@ -172,7 +172,10 @@ export function Screen<T = undefined>({
 				{headerComponent && (
 					<VStack
 						className="z-10 -mb-4 pb-4 pt-6 px-8 shrink-0 bg-background"
-						style={{ marginTop: -offsetTop, paddingTop: offsetTop }}
+						style={{
+							marginTop: -16,
+							paddingTop: offsetTop + 16,
+						}}
 						space={space}
 					>
 						{headerComponent}
