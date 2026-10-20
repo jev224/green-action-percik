@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useMemo, useRef } from "react";
 import { useWindowDimensions, View } from "react-native";
 import { EaseView } from "react-native-ease";
 import {
@@ -16,9 +16,7 @@ import { scheduleOnRN } from "react-native-worklets";
 import { cnBase } from "tailwind-variants";
 
 import { AnimatedPressable } from "@/components/animation/animatedComponent";
-
 import { AnimationConfig } from "@/components/animation/presets";
-import { Box } from "@/components/ui/box";
 import { SelectContent, SelectPortal } from "@/components/ui/select";
 import {
 	Actionsheet,
@@ -34,6 +32,13 @@ interface SmoothActionSheetProp {
 	scrollable?: boolean;
 	selectPortal?: boolean;
 }
+
+const OVERSCROLL = 100;
+const RESISTANCE = 0.25;
+const CLOSE_DISTANCE = 100;
+const CLOSE_VELOCITY = 800;
+const BACKDROP_OPACITY = 0.8;
+
 export const SmoothActionSheet = ({
 	isOpen,
 	onClose,
@@ -42,195 +47,135 @@ export const SmoothActionSheet = ({
 	selectPortal,
 	scrollable = true,
 }: SmoothActionSheetProp) => {
+	const onCloseRef = useRef(onClose);
+	onCloseRef.current = onClose;
+	const requestClose = useCallback(() => onCloseRef.current(), []);
+
 	const { height } = useWindowDimensions();
 
-	const [isOpenInternal, setIsOpenInternal] = useState(false);
+	const translateY = useSharedValue(height);
 
-	const translateY = useSharedValue(0);
-	const opacity = useSharedValue(0);
-	const isAnimating = useSharedValue(false);
-
-	const menuAnimatedStyle = useAnimatedStyle(() => ({
+	const sheetAnimatedStyle = useAnimatedStyle(() => ({
 		transform: [{ translateY: translateY.value }],
 	}));
 
-	const backdropAnimatedStyle = useAnimatedStyle(() => ({
-		opacity: opacity.get(),
-	}));
-
-	const handleOpen = () => {
-		if (!isAnimating.get()) {
-			opacity.set(0);
-			translateY.set(height);
-		}
-
-		isAnimating.set(true);
-
-		setIsOpenInternal(true);
-
-		// Let the newly-mounted content commit + do its first layout pass
-		// (still off-screen / transparent) before the spring starts, so the
-		// mount cost doesn't steal frames from the animation.
-
-		requestAnimationFrame(() => {
-			opacity.set(withSpring(1, AnimationConfig.timing.smoothEnter));
-
-			translateY.set(
-				withSpring(0, AnimationConfig.spring.heavy, (finished) => {
-					"worklet";
-					if (finished) isAnimating.set(false);
-				}),
-			);
-		});
-	};
-
-	const handleClose = () => {
-		isAnimating.set(true);
-
-		opacity.set(withTiming(0, AnimationConfig.timing.fastExit));
-
-		translateY.set(
-			withTiming(height, AnimationConfig.timing.smoothExit, (finished) => {
-				"worklet";
-
-				if (finished) {
-					scheduleOnRN(setIsOpenInternal, false);
-					isAnimating.set(false);
-				}
-			}),
-		);
-	};
-
 	useEffect(() => {
-		if (isOpen) {
-			handleOpen();
-		} else {
-			handleClose();
-		}
-	}, [isOpen]);
+		const id = requestAnimationFrame(() =>
+			translateY.set(
+				isOpen
+					? withSpring(0, AnimationConfig.spring.heavy)
+					: withTiming(height, AnimationConfig.timing.smoothExit),
+			),
+		);
 
-	const [isDragging, setIsDragging] = useState(false);
+		return () => cancelAnimationFrame(id);
+	}, [isOpen, height, translateY]);
 
-	const OVERSCROLL = 100;
-	const RESISTANCE = 0.25;
+	const panGesture = useMemo(
+		() =>
+			Gesture.Pan()
 
-	const panGesture = Gesture.Pan()
-		.onBegin(() => {
-			scheduleOnRN(setIsDragging, true);
-		})
-		.onUpdate((event) => {
-			const y = event.translationY;
+				.onUpdate((event) => {
+					const y = event.translationY;
 
-			if (y > OVERSCROLL) {
-				// Down overscroll
-				translateY.value = OVERSCROLL + (y - OVERSCROLL) * RESISTANCE;
-			} else if (y < -OVERSCROLL) {
-				// Up overscroll
-				translateY.value = -OVERSCROLL + (y + OVERSCROLL) * RESISTANCE;
-			} else {
-				// Normal movement
-				translateY.value = y;
-			}
-		})
-		.onEnd((event) => {
-			scheduleOnRN(setIsDragging, false);
+					if (y < -OVERSCROLL) {
+						// Up overscroll
+						translateY.value = -OVERSCROLL + (y + OVERSCROLL) * RESISTANCE;
+					} else {
+						// Normal movement
+						translateY.value = y;
+					}
+				})
+				.onEnd((event) => {
+					const shouldClose =
+						event.translationY > CLOSE_DISTANCE ||
+						event.velocityY > CLOSE_VELOCITY;
 
-			const shouldClose = event.translationY > 100 || event.velocityY > 800;
+					if (shouldClose) {
+						scheduleOnRN(requestClose);
+						return;
+					}
 
-			if (shouldClose) {
-				scheduleOnRN(onClose);
-				return;
-			}
-
-			translateY.value = withSpring(0, AnimationConfig.spring.snappy);
-		});
-
-	const renderContent = (
-		<>
-			<Box className="absolute inset-0 -bottom-70 rounded-xl bg-background" />
-
-			<Box className="w-full p-2 items-center justify-center z-20">
-				<GestureDetector gesture={panGesture}>
-					<Box className="absolute -top-6 -bottom-6 px-8 items-center justify-center">
-						<EaseView animate={{ scale: isDragging ? 1.2 : 1 }}>
-							<Box className="w-14 h-2 bg-foreground/70 rounded-full" />
-						</EaseView>
-					</Box>
-				</GestureDetector>
-			</Box>
-
-			{scrollable ? (
-				<ScrollView className="w-full mt-2" style={{ maxHeight: height - 200 }}>
-					<VStack space="sm">{children}</VStack>
-				</ScrollView>
-			) : (
-				<View className="flex-1 w-full l mt-2">
-					<VStack space="sm">{children}</VStack>
-				</View>
-			)}
-		</>
+					translateY.value = withSpring(0, {
+						...AnimationConfig.spring.snappy,
+						velocity: event.velocityY,
+					});
+				}),
+		[requestClose, translateY],
 	);
 
-	const renderActionSheetContent = (
-		<>
-			<AnimatedPressable
-				className="absolute inset-0 bg-black/80"
-				onPress={onClose}
-				style={backdropAnimatedStyle}
+	const pointerStyle = {
+		pointerEvents: isOpen ? "auto" : "none",
+	} as const;
+
+	const Portal = selectPortal ? SelectPortal : Actionsheet;
+	const Content = selectPortal ? SelectContent : ActionsheetContent;
+
+	return (
+		<Portal className="pb-6" isOpen onClose={requestClose} style={pointerStyle}>
+			<EaseView
+				animate={{ opacity: isOpen ? BACKDROP_OPACITY : 0 }}
+				style={{
+					pointerEvents: "none",
+					position: "absolute",
+					inset: 0,
+					backgroundColor: "black",
+				}}
 			/>
+
 			<AnimatedPressable
-				onPress={onClose}
-				style={menuAnimatedStyle}
+				onPress={requestClose}
+				accessible={false}
+				accessibilityElementsHidden={!isOpen}
+				importantForAccessibility={isOpen ? "auto" : "no-hide-descendants"}
+				style={[sheetAnimatedStyle, pointerStyle]}
 				className="h-full items-center"
 			>
-				<View className="h-full w-full max-w-180">
-					{selectPortal ? (
-						<SelectContent
-							className={cnBase(
-								"absolute bottom-0 left-0 right-0 p-3 bg-transparent",
-								fullHeight && "min-h-[85%]",
-							)}
-							initial={{ y: 0 }}
-							animate={{ y: 0 }}
-							exit={{ y: 0 }}
-						>
-							{renderContent}
-						</SelectContent>
-					) : (
-						<ActionsheetContent
-							className={cnBase(
-								"absolute bottom-0 left-0 right-0 p-3 bg-transparent",
-								fullHeight && "min-h-[85%]",
-							)}
-							initial={{ y: 0 }}
-							animate={{ y: 0 }}
-							exit={{ y: 0 }}
-						>
-							{renderContent}
-						</ActionsheetContent>
-					)}
+				<View
+					accessibilityViewIsModal={isOpen}
+					className="h-full w-full max-w-180 pointer-events-auto"
+				>
+					<Content
+						className={cnBase(
+							"absolute bottom-0 left-0 right-0 p-3 bg-transparent",
+							fullHeight && "min-h-[85%]",
+						)}
+						initial={{ y: 0 }}
+						animate={{ y: 0 }}
+						exit={{ y: 0 }}
+					>
+						<View className="absolute inset-0 -bottom-70 rounded-xl bg-background" />
+
+						<GestureDetector gesture={panGesture}>
+							<View
+								className="w-full p-2 items-center justify-center z-20"
+								accessible={isOpen}
+								accessibilityRole="button"
+								accessibilityLabel="Close sheet"
+								accessibilityActions={[{ name: "activate" }]}
+								onAccessibilityAction={requestClose}
+							>
+								<View className="absolute -top-6 -bottom-6 px-8 items-center justify-center">
+									<View className="w-14 h-2 bg-foreground/70 rounded-full" />
+								</View>
+							</View>
+						</GestureDetector>
+
+						{scrollable ? (
+							<ScrollView
+								className="w-full mt-2"
+								style={{ maxHeight: height - 200 }}
+							>
+								<VStack space="sm">{children}</VStack>
+							</ScrollView>
+						) : (
+							<View className="flex-1 w-full mt-2">
+								<VStack space="sm">{children}</VStack>
+							</View>
+						)}
+					</Content>
 				</View>
 			</AnimatedPressable>
-		</>
-	);
-
-	return selectPortal ? (
-		<SelectPortal
-			className="pb-6"
-			isOpen={isOpenInternal}
-			onClose={onClose}
-			pointerEvents={isOpen ? "auto" : "box-none"}
-		>
-			{renderActionSheetContent}
-		</SelectPortal>
-	) : (
-		<Actionsheet
-			className="pb-6"
-			isOpen={isOpenInternal}
-			onClose={onClose}
-			pointerEvents={isOpen ? "auto" : "box-none"}
-		>
-			{renderActionSheetContent}
-		</Actionsheet>
+		</Portal>
 	);
 };
