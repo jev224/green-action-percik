@@ -3,14 +3,19 @@
 		"name": "Green Action",
 		"slug": "green-action-percik",
 		"description": "Platform edukasi pengolahan sampah untuk menciptakan lingkungan sekolah yang bersih, hijau, sehat, dan berkelanjutan",
-		"version": "1.0.0",
 		"orientation": "portrait",
 		"icon": "./assets/icons/icon.png",
 		"scheme": "green-action.percik",
 		"userInterfaceStyle": "automatic",
 		"platforms": ["android", "web"],
+		"version": "1.0.0",
 		"runtimeVersion": "1.0.0",
-		"updates": { "url": "https://green-action.percik.workers.dev/manifest" },
+		"updates": {
+			"url": "https://green-action.percik.workers.dev/manifest",
+			"enabled": true,
+			"checkAutomatically": "ON_LOAD",
+			"fallbackToCacheTimeout": 0
+		},
 		"android": {
 			"package": "app.percik.greenaction",
 			"softwareKeyboardLayoutMode": "resize",

@@ -45,6 +45,7 @@
     "expo-sharing": "~55.0.24",
     "expo-splash-screen": "~55.0.25",
     "expo-status-bar": "~55.0.6",
+    "expo-updates": "~55.0.33",
     "expo-zustand-persist": "^1.0.5",
     "fuse.js": "^7.5.0",
     "lucide-react-native": "^0.576.0",
