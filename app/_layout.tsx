@@ -3,7 +3,7 @@ import "@/global.css";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { useUpdates } from "expo-updates";
+import { reloadAsync, useUpdates } from "expo-updates";
 import { useEffect } from "react";
 import { Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -31,7 +31,14 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
 	const { colors, scheme } = useThemeColors();
-	const { isDownloading, downloadProgress } = useUpdates();
+	const { isDownloading, downloadProgress, isUpdatePending } = useUpdates();
+
+	useEffect(() => {
+		if (isUpdatePending) {
+			// Update has successfully downloaded; apply it now
+			reloadAsync();
+		}
+	}, [isUpdatePending]);
 
 	useEffect(() => {
 		if (Platform.OS === "web") {
