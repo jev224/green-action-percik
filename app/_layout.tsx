@@ -31,7 +31,13 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
 	const { colors, scheme } = useThemeColors();
-	const { isDownloading, downloadProgress, isUpdatePending } = useUpdates();
+	const {
+		isDownloading,
+		downloadProgress,
+		isUpdatePending,
+		downloadError,
+		isChecking,
+	} = useUpdates();
 
 	useEffect(() => {
 		if (isUpdatePending) {
@@ -41,8 +47,16 @@ function RootLayoutNav() {
 	}, [isUpdatePending]);
 
 	useEffect(() => {
-		checkForUpdateAsync();
-	}, []);
+		if ((!isChecking || !isDownloading) && !isUpdatePending) {
+			void checkForUpdateAsync();
+		}
+	}, [
+		downloadError,
+		isDownloading,
+		isChecking,
+		isUpdatePending,
+		checkForUpdateAsync,
+	]);
 
 	useEffect(() => {
 		if (Platform.OS === "web") {

@@ -10,6 +10,13 @@ interface UpdateBannerProps {
 
 export function UpdateBanner({ progress, visibile }: UpdateBannerProps) {
 	const insets = useSafeAreaInsets();
+
+	const clampedProgress = Number.isFinite(progress)
+		? Math.min(1, Math.max(0, progress))
+		: 0;
+
+	const percentage = Math.round(clampedProgress * 100);
+
 	return (
 		<EaseView
 			animate={{
@@ -18,7 +25,7 @@ export function UpdateBanner({ progress, visibile }: UpdateBannerProps) {
 			}}
 			style={{
 				position: "absolute",
-				top: Math.max(insets.top, 24),
+				top: Math.max(insets.top, 48),
 				left: 0,
 				right: 0,
 				alignItems: "center",
@@ -29,7 +36,7 @@ export function UpdateBanner({ progress, visibile }: UpdateBannerProps) {
 				<EaseView
 					transformOrigin={{ x: 0 }}
 					style={{ position: "absolute", inset: 0, zIndex: -1 }}
-					animate={{ scaleX: progress }}
+					animate={{ scaleX: clampedProgress }}
 				>
 					<View className="absolute inset-0 bg-primary/50" />
 				</EaseView>
@@ -39,7 +46,7 @@ export function UpdateBanner({ progress, visibile }: UpdateBannerProps) {
 				</Text>
 
 				<Text size="xl" className="font-medium">
-					{`${progress * 100}%`}
+					{`${percentage}%`}
 				</Text>
 			</View>
 		</EaseView>
