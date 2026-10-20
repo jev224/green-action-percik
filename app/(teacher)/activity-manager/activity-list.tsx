@@ -2,6 +2,7 @@ import { GraduationCap, PiggyBank, Recycle } from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FlatList, RefreshControl } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import { BackButton } from "@/components/domain";
 import {
 	ActionTile,
 	EmptyState,
@@ -45,6 +46,7 @@ type WasteCardData = {
 	id: number;
 	title: string;
 	description: string;
+	createdAt: string;
 	completed: boolean;
 	data: WasteBankData;
 };
@@ -54,6 +56,7 @@ type DebtSettlementCardData = {
 	id: number;
 	title: string;
 	description: string;
+	createdAt: string;
 	completed: boolean;
 	data: StudentData;
 };
@@ -98,6 +101,7 @@ async function toWasteCards(): Promise<WasteCardData[]> {
 		id: wasteBank.id,
 		title: wasteBank.student.name,
 		description: `${wasteBank.category} • ${formatDate(wasteBank.created_at)}`,
+		createdAt: wasteBank.created_at,
 		completed: wasteBank.weight !== 0,
 		data: wasteBank,
 	}));
@@ -113,6 +117,7 @@ async function toDebtSettlementCards(): Promise<DebtSettlementCardData[]> {
 		id: student.id,
 		title: student.name,
 		description: "Belum lunas",
+		createdAt: student.created_at,
 		completed: false,
 		data: student,
 	}));
@@ -158,13 +163,24 @@ export default function ActivityListScreen() {
 		searchQuery,
 	);
 
-	const filteredResults = useMemo(
-		() =>
-			searchResults.filter(({ completed }) =>
-				filterStatus === "completed" ? completed : !completed,
-			),
-		[searchResults, filterStatus],
-	);
+	const finalResults = useMemo(() => {
+		const filtered = searchResults.filter(({ completed }) =>
+			filterStatus === "completed" ? completed : !completed,
+		);
+
+		const sorted = filtered.sort((a, b) => {
+			if ("createdAt" in a && "createdAt" in b) {
+				const dateDiff =
+					new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+
+				if (dateDiff !== 0) return dateDiff;
+			}
+
+			return a.title.localeCompare(b.title);
+		});
+
+		return sorted;
+	}, [searchResults, filterStatus]);
 
 	const handleCardPress = useCallback(
 		(card: ActivityCardData) => {
@@ -224,7 +240,10 @@ export default function ActivityListScreen() {
 			requiredInternet
 			headerComponent={
 				<>
-					<ScreenHeader title="Kelola Aktivitas" />
+					<ScreenHeader
+						title="Kelola Aktivitas"
+						leftComponent={<BackButton />}
+					/>
 
 					<SearchField
 						value={searchQuery}
@@ -242,12 +261,12 @@ export default function ActivityListScreen() {
 				</>
 			}
 			contentComponent={
-				filteredResults.length > 0 ? (
+				finalResults.length > 0 ? (
 					<FlatList
 						refreshControl={
 							<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />
 						}
-						data={filteredResults}
+						data={finalResults}
 						showsVerticalScrollIndicator={false}
 						className="overflow-visible"
 						renderItem={renderCard}
