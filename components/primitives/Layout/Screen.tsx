@@ -1,10 +1,9 @@
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
 import { Frown, WifiOff } from "lucide-react-native";
 import { type ReactNode, useEffect, useState } from "react";
-import { ScrollView, type ScrollViewProps } from "react-native";
+import { ScrollView, type ScrollViewProps, View } from "react-native";
 import { EaseView } from "react-native-ease";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Box } from "@/components/ui/box";
 import { Center } from "@/components/ui/center";
 import { VStack } from "@/components/ui/vstack";
 import { useAvoidingViewStore } from "@/stores/avoidingView";
@@ -168,8 +167,8 @@ export function Screen<T = undefined>({
 	}, [requiredInternet]);
 
 	return (
-		<Box className="flex-1 w-full bg-background items-center">
-			<Box className="flex-1 w-full max-w-200">
+		<View className="flex-1 w-full bg-background items-center">
+			<View className="flex-1 w-full max-w-200">
 				{headerComponent && (
 					<VStack
 						className="z-10 -mb-4 pb-4 pt-6 px-8 shrink-0 bg-background"
@@ -224,7 +223,7 @@ export function Screen<T = undefined>({
 				)}
 
 				{!effectiveIsError && overlayComponent}
-			</Box>
-		</Box>
+			</View>
+		</View>
 	);
 }

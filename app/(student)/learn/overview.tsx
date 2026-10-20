@@ -1,6 +1,7 @@
 import { Image } from "expo-image";
 import { Redirect } from "expo-router";
 import { useEffect } from "react";
+import { View } from "react-native";
 import { BackButton } from "@/components/domain";
 import {
 	BottomPanel,
@@ -11,7 +12,6 @@ import {
 	Spacer,
 	SurfaceCard,
 } from "@/components/primitives";
-import { Box } from "@/components/ui/box";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
@@ -89,13 +89,13 @@ export default function LessonOverviewScreen() {
 			}) => (
 				<>
 					{photoUrl && (
-						<Box className="w-full h-52 bg-accent-foreground/20 rounded-md overflow-hidden">
+						<View className="w-full h-52 bg-accent-foreground/20 rounded-md overflow-hidden">
 							<Image
 								style={{ position: "absolute", inset: 0 }}
 								contentFit="cover"
 								source={photoUrl}
 							/>
-						</Box>
+						</View>
 					)}
 
 					<VStack space="xs">

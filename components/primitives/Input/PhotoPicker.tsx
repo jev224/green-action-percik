@@ -8,9 +8,9 @@ import {
 	Linking,
 	Platform,
 	Pressable,
+	View,
 } from "react-native";
 import { tv } from "tailwind-variants";
-import { Box } from "@/components/ui/box";
 import { Center } from "@/components/ui/center";
 import { HStack } from "@/components/ui/hstack";
 import { Icon } from "@/components/ui/icon";
@@ -74,7 +74,7 @@ async function compressToTargetSize(sourceUri: string): Promise<string> {
 }
 
 type PhotoPickerProps = Omit<
-	React.ComponentPropsWithoutRef<typeof Box>,
+	React.ComponentPropsWithoutRef<typeof View>,
 	"children"
 > & {
 	/** Controlled photo uri. Omit to let the component manage its own state. */
@@ -85,7 +85,7 @@ type PhotoPickerProps = Omit<
 };
 
 export const PhotoPicker = React.forwardRef<
-	React.ComponentRef<typeof Box>,
+	React.ComponentRef<typeof View>,
 	PhotoPickerProps
 >(({ value, onChange, className, ...props }, ref) => {
 	const [internalUri, setInternalUri] = useState<string | null>(null);
@@ -147,7 +147,7 @@ export const PhotoPicker = React.forwardRef<
 				onPressOut={() => setIsPressed(false)}
 				disabled={isProcessing}
 			>
-				<Box
+				<View
 					ref={ref}
 					className={photoPickerStyle({
 						hasPhoto: !!uri,
@@ -220,7 +220,7 @@ export const PhotoPicker = React.forwardRef<
 							</VStack>
 						</Center>
 					)}
-				</Box>
+				</View>
 			</Pressable>
 
 			<Modal

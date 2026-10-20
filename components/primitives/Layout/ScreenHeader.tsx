@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Box } from "@/components/ui/box";
+import { View } from "react-native";
 import { Center } from "@/components/ui/center";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
@@ -29,7 +29,7 @@ export function ScreenHeader({
 					{title && truncateText(title, 20)}
 				</Heading>
 			</Center>
-			<Box />
+			<View />
 			{rightComponent}
 		</HStack>
 	);

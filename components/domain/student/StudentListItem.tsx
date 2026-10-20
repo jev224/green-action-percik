@@ -1,10 +1,10 @@
 import { memo } from "react";
+import { View } from "react-native";
 import { EaseView } from "react-native-ease";
 import { useResolveClassNames } from "uniwind";
 import { config } from "@/components/animation/config";
 import { EaseTranstionConfig } from "@/components/animation/presets";
 import { UserAvatar } from "@/components/primitives/Avatar/UserAvatar";
-import { Box } from "@/components/ui/box";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Pressable } from "@/components/ui/pressable";
@@ -94,7 +94,7 @@ export const StudentListItem = memo(function StudentListItem({
 				/>
 
 				{noOffset ? (
-					<Box className="flex-row items-center w-full">
+					<View className="flex-row items-center w-full">
 						<EaseView
 							style={{ flex: 1 }}
 							animate={{ translateX: isPressing || selected ? 14 : 0 }}
@@ -111,7 +111,7 @@ export const StudentListItem = memo(function StudentListItem({
 									imageSource={photoUrl ? { uri: photoUrl } : undefined}
 								/>
 
-								<Box className="flex-1 w-[80%]">
+								<View className="flex-1 w-[80%]">
 									<Heading
 										className="web:truncate"
 										{...nativeOnlyProps({
@@ -121,7 +121,7 @@ export const StudentListItem = memo(function StudentListItem({
 										{name}
 									</Heading>
 									{grade && <Text className="web:truncate">{grade}</Text>}
-								</Box>
+								</View>
 							</HStack>
 						</EaseView>
 
@@ -144,9 +144,9 @@ export const StudentListItem = memo(function StudentListItem({
 								</Heading>
 							</EaseView>
 						)}
-					</Box>
+					</View>
 				) : (
-					<Box className="flex-row items-center px-4 gap-4 w-full">
+					<View className="flex-row items-center px-4 gap-4 w-full">
 						<UserAvatar
 							selected={selected}
 							name={name}
@@ -154,7 +154,7 @@ export const StudentListItem = memo(function StudentListItem({
 							imageSource={photoUrl ? { uri: photoUrl } : undefined}
 						/>
 
-						<Box className="flex-1">
+						<View className="flex-1">
 							<Heading
 								className="web:truncate"
 								{...nativeOnlyProps({
@@ -164,7 +164,7 @@ export const StudentListItem = memo(function StudentListItem({
 								{name}
 							</Heading>
 							{grade && <Text className="web:truncate">{grade}</Text>}
-						</Box>
+						</View>
 
 						{point !== null && (
 							<Heading
@@ -177,7 +177,7 @@ export const StudentListItem = memo(function StudentListItem({
 								{point} Poin
 							</Heading>
 						)}
-					</Box>
+					</View>
 				)}
 			</EaseView>
 		</Pressable>

@@ -1,5 +1,5 @@
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
-import { ScrollView } from "react-native";
+import { ScrollView, View } from "react-native";
 import { EaseView } from "react-native-ease";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
@@ -9,7 +9,6 @@ import Animated, {
 } from "react-native-reanimated";
 import { config } from "@/components/animation/config";
 import { AnimationConfig } from "@/components/animation/presets";
-import { Box } from "@/components/ui/box";
 import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
 import { usePressFeedback } from "@/hooks/usePressFeedback";
@@ -44,7 +43,7 @@ export function FilterChips({
 				overScrollMode="never"
 				style={{ overflow: "visible" }}
 			>
-				<Box className="flex-row gap-2">
+				<View className="flex-row gap-2">
 					<Chip
 						label={allLabel}
 						isActive={selected === null}
@@ -59,7 +58,7 @@ export function FilterChips({
 							onPress={() => onSelect(option)}
 						/>
 					))}
-				</Box>
+				</View>
 			</ScrollView>
 		</GestureDetector>
 	);

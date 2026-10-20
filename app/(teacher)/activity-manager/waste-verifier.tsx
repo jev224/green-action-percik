@@ -1,6 +1,7 @@
 import { Image } from "expo-image";
 import { Check, Coins, Info } from "lucide-react-native";
 import { useEffect, useState } from "react";
+import { View } from "react-native";
 import { BackButton } from "@/components/domain";
 import {
 	BottomPanel,
@@ -14,7 +15,6 @@ import {
 	StatCard,
 	TextField,
 } from "@/components/primitives";
-import { Box } from "@/components/ui/box";
 import { Center } from "@/components/ui/center";
 import {
 	Checkbox,
@@ -219,7 +219,7 @@ export default function WasteVerifierScreen() {
 			contentComponent={
 				<>
 					{selectedWaste.photo && (
-						<Box className="w-full h-64 bg-accent-foreground/20 rounded-md overflow-hidden">
+						<View className="w-full h-64 bg-accent-foreground/20 rounded-md overflow-hidden">
 							{isPhotoLoading && (
 								<Center className="absolute w-full h-full">
 									<Spinner />
@@ -243,7 +243,7 @@ export default function WasteVerifierScreen() {
 									source={photoUri}
 								/>
 							)}
-						</Box>
+						</View>
 					)}
 
 					<ListSection title="Harga sampah">

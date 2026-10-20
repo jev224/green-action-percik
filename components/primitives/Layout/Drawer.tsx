@@ -1,8 +1,7 @@
 import { type ComponentProps, type ReactNode, useEffect } from "react";
-import { Keyboard } from "react-native";
+import { Keyboard, View } from "react-native";
 import { EaseView } from "react-native-ease";
 import { DrawerIn, DrawerOut } from "@/components/animation/presets";
-import { Box } from "@/components/ui/box";
 import {
 	DrawerBackdrop,
 	DrawerBody,
@@ -53,9 +52,9 @@ const Drawer = ({
 					entering={DrawerIn.direction(anchor)}
 					exiting={DrawerOut.direction(anchor)}
 				>
-					<Box className="absolute inset-0 -bottom-full rounded-xl bg-background" />
+					<View className="absolute inset-0 -bottom-full rounded-xl bg-background" />
 
-					<Box
+					<View
 						className="absolute inset-0 z-30"
 						style={{ pointerEvents: isOpen ? "none" : "box-only" }}
 					/>

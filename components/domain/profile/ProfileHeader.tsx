@@ -5,6 +5,7 @@ import {
 	Modal,
 	Pressable,
 	useWindowDimensions,
+	View,
 } from "react-native";
 import Animated, {
 	measure,
@@ -17,7 +18,6 @@ import Animated, {
 import { scheduleOnRN, scheduleOnUI } from "react-native-worklets";
 import { AnimationConfig } from "@/components/animation/presets";
 import { UserAvatar } from "@/components/primitives/Avatar/UserAvatar";
-import { Box } from "@/components/ui/box";
 import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
@@ -128,7 +128,7 @@ export function ProfileHeader({
 
 	return (
 		<>
-			<Box
+			<View
 				className={cn(
 					"shrink-0  items-center gap-2 h-fit",
 					layout === "centered"
@@ -167,7 +167,7 @@ export function ProfileHeader({
 					</Text>
 					{id && <Text className="opacity-60">{id}</Text>}
 				</VStack>
-			</Box>
+			</View>
 
 			<Modal visible={previewVisible} transparent onRequestClose={closePreview}>
 				<Animated.View

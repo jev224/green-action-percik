@@ -41,7 +41,7 @@ export function StackedToast({
 		<EaseView
 			pointerEvents="none"
 			style={{ position: "absolute", top: 0, width: "100%" }}
-			initialAnimate={{ scale: 1.05, translateY: 100 }}
+			initialAnimate={{ scale: 1.05, translateY: 100, opacity: 0 }}
 			animate={{
 				opacity: shouldHide ? 0 : depth >= MAX_STACK_SIZE ? 0.8 : 1,
 				translateY: direction * (depth * 16 - depth ** 2.5),

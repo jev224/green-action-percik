@@ -20,6 +20,7 @@ import {
 	Users,
 } from "lucide-react-native";
 import { useState } from "react";
+import { View } from "react-native";
 import {
 	Greeting,
 	ProfileHeader,
@@ -50,7 +51,6 @@ import {
 	UserAvatar,
 } from "@/components/primitives";
 import { SortSelect } from "@/components/primitives/Input/SortSelect";
-import { Box } from "@/components/ui/box";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
@@ -324,9 +324,9 @@ export default function ComponentCatalogScreen() {
 					<DemoSection title="ProgressBar / EmptyState">
 						<VStack space="md">
 							<ProgressBar text="Module completed" value={65} />
-							<Box className="border border-dashed border-border rounded-lg">
+							<View className="border border-dashed border-border rounded-lg">
 								<EmptyState message="No data to display." />
-							</Box>
+							</View>
 						</VStack>
 					</DemoSection>
 

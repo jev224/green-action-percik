@@ -1,7 +1,12 @@
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
 import { Image } from "expo-image";
 import type { ComponentProps, ReactNode } from "react";
-import { type ImageSourcePropType, Pressable, StyleSheet } from "react-native";
+import {
+	type ImageSourcePropType,
+	Pressable,
+	StyleSheet,
+	View,
+} from "react-native";
 import { EaseView } from "react-native-ease";
 import { tv, type VariantProps } from "tailwind-variants";
 import { config } from "@/components/animation/config";
@@ -10,7 +15,6 @@ import type {
 	SemanticColor,
 	SurfaceVariant,
 } from "@/components/styles/buildColorsVariants";
-import { Box } from "@/components/ui/box";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Icon } from "@/components/ui/icon";
@@ -147,12 +151,12 @@ export function ActionTile({
 			{(baseStyles) => (
 				<>
 					{innerDecoration && (
-						<Box className="absolute inset-0">{innerDecoration}</Box>
+						<View className="absolute inset-0">{innerDecoration}</View>
 					)}
 
 					{/* Thumbnail — only rendered when there's actually something to show */}
 					{hasThumbnail && (
-						<Box
+						<View
 							className={baseStyles.thumbnail({
 								class: styles.thumbnail(),
 							})}
@@ -180,7 +184,7 @@ export function ActionTile({
 									/>
 								)}
 							</EaseView>
-						</Box>
+						</View>
 					)}
 
 					{/* Content */}
