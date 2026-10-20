@@ -28,7 +28,7 @@ const IconWrapper = React.forwardRef<
 	React.ComponentRef<typeof UIIcon>,
 	React.ComponentPropsWithoutRef<typeof UIIcon>
 >(function IconWrapper({ ...props }, ref) {
-	return <StyledUIIcon {...props} ref={ref} />;
+	return <StyledUIIcon {...props} ref={ref as any} />;
 });
 
 const SCOPE = "CHECKBOX";
@@ -122,7 +122,7 @@ type ICheckboxIconProps = React.ComponentPropsWithoutRef<
 
 const CheckboxIcon = React.forwardRef<
 	React.ComponentRef<typeof UICheckbox.Icon>,
-	ICheckboxIconProps
+	ICheckboxIconProps & {size?: string, height?: number, width?: number}
 >(function CheckboxIcon({ className, size, ...props }, ref) {
 	if (typeof size === "number") {
 		return (
@@ -130,7 +130,7 @@ const CheckboxIcon = React.forwardRef<
 				ref={ref}
 				{...props}
 				className={checkboxIconStyle({ class: className })}
-				size={size}
+			
 			/>
 		);
 	} else if (
