@@ -89,20 +89,22 @@ export async function isCompostActivitySubmitted(classId: number) {
 		});
 	}
 
-	if (data?.submitted_by) {
-		const profile = await getProfileByRole(
-			data.submitted_by,
-			data.submitted_by_role as UserRole,
-		);
+	try {
+		if (data?.submitted_by) {
+			const profile = await getProfileByRole(
+				data.submitted_by,
+				data.submitted_by_role as UserRole,
+			);
 
-		return {
-			activityId: data?.id,
-			submitted: true as true,
-			submittedBy: data.submitted_by,
-			submittedByRole: data.submitted_by_role as UserRole,
-			submittedAuthor: profile.name,
-		};
-	}
+			return {
+				activityId: data?.id,
+				submitted: true as true,
+				submittedBy: data.submitted_by,
+				submittedByRole: data.submitted_by_role as UserRole,
+				submittedAuthor: profile.name,
+			};
+		}
+	} catch (_e) {}
 
 	if (data) {
 		return {
