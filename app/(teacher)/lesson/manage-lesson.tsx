@@ -28,15 +28,19 @@ import {
 	TextField,
 } from "@/components/primitives";
 import { HStack } from "@/components/ui/hstack";
-import { CloseIcon } from "@/components/ui/icon";
+import { Menu, MenuItem, MenuItemLabel } from "@/components/ui/menu";
+import { CloseIcon, ThreeDotsIcon } from "@/components/ui/icon";
 import { VStack } from "@/components/ui/vstack";
+
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useNavigation } from "@/hooks/useNavigation";
 import { refreshOnNextNavigate } from "@/hooks/useRefreshOnNavigate";
 import { useShowToast } from "@/hooks/useShowToast";
 import { useUserProfile } from "@/hooks/useUser";
+
 import {
 	createLesson,
+	deleteLesson,
 	getChangedLessonFields,
 	type LessonFields,
 	type LessonForm,
@@ -44,7 +48,9 @@ import {
 } from "@/services/fetcher/lesson/lessonManager";
 import { fetchLesson } from "@/services/fetcher/lesson/lessonQuery";
 import { ServerError } from "@/services/ServerError";
+
 import { type LessonContent, useLessonStore } from "@/stores/lesson";
+import { normalizeError } from "@/utils";
 
 // Date.now() alone can collide if two blocks are added in the same
 // millisecond (e.g. double-tap); pad with a random suffix.
@@ -61,19 +67,18 @@ export default function EditLessonScreen() {
 	const showToast = useShowToast();
 
 	const [showUnsavedModal, setShowUnsavedModal] = useState(false);
+	const [showDeleteModal, setShowDeleteModal] = useState(false);
+	const [isDeleteLoading, setDeleteLoading] = useState(false);
+	const [isMenuOpen, setMenuOpen] = useState(false);
 
-	// ─────────────────────────────────────────────────────────────
 	// MODE — this screen doubles as both "create lesson" and "edit
 	// lesson"; almost everything below branches on `isEdit`.
-	// ─────────────────────────────────────────────────────────────
 	const lesson = useLessonStore((state) => state.lesson);
 	const isEdit = lesson.mode === "edit";
 
-	// ─────────────────────────────────────────────────────────────
 	// FORM STATE — title/description/photoUri/contents all live in
 	// one RHF form. `defaultValues` is just the empty-shell starting
 	// point; real data (edit mode) is loaded in via `reset()` below.
-	// ─────────────────────────────────────────────────────────────
 	const { formState, control, watch, reset, handleSubmit } =
 		useForm<LessonForm>({
 			defaultValues: {
@@ -94,12 +99,10 @@ export default function EditLessonScreen() {
 		keyName: "fieldId",
 	});
 
-	// ─────────────────────────────────────────────────────────────
 	// CONTENT BLOCK EDITING/DELETING — which block (if any) is open
 	// in the drawer / pending delete confirmation. Stored as an id,
 	// not an index, so it stays valid across reorders/deletes; the
 	// actual index is derived fresh every render.
-	// ─────────────────────────────────────────────────────────────
 	const [editingId, setEditingId] = useState<string | null>(null);
 	const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -146,12 +149,10 @@ export default function EditLessonScreen() {
 		replace(reordered);
 	};
 
-	// ─────────────────────────────────────────────────────────────
 	// DATA FETCH + HYDRATION (edit mode only) — fetch the existing
 	// lesson, then seed the form with it exactly once. `hasHydratedRef`
 	// guards against re-seeding (and wiping user edits) if the fetch
 	// result reference ever changes after the first successful load.
-	// ─────────────────────────────────────────────────────────────
 	const hasHydratedRef = useRef(false);
 
 	const {
@@ -188,9 +189,7 @@ export default function EditLessonScreen() {
 		hasHydratedRef.current = true;
 	}, [fetchedLesson, isLessonError, errorMessage, reset]);
 
-	// ─────────────────────────────────────────────────────────────
 	// DERIVED FORM STATUS
-	// ─────────────────────────────────────────────────────────────
 	const title = watch("title");
 	const description = watch("description");
 
@@ -206,11 +205,9 @@ export default function EditLessonScreen() {
 	// mode only once something differs from what was loaded.
 	const hasUnsavedChanges = formState.isDirty;
 
-	// ─────────────────────────────────────────────────────────────
 	// BACK NAVIGATION — intercepts hardware back / edge-swipe / header
 	// back button when there are unsaved changes, and shows a confirm
 	// modal. `proceed` resumes the exact action that was blocked.
-	// ─────────────────────────────────────────────────────────────
 	const proceedRef = useRef<(() => void) | null>(null);
 
 	useBackGuard(hasUnsavedChanges, (proceed) => {
@@ -229,6 +226,30 @@ export default function EditLessonScreen() {
 		else goBackToHome();
 	};
 
+	const onDelete = async () => {
+		if (!isEdit || !fetchedLesson || isDeleteLoading) return;
+		setShowDeleteModal(false);
+		setDeleteLoading(true);
+
+		try {
+			await deleteLesson(lesson.id, fetchedLesson.photo);
+			showToast({ title: "Materi berhasil di hapus" });
+
+			refreshOnNextNavigate();
+
+			const proceed = proceedRef.current;
+			proceedRef.current = null;
+
+			if (proceed) proceed();
+			else goBackToHome();
+		} catch (e) {
+			const { uiMessage } = normalizeError(e, "Delete Lesson");
+			showToast({ title: uiMessage });
+		} finally {
+			setDeleteLoading(false);
+		}
+	};
+
 	// For navigation we trigger ourselves (successful submit, in-content
 	// back button) rather than an intercepted system gesture — skips the
 	// guard since we already know it's safe to leave.
@@ -243,10 +264,8 @@ export default function EditLessonScreen() {
 		goBackToHome();
 	};
 
-	// ─────────────────────────────────────────────────────────────
 	// SUBMIT — create or update, diffing against the loaded baseline
 	// in edit mode so only changed fields are sent.
-	// ─────────────────────────────────────────────────────────────
 	const onSubmit = async (data: LessonForm) => {
 		if (!profile) {
 			return;
@@ -295,6 +314,30 @@ export default function EditLessonScreen() {
 					<ScreenHeader
 						title={isEdit ? "Edit Materi" : "Buat Materi"}
 						leftComponent={<BackButton onPress={onGoBack} />}
+						rightComponent={
+							isEdit && (
+								<Menu
+									placement="bottom right"
+									offset={5}
+									onOpen={() => setMenuOpen(true)}
+									onClose={() => setMenuOpen(false)}
+									trigger={({ ...triggerProps }) => {
+										return (
+											<IconButton icon={ThreeDotsIcon} {...triggerProps} />
+										);
+									}}
+								>
+									<MenuItem
+										onPress={() => setShowDeleteModal(true)}
+										className="rounded-xs"
+										key="DeleteLesson"
+										textValue="Hapus Materi"
+									>
+										<MenuItemLabel>Hapus Materi</MenuItemLabel>
+									</MenuItem>
+								</Menu>
+							)
+						}
 					/>
 				}
 				contentComponent={
@@ -381,7 +424,7 @@ export default function EditLessonScreen() {
 									size="cta"
 									onPress={handleSubmit(onSubmit)}
 									isDisabled={isSaveDisabled}
-									isLoading={formState.isSubmitting}
+									isLoading={formState.isSubmitting || isDeleteLoading}
 								/>
 							</HStack>
 						</BottomPanel>
@@ -405,6 +448,13 @@ export default function EditLessonScreen() {
 							isOpen={showUnsavedModal}
 							onCancel={() => setShowUnsavedModal(false)}
 							onContinue={onDiscard}
+						/>
+
+						<DeleteConfirmationModal
+							isOpen={showDeleteModal}
+							onCancel={() => setShowDeleteModal(false)}
+							onContinue={onDelete}
+							isLoading={isDeleteLoading}
 						/>
 					</>
 				}
@@ -541,6 +591,41 @@ const UnsavedChangesModal = ({
 			<>
 				<Button label="Batal" variant="outline" onPress={onCancel} />
 				<Button label="Buang" variant="destructive" onPress={onContinue} />
+			</>
+		}
+	/>
+);
+
+const DeleteConfirmationModal = ({
+	isOpen,
+	onCancel,
+	onContinue,
+	isLoading,
+}: {
+	isOpen: boolean;
+	onCancel: () => void;
+	onContinue: () => void;
+	isLoading: boolean;
+}) => (
+	<Modal
+		isOpen={isOpen || isLoading}
+		onClose={onCancel}
+		title="Yakin ingin hapus Materi?"
+		description="Materi akan dihapus dan tidak dapat dikembalikan."
+		contentComponent={
+			<>
+				<Button
+					label="Batal"
+					variant="outline"
+					onPress={onCancel}
+					isDisabled={isLoading}
+				/>
+				<Button
+					label="Hapus"
+					variant="destructive"
+					onPress={onContinue}
+					isLoading={isLoading}
+				/>
 			</>
 		}
 	/>

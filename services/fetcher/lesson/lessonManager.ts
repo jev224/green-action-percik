@@ -85,7 +85,7 @@ export async function createLesson(author: string, insert: LessonFields) {
 	}
 }
 
-export async function deleteLesson(id: number, photoPath: string) {
+export async function deleteLesson(id: number, photoPath?: string | null) {
 	const { error } = await supabase.from(TABLE_NAME).delete().eq("id", id);
 
 	if (error) {
@@ -99,7 +99,7 @@ export async function deleteLesson(id: number, photoPath: string) {
 		});
 	}
 
-	await deletePhoto(photoPath);
+	if (photoPath) await deletePhoto(photoPath);
 }
 
 export async function updateLesson(
