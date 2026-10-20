@@ -1,6 +1,11 @@
 import { Plus, XIcon } from "lucide-react-native";
 import { useCallback, useMemo, useState } from "react";
-import { type LayoutChangeEvent, View } from "react-native";
+import {
+	FlatList,
+	type LayoutChangeEvent,
+	Pressable,
+	View,
+} from "react-native";
 import { useResolveClassNames } from "uniwind";
 import {
 	IconButton,
@@ -21,10 +26,8 @@ import {
 	CheckboxIcon,
 	CheckboxIndicator,
 } from "@/components/ui/checkbox";
-import { FlatList } from "@/components/ui/flat-list";
 import { HStack } from "@/components/ui/hstack";
 import { CheckIcon } from "@/components/ui/icon";
-import { Pressable } from "@/components/ui/pressable";
 import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";

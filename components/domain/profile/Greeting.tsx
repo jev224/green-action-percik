@@ -1,6 +1,6 @@
 import { LogOut } from "lucide-react-native";
 import { useState } from "react";
-import { type ImageSourcePropType, View } from "react-native";
+import { type ImageSourcePropType, Pressable, View } from "react-native";
 import { EaseView } from "react-native-ease";
 import {
 	ProfileMenuGlideIn,
@@ -12,7 +12,6 @@ import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Icon, InfoIcon, SettingsIcon } from "@/components/ui/icon";
 import { Menu, MenuItem, MenuItemLabel } from "@/components/ui/menu";
-import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { Cloud1, Leaf4, Spark2 } from "@/constants/Assets";

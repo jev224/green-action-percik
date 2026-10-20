@@ -3,10 +3,11 @@ import { StyleSheet } from "react-native";
 
 import Animated from "react-native-reanimated";
 
-import { Textarea, TextareaInput } from "@/components/ui/textarea";
+// import { Textarea, TextareaInput } from "@/components/ui/textarea";
+import { Input, InputField } from "@/components/ui/input";
 import { useThemeColors } from "@/hooks/useThemeColors";
 
-type TextAreaFieldProps = ComponentProps<typeof TextareaInput> & {
+type TextAreaFieldProps = ComponentProps<typeof InputField> & {
 	isDisabled?: boolean;
 };
 
@@ -19,11 +20,11 @@ export function TextAreaField({
 
 	return (
 		<Animated.View className="min-h-32 max-h-52 flex-none">
-			<Textarea
-				className="h-full rounded-md px-2 py-1 border-2 font-medium web:outline-none"
+			<Input
+				className="h-full rounded-md p-2 border-2 font-medium web:outline-none"
 				isDisabled={isDisabled}
 			>
-				<TextareaInput
+				<InputField
 					{...props}
 					className="text-lg min-h-32 max-h-64"
 					multiline
@@ -31,7 +32,7 @@ export function TextAreaField({
 					textAlignVertical="top"
 					placeholderTextColor={colors.mutedForeground}
 				/>
-			</Textarea>
+			</Input>
 		</Animated.View>
 	);
 }

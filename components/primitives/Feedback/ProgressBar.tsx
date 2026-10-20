@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { View } from "react-native";
 import Animated, {
 	Easing,
 	type SharedValue,
@@ -6,7 +7,6 @@ import Animated, {
 	useSharedValue,
 	withTiming,
 } from "react-native-reanimated";
-import { Progress, ProgressFilledTrack } from "@/components/ui/progress";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 
@@ -21,9 +21,6 @@ interface ProgressBarProps {
 	 */
 	progress?: SharedValue<number>;
 }
-
-const AnimatedProgressFilledTrack =
-	Animated.createAnimatedComponent(ProgressFilledTrack);
 
 export function ProgressBar({ text, value, progress }: ProgressBarProps) {
 	const animatedValue = useSharedValue(value);
@@ -40,7 +37,7 @@ export function ProgressBar({ text, value, progress }: ProgressBarProps) {
 	}, [value, progress]);
 
 	const animatedStyle = useAnimatedStyle(() => ({
-		width: `${(progress ?? animatedValue).value}%`,
+		width: `${Math.min(100, Math.max(0, (progress ?? animatedValue).value))}%`,
 	}));
 
 	return (
@@ -51,12 +48,16 @@ export function ProgressBar({ text, value, progress }: ProgressBarProps) {
 				</Text>
 			)}
 
-			<Progress value={value} className="h-2.5">
-				<AnimatedProgressFilledTrack
-					className="rounded-full"
+			<View
+				accessibilityRole="progressbar"
+				accessibilityValue={{ min: 0, max: 100, now: value }}
+				className="h-3 w-full overflow-hidden rounded-full bg-primary/20"
+			>
+				<Animated.View
+					className="h-full rounded-full bg-primary"
 					style={animatedStyle}
 				/>
-			</Progress>
+			</View>
 		</VStack>
 	);
 }

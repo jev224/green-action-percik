@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import { EaseView } from "react-native-ease";
 import { useResolveClassNames } from "uniwind";
 import { config } from "@/components/animation/config";
@@ -7,7 +7,6 @@ import { EaseTranstionConfig } from "@/components/animation/presets";
 import { UserAvatar } from "@/components/primitives/Avatar/UserAvatar";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
-import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
 import { usePressFeedback } from "@/hooks/usePressFeedback";
 import { useThemeColors } from "@/hooks/useThemeColors";

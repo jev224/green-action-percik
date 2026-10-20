@@ -1,5 +1,5 @@
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
-import { ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { EaseView } from "react-native-ease";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
@@ -9,7 +9,6 @@ import Animated, {
 } from "react-native-reanimated";
 import { config } from "@/components/animation/config";
 import { AnimationConfig } from "@/components/animation/presets";
-import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
 import { usePressFeedback } from "@/hooks/usePressFeedback";
 import { useThemeColors } from "@/hooks/useThemeColors";

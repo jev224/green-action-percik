@@ -1,11 +1,10 @@
-import type { FlatListProps } from "react-native";
+import { FlatList, type FlatListProps } from "react-native";
 import Animated from "react-native-reanimated";
 import {
 	contentEnterTransition,
 	contentExitTransition,
 	contentLayoutTransition,
 } from "@/components/animation/presets";
-import { FlatList } from "@/components/ui/flat-list";
 import { StudentListItem } from "./StudentListItem";
 import type { StudentData } from "./types";
 
