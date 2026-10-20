@@ -9,6 +9,7 @@ dist/
 dist-ota/
 web-build/
 expo-env.d.ts
+public/updates/
 
 # Supabase
 supabase/
