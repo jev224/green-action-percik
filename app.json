@@ -10,7 +10,7 @@
 		"userInterfaceStyle": "automatic",
 		"platforms": ["android", "web"],
 		"runtimeVersion": "1.0.0",
-		"updates": { "url": "https://my-app.pages.dev/manifest" },
+		"updates": { "url": "https://green-action.percik.workers.dev/manifest" },
 		"android": {
 			"package": "app.percik.greenaction",
 			"softwareKeyboardLayoutMode": "resize",
