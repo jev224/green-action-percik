@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AnimatedPressable } from "@/components/animation/animatedComponent";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
+import { usePressFeedback } from "@/hooks/usePressFeedback";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { useTabBarHeightStore } from "@/stores/tabBarHeight";
 
@@ -47,8 +48,14 @@ export function TabBar({
 			}}
 		>
 			<EaseView
-				initialAnimate={{ translateY: 100, opacity: 0 }}
-				animate={{ translateY: 0, opacity: 1 }}
+				initialAnimate={{
+					translateY: 100,
+					opacity: 0,
+				}}
+				animate={{
+					translateY: 0,
+					opacity: 1,
+				}}
 				transition={{
 					transform: { type: "spring" },
 					opacity: { type: "timing" },
@@ -80,6 +87,7 @@ export function TabBarButton({ onPress, isFocused, tab }: TabBarButtonProps) {
 
 	const [expandedWidth, setExpandedWidth] = useState<number>(TAB_HEIGHT);
 	const progress = useSharedValue(isFocused ? 1 : 0);
+	const { bind, isPressing } = usePressFeedback();
 
 	useEffect(() => {
 		progress.value = withSpring(isFocused ? 1 : 0, { damping: 80 });
@@ -97,6 +105,8 @@ export function TabBarButton({ onPress, isFocused, tab }: TabBarButtonProps) {
 			? interpolate(progress.value, [0, 1], [TAB_HEIGHT, expandedWidth])
 			: TAB_HEIGHT;
 
+		const scale = withSpring(isPressing ? 1.15 : 1);
+
 		return {
 			width,
 			backgroundColor: interpolateColor(
@@ -104,6 +114,7 @@ export function TabBarButton({ onPress, isFocused, tab }: TabBarButtonProps) {
 				[0, 1],
 				["transparent", colors.primary],
 			),
+			transform: [{ scale }],
 		};
 	});
 
@@ -117,6 +128,7 @@ export function TabBarButton({ onPress, isFocused, tab }: TabBarButtonProps) {
 			onPress={onPress}
 			className="h-14 rounded-2xl overflow-hidden"
 			style={buttonAnimatedStyle}
+			{...bind}
 		>
 			<View
 				className="h-full flex-row items-center self-start pr-6"
