@@ -163,7 +163,6 @@ export function StudentMultiSelect({
 				isOpen={isPortalOpen}
 				onClose={() => setPortalOpen(false)}
 				fullHeight
-				scrollable={false}
 			>
 				<VStack className="px-2" space="lg">
 					<HStack space="sm">
