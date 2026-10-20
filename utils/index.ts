@@ -143,6 +143,8 @@ export function normalizeError(error: unknown, label: string): NormalizedError {
 			error.status ?? `[${error.status}]`,
 			`(${error.name}):`,
 			error.message,
+			"\n",
+			error.stack,
 		);
 
 		return {

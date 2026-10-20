@@ -1,6 +1,6 @@
-import { File } from "expo-file-system";
 import { supabase } from "@/lib/supabase";
 import { ServerError } from "../ServerError";
+import { readPhotoBytes } from "@/utils/photoTools";
 
 const SIGNED_URL_EXPIRATION = 60 * 60; // 1 hour
 const IMAGE_CONTENT_TYPE = "image/jpeg";
@@ -16,8 +16,7 @@ export class PhotoStorage {
 
 	async upload(path: string, localUri: string, upsert = true) {
 		try {
-			const file = new File(localUri);
-			const arrayBuffer = await file.arrayBuffer();
+			const arrayBuffer = await readPhotoBytes(localUri);
 
 			const { error, data } = await supabase.storage
 				.from(this.bucket)
@@ -38,8 +37,7 @@ export class PhotoStorage {
 
 	async replace(path: string, localUri: string) {
 		try {
-			const file = new File(localUri);
-			const arrayBuffer = await file.arrayBuffer();
+			const arrayBuffer = await readPhotoBytes(localUri);
 
 			const { error, data } = await supabase.storage
 				.from(this.bucket)

@@ -1,5 +1,3 @@
-import { tva } from "@gluestack-ui/utils/nativewind-utils";
-import { File } from "expo-file-system";
 import { Image } from "expo-image";
 import * as ImageManipulator from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
@@ -15,11 +13,13 @@ import { Box } from "@/components/ui/box";
 import { Center } from "@/components/ui/center";
 import { HStack } from "@/components/ui/hstack";
 import { Icon } from "@/components/ui/icon";
-import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { Button } from "../Button/Button";
 import { Modal } from "../Layout/Modal";
+import { tv } from "tailwind-variants";
+import { Spinner } from "../Feedback/Spinner";
+import { getPhotoSize } from "@/utils/photoTools";
 
 // Target upper bound for the final compressed photo.
 // NOTE: 5kb is very aggressive — expect roughly thumbnail-level detail.
@@ -27,7 +27,7 @@ import { Modal } from "../Layout/Modal";
 const MAX_FILE_SIZE_BYTES = 1 * 1024 * 1024;
 const MAX_COMPRESSION_ATTEMPTS = 8;
 
-const photoPickerStyle = tva({
+const photoPickerStyle = tv({
 	base: "h-64 rounded-xl overflow-hidden border-2 border-dashed border-border bg-background-50",
 	variants: {
 		hasPhoto: {
@@ -58,10 +58,7 @@ async function compressToTargetSize(sourceUri: string): Promise<string> {
 			{ compress: quality, format: ImageManipulator.SaveFormat.JPEG },
 		);
 
-		const file = new File(manipulated.uri);
-		const size = file.exists
-			? (file.size ?? Number.POSITIVE_INFINITY)
-			: Number.POSITIVE_INFINITY;
+		const size = await getPhotoSize(manipulated.uri);
 
 		bestUri = manipulated.uri;
 
@@ -218,7 +215,7 @@ export const PhotoPicker = React.forwardRef<
 					{isProcessing && (
 						<Center className="absolute inset-0 bg-background-950/40">
 							<VStack space="sm" className="items-center">
-								<Spinner size={"large"} />
+								<Spinner />
 								<Text className="font-medium">Memproses...</Text>
 							</VStack>
 						</Center>
