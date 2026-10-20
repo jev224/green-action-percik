@@ -24,12 +24,15 @@
         -webkit-tap-highlight-color: transparent;
       }
 
-      button, 
+      button,
       .btn-main,
       .btn-sec,
       .act,
       .theme-toggle,
-      .close {
+      .close,
+      .video-open,
+      .lb-play,
+      .lb-close {
         -webkit-user-select: none;
         user-select: none;
         -webkit-touch-callout: none;
@@ -631,7 +634,7 @@
         width: auto;
         max-width: 100%;
         max-height: min(360px, 45vh);
-        margin: 14px auto 0;
+        margin: 0;
         border-radius: 16px;
         border: 1px solid rgb(var(--border));
         background: rgb(var(--muted));
@@ -698,6 +701,193 @@
         flex: 1;
         height: 1px;
         background: rgb(var(--border));
+      }
+
+      /* ===== Inline video: tap to enlarge ===== */
+      .video-wrap {
+        position: relative;
+        display: block;
+        width: fit-content;
+        max-width: 100%;
+        margin: 14px auto 0;
+      }
+      .video-open {
+        position: absolute;
+        inset: 0;
+        border: 0;
+        border-radius: 16px;
+        background: transparent;
+        cursor: zoom-in;
+      }
+      .video-open .pill {
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        border-radius: 99px;
+        font: 700 12px "Inter", sans-serif;
+        color: #fff;
+        background: rgb(0 0 0 / 0.62);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        transition: background 0.2s;
+      }
+      .video-open:hover .pill {
+        background: rgb(0 0 0 / 0.8);
+      }
+
+      /* ===== Video lightbox ===== */
+      .lightbox {
+        position: fixed;
+        inset: 0;
+        z-index: 60;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+        padding: calc(env(safe-area-inset-top, 0px) + 64px) 16px
+          calc(env(safe-area-inset-bottom, 0px) + 16px);
+        color: #fff;
+        background: rgb(0 0 0 / 0.9);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+      .lightbox.open {
+        display: flex;
+        animation: fade 0.2s ease;
+      }
+      .lb-stage {
+        flex: 1 1 0;
+        min-height: 0;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+      .lb-video {
+        display: block;
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 16px;
+        background: #000;
+        cursor: pointer;
+      }
+      .lb-close {
+        position: absolute;
+        top: calc(env(safe-area-inset-top, 0px) + 14px);
+        right: 16px;
+        width: 40px;
+        height: 40px;
+        display: grid;
+        place-items: center;
+        border: 0;
+        border-radius: 50%;
+        cursor: pointer;
+        color: #fff;
+        background: rgb(255 255 255 / 0.16);
+      }
+      .lb-close svg {
+        width: 20px;
+        height: 20px;
+      }
+      .lb-controls {
+        width: min(560px, 100%);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 16px 8px 8px;
+        border-radius: calc(var(--radius) + 8px);
+        background: rgb(255 255 255 / 0.12);
+        border: 1px solid rgb(255 255 255 / 0.18);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+      }
+      .lb-play {
+        flex: none;
+        width: 44px;
+        height: 44px;
+        display: grid;
+        place-items: center;
+        border: 0;
+        border-radius: 50%;
+        cursor: pointer;
+        color: rgb(var(--primary-foreground));
+        background: linear-gradient(
+          135deg,
+          rgb(var(--garden)),
+          rgb(var(--primary))
+        );
+      }
+      .lb-play svg {
+        width: 20px;
+        height: 20px;
+        fill: currentColor;
+      }
+      .lb-play .i-pause,
+      .lightbox.is-playing .lb-play .i-play {
+        display: none;
+      }
+      .lightbox.is-playing .lb-play .i-pause {
+        display: block;
+      }
+      .lb-time {
+        flex: none;
+        min-width: 36px;
+        text-align: center;
+        font: 600 13px "Inter", sans-serif;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* Seekbar: --p is the filled percentage, set from JS */
+      .lb-seek {
+        --p: 0%;
+        -webkit-appearance: none;
+        appearance: none;
+        flex: 1;
+        min-width: 0;
+        height: 36px;
+        background: transparent;
+        cursor: pointer;
+      }
+      .lb-seek::-webkit-slider-runnable-track {
+        height: 6px;
+        border-radius: 99px;
+        background: linear-gradient(
+          to right,
+          rgb(var(--garden)) var(--p),
+          rgb(255 255 255 / 0.28) var(--p)
+        );
+      }
+      .lb-seek::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 18px;
+        height: 18px;
+        margin-top: -6px;
+        border: 0;
+        border-radius: 50%;
+        background: #fff;
+        box-shadow: 0 2px 8px rgb(0 0 0 / 0.4);
+      }
+      .lb-seek::-moz-range-track {
+        height: 6px;
+        border-radius: 99px;
+        background: rgb(255 255 255 / 0.28);
+      }
+      .lb-seek::-moz-range-progress {
+        height: 6px;
+        border-radius: 99px;
+        background: rgb(var(--garden));
+      }
+      .lb-seek::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+        border: 0;
+        border-radius: 50%;
+        background: #fff;
       }
 
       /* ===== Theme toggle ===== */
@@ -1017,26 +1207,40 @@
             iOS punya cara pemasangan yang berbeda dari Android.
           </p>
 
-          <video
-            class="instructions-video"
-            autoplay
-            loop
-            muted
-            playsinline
-            preload="none"
-            disablepictureinpicture
-            poster="/download-website/ios-poster.jpg"
-            aria-label="Video panduan pemasangan di iPhone"
-          >
-            <source
-              src="/download-website/ios-instructions.webm"
-              type="video/webm"
-            />
-            <source
-              src="/download-website/ios-instructions-compressed.mp4"
-              type="video/mp4"
-            />
-          </video>
+          <div class="video-wrap">
+            <video
+              class="instructions-video"
+              autoplay
+              loop
+              muted
+              playsinline
+              preload="none"
+              disablepictureinpicture
+              poster="/download-website/ios-poster.jpg"
+              aria-label="Video panduan pemasangan di iPhone"
+            >
+              <source
+                src="/download-website/ios-instructions.webm"
+                type="video/webm"
+              />
+              <source
+                src="/download-website/ios-instructions-compressed.mp4"
+                type="video/mp4"
+              />
+            </video>
+
+            <button
+              type="button"
+              class="video-open"
+              id="openVideo"
+              aria-haspopup="dialog"
+              aria-label="Perbesar video panduan"
+            >
+              <span class="pill"
+                ><i data-lucide="maximize-2"></i>Perbesar</span
+              >
+            </button>
+          </div>
 
           <ol class="steps">
             <li>Buka halaman ini di <b>Safari</b>.</li>
@@ -1071,6 +1275,66 @@
             </button>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- VIDEO LIGHTBOX (outside .sheet: its transform animation would trap a fixed child) -->
+    <div
+      class="lightbox"
+      id="lightbox"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Video panduan pemasangan"
+    >
+      <button
+        type="button"
+        class="lb-close"
+        id="lbClose"
+        aria-label="Tutup video"
+      >
+        <i data-lucide="x"></i>
+      </button>
+
+      <div class="lb-stage" id="lbStage">
+        <video
+          class="lb-video"
+          id="lbVideo"
+          loop
+          muted
+          playsinline
+          preload="none"
+          disablepictureinpicture
+          poster="/download-website/ios-poster.jpg"
+          aria-label="Video panduan pemasangan di iPhone"
+        >
+          <source
+            src="/download-website/ios-instructions.webm"
+            type="video/webm"
+          />
+          <source
+            src="/download-website/ios-instructions-compressed.mp4"
+            type="video/mp4"
+          />
+        </video>
+      </div>
+
+      <div class="lb-controls">
+        <button type="button" class="lb-play" id="lbPlay" aria-label="Putar">
+          <i data-lucide="play" class="i-play"></i>
+          <i data-lucide="pause" class="i-pause"></i>
+        </button>
+        <span class="lb-time" id="lbCur">0:00</span>
+        <input
+          type="range"
+          class="lb-seek"
+          id="lbSeek"
+          min="0"
+          max="1000"
+          step="1"
+          value="0"
+          aria-label="Posisi video"
+        />
+        <span class="lb-time" id="lbDur">0:00</span>
       </div>
     </div>
 
@@ -1123,17 +1387,183 @@
         if (e.target === overlay) closeOverlay();
       });
 
+      /* ===== Video lightbox ===== */
+      const inlineVideo = document.querySelector(".instructions-video");
+      const lightbox = document.getElementById("lightbox");
+      const lbStage = document.getElementById("lbStage");
+      const lbVideo = document.getElementById("lbVideo");
+      const lbPlay = document.getElementById("lbPlay");
+      const lbSeek = document.getElementById("lbSeek");
+      const lbCur = document.getElementById("lbCur");
+      const lbDur = document.getElementById("lbDur");
+      let lbRaf = 0;
+      let lbScrubbing = false;
+      let lbLastFocus;
+
+      const lbIsOpen = () => lightbox.classList.contains("open");
+
+      function fmtTime(s) {
+        if (!isFinite(s) || s < 0) s = 0;
+        return (
+          Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(2, "0")
+        );
+      }
+
+      /* Scale the video up (or down) to fill the stage, keeping its aspect ratio */
+      function fitVideo() {
+        const vw = lbVideo.videoWidth,
+          vh = lbVideo.videoHeight;
+        if (!vw || !vh) return;
+        const r = lbStage.getBoundingClientRect();
+        const s = Math.min(r.width / vw, r.height / vh);
+        lbVideo.style.width = Math.floor(vw * s) + "px";
+        lbVideo.style.height = Math.floor(vh * s) + "px";
+      }
+      new ResizeObserver(fitVideo).observe(lbStage);
+
+      function renderLb() {
+        const d = lbVideo.duration,
+          c = lbVideo.currentTime;
+        const ok = isFinite(d) && d > 0;
+        if (!lbScrubbing) lbSeek.value = ok ? (c / d) * 1000 : 0;
+        lbSeek.style.setProperty("--p", lbSeek.value / 10 + "%");
+        const cur = fmtTime(c),
+          dur = fmtTime(d);
+        if (cur !== lbCur.textContent) {
+          lbCur.textContent = cur;
+          lbSeek.setAttribute("aria-valuetext", cur + " dari " + dur);
+        }
+        if (dur !== lbDur.textContent) lbDur.textContent = dur;
+      }
+
+      function lbLoop() {
+        renderLb();
+        lbRaf = requestAnimationFrame(lbLoop);
+      }
+
+      function lbSyncPlayState() {
+        const playing = !lbVideo.paused;
+        lightbox.classList.toggle("is-playing", playing);
+        lbPlay.setAttribute("aria-label", playing ? "Jeda" : "Putar");
+      }
+
+      function lbToggle() {
+        if (lbVideo.paused) lbVideo.play().catch(() => {});
+        else lbVideo.pause();
+      }
+
+      function openLightbox() {
+        lbLastFocus = document.activeElement;
+        const t = inlineVideo.currentTime || 0; // inline -> lightbox
+        inlineVideo.pause();
+        lightbox.classList.add("open");
+        lbVideo.preload = "auto";
+
+        const start = () => {
+          lbVideo.onloadedmetadata = null;
+          lbVideo.currentTime = t;
+          fitVideo();
+          renderLb();
+          lbVideo.play().catch(() => {});
+        };
+        if (lbVideo.readyState >= 1) start();
+        else {
+          lbVideo.onloadedmetadata = start;
+          lbVideo.load();
+        }
+
+        lbSyncPlayState();
+        lbLoop();
+        lbPlay.focus();
+      }
+
+      function closeLightbox() {
+        if (!lbIsOpen()) return;
+        cancelAnimationFrame(lbRaf);
+        lbVideo.onloadedmetadata = null;
+        const loaded = lbVideo.readyState >= 1;
+        const t = lbVideo.currentTime;
+        lbVideo.pause();
+        lightbox.classList.remove("open");
+        if (loaded) inlineVideo.currentTime = t; // lightbox -> inline
+        inlineVideo.play().catch(() => {});
+        lbLastFocus?.focus();
+      }
+
+      lbVideo.addEventListener("play", lbSyncPlayState);
+      lbVideo.addEventListener("pause", lbSyncPlayState);
+      lbVideo.addEventListener("loadedmetadata", () => {
+        fitVideo();
+        renderLb();
+      });
+      lbVideo.addEventListener("durationchange", renderLb);
+      lbVideo.addEventListener("click", lbToggle);
+      lbPlay.addEventListener("click", lbToggle);
+
+      lbSeek.addEventListener("input", () => {
+        const d = lbVideo.duration;
+        if (isFinite(d)) lbVideo.currentTime = (lbSeek.value / 1000) * d;
+        renderLb();
+      });
+      lbSeek.addEventListener("pointerdown", () => (lbScrubbing = true));
+      addEventListener("pointerup", () => (lbScrubbing = false));
+      addEventListener("pointercancel", () => (lbScrubbing = false));
+
+      document
+        .getElementById("openVideo")
+        .addEventListener("click", openLightbox);
+      document
+        .getElementById("lbClose")
+        .addEventListener("click", closeLightbox);
+      lightbox.addEventListener("click", (e) => {
+        if (e.target === lightbox || e.target === lbStage) closeLightbox();
+      });
+
+      /* ===== Keyboard: Esc, Tab trap, and lightbox shortcuts ===== */
       document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") closeOverlay();
+        const lbOpen = lbIsOpen();
+        if (!lbOpen && !overlay.classList.contains("open")) return;
+
+        if (e.key === "Escape") {
+          // Esc closes the lightbox first, the sheet underneath stays open
+          if (lbOpen) closeLightbox();
+          else closeOverlay();
+          return;
+        }
+
+        if (lbOpen) {
+          if (
+            (e.key === " " || e.key === "k") &&
+            e.target.tagName !== "BUTTON"
+          ) {
+            e.preventDefault();
+            lbToggle();
+            return;
+          }
+          if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+            e.preventDefault();
+            const d = lbVideo.duration || 0;
+            const next =
+              lbVideo.currentTime + (e.key === "ArrowRight" ? 5 : -5);
+            lbVideo.currentTime = Math.min(Math.max(next, 0), d);
+            renderLb();
+            return;
+          }
+        }
+
         if (e.key === "Tab") {
-          console.log("TAB");
-          // keep focus inside the dialog
-          const f = [...overlay.querySelectorAll("button,a[href]")].filter(
-            (x) => x.offsetParent,
-          );
+          // keep focus inside whichever dialog is on top
+          const scope = lbOpen ? lightbox : overlay;
+          const f = [
+            ...scope.querySelectorAll("button, a[href], input"),
+          ].filter((x) => x.getClientRects().length);
+          if (!f.length) return;
           const first = f[0],
             last = f[f.length - 1];
-          if (e.shiftKey && document.activeElement === first) {
+          if (!scope.contains(document.activeElement)) {
+            e.preventDefault();
+            first.focus();
+          } else if (e.shiftKey && document.activeElement === first) {
             e.preventDefault();
             last.focus();
           } else if (!e.shiftKey && document.activeElement === last) {
