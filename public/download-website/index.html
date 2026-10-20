@@ -1403,10 +1403,8 @@
       const lbIsOpen = () => lightbox.classList.contains("open");
 
       function fmtTime(s) {
-        if (!isFinite(s) || s < 0) s = 0;
-        return (
-          Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(2, "0")
-        );
+        if (!Number.isFinite(s) || s < 0) s = 0;
+        return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
       }
 
       /* Scale the video up (or down) to fill the stage, keeping its aspect ratio */
@@ -1416,22 +1414,22 @@
         if (!vw || !vh) return;
         const r = lbStage.getBoundingClientRect();
         const s = Math.min(r.width / vw, r.height / vh);
-        lbVideo.style.width = Math.floor(vw * s) + "px";
-        lbVideo.style.height = Math.floor(vh * s) + "px";
+        lbVideo.style.width = `${Math.floor(vw * s)}px`;
+        lbVideo.style.height = `${Math.floor(vh * s)}px`;
       }
       new ResizeObserver(fitVideo).observe(lbStage);
 
       function renderLb() {
         const d = lbVideo.duration,
           c = lbVideo.currentTime;
-        const ok = isFinite(d) && d > 0;
+        const ok = Number.isFinite(d) && d > 0;
         if (!lbScrubbing) lbSeek.value = ok ? (c / d) * 1000 : 0;
-        lbSeek.style.setProperty("--p", lbSeek.value / 10 + "%");
+        lbSeek.style.setProperty("--p", `${lbSeek.value / 10}%`);
         const cur = fmtTime(c),
           dur = fmtTime(d);
         if (cur !== lbCur.textContent) {
           lbCur.textContent = cur;
-          lbSeek.setAttribute("aria-valuetext", cur + " dari " + dur);
+          lbSeek.setAttribute("aria-valuetext", `${cur} dari ${dur}`);
         }
         if (dur !== lbDur.textContent) lbDur.textContent = dur;
       }
@@ -1502,7 +1500,7 @@
 
       lbSeek.addEventListener("input", () => {
         const d = lbVideo.duration;
-        if (isFinite(d)) lbVideo.currentTime = (lbSeek.value / 1000) * d;
+        if (Number.isFinite(d)) lbVideo.currentTime = (lbSeek.value / 1000) * d;
         renderLb();
       });
       lbSeek.addEventListener("pointerdown", () => (lbScrubbing = true));

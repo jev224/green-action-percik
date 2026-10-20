@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
-import { ServerError } from "../ServerError";
 import { readPhotoBytes } from "@/utils/photoTools";
+import { ServerError } from "../ServerError";
 
 const SIGNED_URL_EXPIRATION = 60 * 60; // 1 hour
 const IMAGE_CONTENT_TYPE = "image/jpeg";

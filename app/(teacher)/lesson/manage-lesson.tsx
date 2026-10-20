@@ -28,8 +28,8 @@ import {
 	TextField,
 } from "@/components/primitives";
 import { HStack } from "@/components/ui/hstack";
-import { Menu, MenuItem, MenuItemLabel } from "@/components/ui/menu";
 import { CloseIcon, ThreeDotsIcon } from "@/components/ui/icon";
+import { Menu, MenuItem, MenuItemLabel } from "@/components/ui/menu";
 import { VStack } from "@/components/ui/vstack";
 
 import { useAsyncData } from "@/hooks/useAsyncData";
@@ -69,7 +69,6 @@ export default function EditLessonScreen() {
 	const [showUnsavedModal, setShowUnsavedModal] = useState(false);
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
 	const [isDeleteLoading, setDeleteLoading] = useState(false);
-	const [isMenuOpen, setMenuOpen] = useState(false);
 
 	// MODE — this screen doubles as both "create lesson" and "edit
 	// lesson"; almost everything below branches on `isEdit`.
@@ -319,8 +318,6 @@ export default function EditLessonScreen() {
 								<Menu
 									placement="bottom right"
 									offset={5}
-									onOpen={() => setMenuOpen(true)}
-									onClose={() => setMenuOpen(false)}
 									trigger={({ ...triggerProps }) => {
 										return (
 											<IconButton icon={ThreeDotsIcon} {...triggerProps} />
