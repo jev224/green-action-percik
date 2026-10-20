@@ -12,8 +12,10 @@ import {
 	SafeAreaProvider,
 } from "react-native-safe-area-context";
 import { Uniwind } from "uniwind";
+import { UpdateBanner } from "@/components/domain/layout/UpdateBanner";
 import { ToastHost } from "@/components/primitives/Feedback/Toast/ToastHost";
 import { useThemeColors } from "@/hooks/useThemeColors";
+import { useExpoUpdates } from "@/hooks/useUpdates";
 
 export { ErrorBoundary } from "expo-router";
 
@@ -29,6 +31,7 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
 	const { colors, scheme } = useThemeColors();
+	const { isDownloading, progress } = useExpoUpdates();
 
 	useEffect(() => {
 		if (Platform.OS === "web") {
@@ -58,6 +61,7 @@ function RootLayoutNav() {
 						<Stack screenOptions={{ headerShown: false }} />
 					</GluestackUIProvider>
 
+					<UpdateBanner progress={progress} visibile={isDownloading} />
 					<ToastHost />
 				</GestureHandlerRootView>
 			</SafeAreaListener>
