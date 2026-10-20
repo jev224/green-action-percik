@@ -19,7 +19,7 @@ export function useNavigation() {
 		if (router.canGoBack()) {
 			router.back();
 		} else if (fallbackHref) {
-			router.navigate(fallbackHref);
+			resetTo(fallbackHref);
 		}
 	});
 
