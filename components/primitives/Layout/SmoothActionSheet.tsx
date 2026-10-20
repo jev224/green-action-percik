@@ -1,4 +1,11 @@
-import { type ReactNode, useCallback, useEffect, useMemo, useRef } from "react";
+import {
+	type ReactNode,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import { useWindowDimensions, View } from "react-native";
 import { EaseView } from "react-native-ease";
 import {
@@ -53,6 +60,10 @@ export const SmoothActionSheet = ({
 
 	const { height } = useWindowDimensions();
 
+	const [isAnimating, setAnimating] = useState(false);
+	const animationId = useRef(0);
+	const isFirstRun = useRef(true);
+
 	const translateY = useSharedValue(height);
 
 	const sheetAnimatedStyle = useAnimatedStyle(() => ({
@@ -60,15 +71,35 @@ export const SmoothActionSheet = ({
 	}));
 
 	useEffect(() => {
-		const id = requestAnimationFrame(() =>
+		if (isFirstRun.current) {
+			isFirstRun.current = false;
+			if (!isOpen) return; // already at rest, nothing to animate
+		}
+
+		setAnimating(true);
+		const id = ++animationId.current;
+
+		const finalize = (finishedId: number) => {
+			if (finishedId === animationId.current) setAnimating(false);
+		};
+
+		const onComplete = () => {
+			"worklet";
+			scheduleOnRN(finalize, id);
+		};
+
+		const raf = requestAnimationFrame(() =>
 			translateY.set(
 				isOpen
-					? withSpring(0, AnimationConfig.spring.heavy)
-					: withTiming(height, AnimationConfig.timing.smoothExit),
+					? withSpring(0, AnimationConfig.spring.heavy, onComplete)
+					: withTiming(height, AnimationConfig.timing.smoothExit, onComplete),
 			),
 		);
 
-		return () => cancelAnimationFrame(id);
+		return () => {
+			cancelAnimationFrame(raf);
+			animationId.current++;
+		};
 	}, [isOpen, height, translateY]);
 
 	const panGesture = useMemo(
@@ -112,7 +143,12 @@ export const SmoothActionSheet = ({
 	const Content = selectPortal ? SelectContent : ActionsheetContent;
 
 	return (
-		<Portal className="pb-6" isOpen onClose={requestClose} style={pointerStyle}>
+		<Portal
+			className="pb-6"
+			isOpen={isAnimating || isOpen}
+			onClose={requestClose}
+			style={pointerStyle}
+		>
 			<EaseView
 				animate={{ opacity: isOpen ? BACKDROP_OPACITY : 0 }}
 				style={{

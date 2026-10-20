@@ -3,7 +3,13 @@ import "@/global.css";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { checkForUpdateAsync, reloadAsync, useUpdates } from "expo-updates";
+import {
+	checkForUpdateAsync,
+	fetchUpdateAsync,
+	isEnabled,
+	reloadAsync,
+	useUpdates,
+} from "expo-updates";
 import { useEffect } from "react";
 import { Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -29,6 +35,9 @@ export default function RootLayout() {
 	return <RootLayoutNav />;
 }
 
+const supportedPlatformForExpoUpdates =
+	!__DEV__ && Platform.OS !== "web" && isEnabled;
+
 function RootLayoutNav() {
 	const { colors, scheme } = useThemeColors();
 	const {
@@ -36,27 +45,33 @@ function RootLayoutNav() {
 		downloadProgress,
 		isUpdatePending,
 		downloadError,
-		isChecking,
+		isUpdateAvailable,
 	} = useUpdates();
 
 	useEffect(() => {
-		if (isUpdatePending) {
+		if (isUpdatePending && supportedPlatformForExpoUpdates) {
 			// Update has successfully downloaded; apply it now
 			reloadAsync();
 		}
 	}, [isUpdatePending]);
 
+	// check on mount, and again after a download error
 	useEffect(() => {
-		if ((!isChecking || !isDownloading) && !isUpdatePending) {
-			void checkForUpdateAsync();
+		if (supportedPlatformForExpoUpdates)
+			void checkForUpdateAsync().catch(() => {});
+	}, [downloadError]);
+
+	// download when available
+	useEffect(() => {
+		if (
+			isUpdateAvailable &&
+			!isDownloading &&
+			!isUpdatePending &&
+			supportedPlatformForExpoUpdates
+		) {
+			void fetchUpdateAsync().catch(() => {});
 		}
-	}, [
-		downloadError,
-		isDownloading,
-		isChecking,
-		isUpdatePending,
-		checkForUpdateAsync,
-	]);
+	}, [isUpdateAvailable, isDownloading, isUpdatePending]);
 
 	useEffect(() => {
 		if (Platform.OS === "web") {
