@@ -3,6 +3,7 @@ import "@/global.css";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
+import { useUpdates } from "expo-updates";
 import { useEffect } from "react";
 import { Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -15,7 +16,6 @@ import { Uniwind } from "uniwind";
 import { UpdateBanner } from "@/components/domain/layout/UpdateBanner";
 import { ToastHost } from "@/components/primitives/Feedback/Toast/ToastHost";
 import { useThemeColors } from "@/hooks/useThemeColors";
-import { useExpoUpdates } from "@/hooks/useUpdates";
 
 export { ErrorBoundary } from "expo-router";
 
@@ -31,7 +31,7 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
 	const { colors, scheme } = useThemeColors();
-	const { isDownloading, progress } = useExpoUpdates();
+	const { isDownloading, downloadProgress } = useUpdates();
 
 	useEffect(() => {
 		if (Platform.OS === "web") {
@@ -61,7 +61,10 @@ function RootLayoutNav() {
 						<Stack screenOptions={{ headerShown: false }} />
 					</GluestackUIProvider>
 
-					<UpdateBanner progress={progress} visibile={isDownloading} />
+					<UpdateBanner
+						progress={downloadProgress ?? 0}
+						visibile={isDownloading}
+					/>
 					<ToastHost />
 				</GestureHandlerRootView>
 			</SafeAreaListener>
