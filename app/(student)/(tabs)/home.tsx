@@ -303,6 +303,7 @@ export default function HomeScreen() {
 							<Button
 								label="Perbarui sekarang"
 								variant="default"
+								size="cta"
 								onPress={() => {
 									setPasswordDialogShown(false);
 									navigateTo("/profile/change-password");
@@ -311,6 +312,7 @@ export default function HomeScreen() {
 							<Button
 								label="Nanti Saja"
 								variant="secondary"
+								size="cta"
 								onPress={() => setPasswordDialogShown(false)}
 							/>
 						</>
