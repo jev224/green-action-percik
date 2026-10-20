@@ -14,7 +14,7 @@ import { Text } from "@/components/ui/text";
 import { useKeyboardHeight } from "@/hooks/useKeyboardHeight";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { useAvoidingViewStore } from "@/stores/avoidingView";
-import { nativeOnlyProps } from "@/utils";
+import { nativeOnlyProps, toLocalDecimal } from "@/utils";
 import { IconButton } from "../Button/IconButton";
 
 const AVOID_KEYBOARD_BOTTOM_OFFSET = 48;
@@ -26,16 +26,23 @@ type TextFieldProps = Omit<
 	isDisabled?: boolean;
 	isPassword?: boolean;
 	isNumber?: boolean; // digits only
-	isDecimal?: boolean; // digits + single decimal point (implies numeric keyboard)
+	isDecimal?: boolean; // digits + single decimal separator (implies numeric keyboard)
 	min?: number;
 	max?: number;
 	unit?: string; // e.g. "kg", "cm", "pcs" - shown inside the field
 	onChangeText?: (text: string) => void;
 };
 
+/**
+ * Keeps only digits (and, when `allowDecimal` is true, one decimal separator).
+ *
+ * Some regional keyboards only offer "," as the decimal key, others only ".".
+ * Both are accepted and normalized to "." so that the value we emit is always
+ * safe to pass to parseFloat / Number / the backend, whatever the keyboard.
+ */
 function sanitizeNumeric(text: string, allowDecimal: boolean) {
 	if (allowDecimal) {
-		let sanitized = text.replace(/[^0-9.]/g, "");
+		let sanitized = text.replace(/,/g, ".").replace(/[^0-9.]/g, "");
 		const firstDot = sanitized.indexOf(".");
 		if (firstDot !== -1) {
 			sanitized =
@@ -163,6 +170,10 @@ export function TextField({
 		keyboardType ??
 		(isDecimal ? "decimal-pad" : isNumber ? "number-pad" : undefined);
 
+	const rawValue = value ?? (isNumeric ? internalValue : undefined);
+	const resolvedValue =
+		isDecimal && rawValue !== undefined ? toLocalDecimal(rawValue) : rawValue;
+
 	return (
 		<View className="flex-row items-center gap-2" ref={inputRef}>
 			<Input
@@ -174,7 +185,7 @@ export function TextField({
 					className={cn("text-lg", className)}
 					placeholderTextColor={colors.mutedForeground}
 					secureTextEntry={isPassword && !showPassword}
-					value={value ?? (isNumeric ? internalValue : undefined)}
+					value={resolvedValue}
 					onChangeText={handleChangeText}
 					onFocus={handleFocus}
 					onBlur={handleBlur}

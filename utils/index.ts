@@ -53,6 +53,10 @@ export const formatPrice = (price: number) => {
 	return new Intl.NumberFormat("id-ID").format(price);
 };
 
+export const toLocalDecimal = (value: string | number): string => {
+	return String(value).replace(".", ",");
+};
+
 export const formatDate = (date: string | Date) => {
 	return new Intl.DateTimeFormat("id-ID", {
 		day: "numeric",
