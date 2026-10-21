@@ -8,7 +8,6 @@ import {
 	ChevronLeftIcon,
 	ChevronRightIcon,
 	CircleCheckBig,
-	Download,
 	FileSpreadsheet,
 	TriangleAlert,
 	Trophy,
@@ -262,7 +261,6 @@ export default function DownloadScreen() {
 						        data-[hover=true]:bg-primary-foreground/80 data-[active=true]:bg-primary-foreground/60
 								dark:data-[hover=true]:bg-primary-foreground/80 dark:data-[active=true]:bg-primary-foregroundd/50`}
 										label={buttonLabel}
-										icon={Download}
 										variant="secondary"
 										isLoading={isRunning}
 										isDisabled={isDownloading}
@@ -277,8 +275,7 @@ export default function DownloadScreen() {
 											className={`mt-2 mb-1 bg-foreground 
 					              data-[hover=true]:bg-foreground/80 data-[active=true]:bg-foreground/60
 								  dark:data-[hover=true]:bg-foreground/70 dark:data-[active=true]:bg-foreground/50`}
-											label={"Download"}
-											icon={Download}
+											label={"Simpan"}
 											variant="ghost"
 											isLoading={isDownloading}
 											isDisabled={!isSuccess}
