@@ -253,3 +253,26 @@ export function throttle<Args extends unknown[]>(
 ) {
 	return createThrottle(windowMs, options)(fn);
 }
+
+export function limitDecimalInput(
+	value: string | number,
+	maxDecimals = 1,
+): string {
+	// keep only digits and separators
+	const cleaned = String(value).replace(/[^\d.,]/g, "");
+
+	// find the first separator, drop all later ones
+	const sepIndex = cleaned.search(/[.,]/);
+	if (sepIndex === -1) return cleaned;
+
+	if (maxDecimals <= 0) return cleaned.slice(0, sepIndex);
+
+	const integerPart = cleaned.slice(0, sepIndex);
+	const separator = cleaned[sepIndex];
+	const decimalPart = cleaned
+		.slice(sepIndex + 1)
+		.replace(/[.,]/g, "")
+		.slice(0, maxDecimals);
+
+	return `${integerPart}${separator}${decimalPart}`;
+}

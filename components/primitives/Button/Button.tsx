@@ -70,6 +70,7 @@ export function Button({
 			animate={scaleAnimation}
 			transition={{ transform: PRESS_SCALE_TRANSITION }}
 			style={{ flex: fill ? 1 : undefined }}
+			transformOrigin={{ x: 0.5, y: 0.5 }}
 		>
 			<GSButton
 				delayHoverIn={0}

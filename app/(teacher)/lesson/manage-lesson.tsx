@@ -60,6 +60,19 @@ const createEmptyBlock = (index: number): LessonContent => ({
 	explanation: "",
 });
 
+export function sanitizeContents<T extends LessonContent>(contents: T[]): T[] {
+	return contents
+		.map((c) => ({
+			...c,
+			title: (c.title ?? "").trim(),
+			explanation: (c.explanation ?? "Tidak ada penjelasan.").trim(),
+		}))
+		.filter((c) => c.title.length > 0);
+}
+
+const noSpaceValidation = (v: string) =>
+	v.trim().length > 0 || "Tidak boleh hanya spasi";
+
 export default function EditLessonScreen() {
 	const { profile, isLoading } = useUserProfile();
 
@@ -197,6 +210,7 @@ export default function EditLessonScreen() {
 		!description ||
 		fields.length === 0 ||
 		formState.isSubmitting ||
+		!formState.isValid ||
 		(isEdit && (isLoadingLesson || isLessonError || isLoading));
 
 	// RHF tracks dirtiness against the last `reset()` baseline, so this
@@ -265,7 +279,19 @@ export default function EditLessonScreen() {
 
 	// SUBMIT — create or update, diffing against the loaded baseline
 	// in edit mode so only changed fields are sent.
-	const onSubmit = async (data: LessonForm) => {
+	const onSubmit = async ({
+		title,
+		description,
+		contents,
+		...rest
+	}: LessonForm) => {
+		const sanitizedData = {
+			title: title.trim(),
+			description: description.trim(),
+			contents: sanitizeContents(contents),
+			...rest,
+		};
+
 		if (!profile) {
 			return;
 		}
@@ -280,14 +306,14 @@ export default function EditLessonScreen() {
 			if (isEdit) {
 				const original = formState.defaultValues as LessonFields;
 				const changedFields = formState.defaultValues
-					? getChangedLessonFields(original, data)
-					: data;
+					? getChangedLessonFields(original, sanitizedData)
+					: sanitizedData;
 
 				await updateLesson(lesson.id, fetchedLesson?.photo, changedFields);
 
 				showToast({ title: "Materi berhasil diedit" });
 			} else {
-				await createLesson(profile.name, data);
+				await createLesson(profile.name, sanitizedData);
 				showToast({ title: "Materi berhasil dibuat" });
 			}
 
@@ -343,6 +369,7 @@ export default function EditLessonScreen() {
 							<Controller
 								control={control}
 								name="title"
+								rules={{ validate: noSpaceValidation }}
 								render={({ field }) => (
 									<TextField
 										placeholder="Pengertian Sampah"
@@ -357,6 +384,7 @@ export default function EditLessonScreen() {
 							<Controller
 								control={control}
 								name="description"
+								rules={{ validate: noSpaceValidation }}
 								render={({ field }) => (
 									<TextAreaField
 										placeholder="Deskripsi untuk materi ini..."
@@ -391,7 +419,7 @@ export default function EditLessonScreen() {
 								renderItem={({ item: { id, title, explanation } }) => (
 									<SortableCard
 										title={title}
-										description={explanation || "Tidak ada penjelasan."}
+										description={explanation.trim() || "Tidak ada penjelasan."}
 										onPress={() => setEditingId(id)}
 										onDelete={() => setDeletingId(id)}
 									/>
@@ -499,6 +527,7 @@ const ContentEditorDrawer = ({
 						<Controller
 							control={control}
 							name={`contents.${editingIndex}.title`}
+							rules={{ validate: noSpaceValidation }}
 							render={({ field }) => (
 								<TextField
 									placeholder="Pengertian Sampah"
@@ -526,7 +555,7 @@ const ContentEditorDrawer = ({
 			}
 			footerComponent={
 				<Button
-					isDisabled={title === ""}
+					isDisabled={title?.trim() === ""}
 					size="cta"
 					label="Simpan"
 					onPress={onSave}
@@ -563,8 +592,8 @@ const DeletingModal = ({
 		}
 		contentComponent={
 			<>
-				<Button label="Batal" variant="outline" onPress={onCancel} />
 				<Button label="Ya" variant="destructive" onPress={onContinue} />
+				<Button label="Batal" variant="outline" onPress={onCancel} />
 			</>
 		}
 	/>
@@ -586,8 +615,8 @@ const UnsavedChangesModal = ({
 		description="Perubahan yang belum disimpan akan hilang."
 		contentComponent={
 			<>
-				<Button label="Batal" variant="outline" onPress={onCancel} />
 				<Button label="Buang" variant="destructive" onPress={onContinue} />
+				<Button label="Batal" variant="outline" onPress={onCancel} />
 			</>
 		}
 	/>
@@ -612,16 +641,16 @@ const DeleteConfirmationModal = ({
 		contentComponent={
 			<>
 				<Button
-					label="Batal"
-					variant="outline"
-					onPress={onCancel}
-					isDisabled={isLoading}
-				/>
-				<Button
 					label="Hapus"
 					variant="destructive"
 					onPress={onContinue}
 					isLoading={isLoading}
+				/>
+				<Button
+					label="Batal"
+					variant="outline"
+					onPress={onCancel}
+					isDisabled={isLoading}
 				/>
 			</>
 		}

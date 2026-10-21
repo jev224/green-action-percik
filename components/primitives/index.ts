@@ -15,6 +15,7 @@ export { SurfaceCard } from "./Card/SurfaceCard";
 export { EmptyState } from "./Feedback/EmptyState";
 export { ProgressBar } from "./Feedback/ProgressBar";
 export { Spinner } from "./Feedback/Spinner";
+export { Checkbox } from "./Input/Checkbox";
 export { FilterChips } from "./Input/FilterChips";
 export { PhotoPicker } from "./Input/PhotoPicker";
 export { SearchField } from "./Input/SearchField";

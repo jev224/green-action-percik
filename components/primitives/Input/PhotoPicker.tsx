@@ -230,6 +230,10 @@ export const PhotoPicker = React.forwardRef<
 				description="Aplikasi memerlukan akses kamera untuk mengambil foto. Silakan izinkan akses kamera melalui pengaturan perangkat Anda."
 				contentComponent={
 					<>
+						<Button
+							label="Mengerti"
+							onPress={() => setDeniedDialogShown(false)}
+						/>
 						{Platform.OS !== "web" && (
 							<Button
 								label="Pengaturan"
@@ -237,10 +241,6 @@ export const PhotoPicker = React.forwardRef<
 								onPress={Linking.openSettings}
 							/>
 						)}
-						<Button
-							label="Mengerti"
-							onPress={() => setDeniedDialogShown(false)}
-						/>
 					</>
 				}
 			/>

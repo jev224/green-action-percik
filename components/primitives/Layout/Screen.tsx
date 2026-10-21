@@ -82,6 +82,8 @@ export function Screen<T = undefined>({
 
 	const canRenderContent = !effectiveIsLoading && !effectiveIsError;
 
+	const offsetTop = Math.max(insets.top + 4, 8) + 24;
+
 	const renderedContent = canRenderContent
 		? isContentFn
 			? (contentComponent as (data: T) => ReactNode)(data as T)
@@ -110,12 +112,14 @@ export function Screen<T = undefined>({
 			style={{
 				flex: 1,
 
+				paddingTop: headerComponent ? 0 : offsetTop,
+
 				paddingBottom: tabBarPadding
 					? Math.max(tabBarHeight, 24)
 					: Math.max(insets.bottom, 24),
 			}}
 		>
-			<VStack className="flex-1 px-8 py-6" space={space}>
+			<VStack className="flex-1 px-8 pb-6" space={space}>
 				{canRenderContent && renderedContent}
 
 				{effectiveIsLoading && (
@@ -134,8 +138,6 @@ export function Screen<T = undefined>({
 			</VStack>
 		</EaseView>
 	);
-
-	const offsetTop = Math.max(insets.top + 4, 8);
 
 	const checkInternet = async () => {
 		if (!requiredInternet) return;
@@ -171,11 +173,8 @@ export function Screen<T = undefined>({
 			<View className="flex-1 w-full max-w-200">
 				{headerComponent && (
 					<VStack
-						className="z-10 -mb-4 pb-4 pt-6 px-8 shrink-0 bg-background"
-						style={{
-							marginTop: -16,
-							paddingTop: offsetTop + 16,
-						}}
+						className="z-10 pb-4 pt-6 px-8 shrink-0 bg-background"
+						style={{ paddingTop: offsetTop }}
 						space={space}
 					>
 						{headerComponent}
@@ -184,11 +183,8 @@ export function Screen<T = undefined>({
 
 				{scrollable ? (
 					<ScrollView
+						contentContainerClassName="grow"
 						showsVerticalScrollIndicator={false}
-						contentContainerStyle={{
-							flexGrow: 1,
-							paddingTop: headerComponent ? 0 : offsetTop,
-						}}
 						refreshControl={refreshControl}
 					>
 						{content}

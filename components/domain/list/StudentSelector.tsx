@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { useResolveClassNames } from "uniwind";
 import {
+	Checkbox,
 	IconButton,
 	SearchField,
 	SmoothActionSheet,
@@ -21,13 +22,7 @@ import {
 	AvatarFallbackText,
 	AvatarImage,
 } from "@/components/ui/avatar";
-import {
-	Checkbox,
-	CheckboxIcon,
-	CheckboxIndicator,
-} from "@/components/ui/checkbox";
 import { HStack } from "@/components/ui/hstack";
-import { CheckIcon } from "@/components/ui/icon";
 import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
@@ -165,38 +160,31 @@ export function StudentMultiSelect({
 				fullHeight
 				scrollable={false}
 			>
-				<VStack className="px-2" space="lg">
-					<HStack space="sm">
-						<SearchField value={searchQuery} onChangeText={setSearchQuery} />
-						<SortSelect
-							options={STUDENT_SORT_OPTIONS}
-							value={sort}
-							onChange={setSort}
-						/>
-					</HStack>
+				<VStack className="h-full px-2" space="lg">
+					<VStack className="-mb-4 pb-4 bg-background shrink-0" space="lg">
+						<HStack space="sm">
+							<SearchField value={searchQuery} onChangeText={setSearchQuery} />
+							<SortSelect
+								options={STUDENT_SORT_OPTIONS}
+								value={sort}
+								onChange={setSort}
+							/>
+						</HStack>
 
-					<HStack className="justify-between items-center px-1 -mb-2">
-						<Pressable onPress={handleSelectAllChange}>
+						<HStack className="justify-between items-center px-1 -mb-2">
 							<Checkbox
-								value="select-all"
-								isChecked={isSelectAll}
-								pointerEvents="none"
-							>
-								<CheckboxIndicator className="p-2.5">
-									<CheckboxIcon as={CheckIcon} />
-								</CheckboxIndicator>
-								<Text size="sm" className="font-medium">
-									Pilih Semua
-								</Text>
-							</Checkbox>
-						</Pressable>
+								checked={isSelectAll}
+								onCheckedChange={handleSelectAllChange}
+								label="Pilih Semua"
+							/>
 
-						<Text size="lg" className="font-semibold">
-							{selectedCount} Dipilih
-						</Text>
-					</HStack>
+							<Text size="lg" className="font-semibold">
+								{selectedCount} Dipilih
+							</Text>
+						</HStack>
+					</VStack>
 
-					<View>
+					<View className="flex-1 -z-1">
 						<View className="absolute inset-0 z-10">
 							{Boolean(errorMessage) && !isLoading && (
 								<View className="absolute inset-0">
@@ -232,11 +220,10 @@ export function StudentMultiSelect({
 						<FlatList
 							data={filtered}
 							style={{
-								overflow: "visible",
 								opacity: isLoading || errorMessage ? 0 : 255,
 								zIndex: isLoading || errorMessage ? 0 : 100,
-								flex: 1,
 							}}
+							className="native:overflow-visible"
 							keyExtractor={(student) => student.user_id}
 							renderItem={({ item }) => (
 								<StudentListItem

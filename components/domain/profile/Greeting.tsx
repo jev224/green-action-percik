@@ -163,17 +163,16 @@ export function Greeting({ name, info, imageSource }: GreetingProps) {
 				contentComponent={
 					<>
 						<Button
-							isDisabled={isLoggingOut}
-							label="Batalkan"
-							variant="outline"
-							onPress={() => setShowLogoutModal(false)}
-						/>
-
-						<Button
 							isLoading={isLoggingOut}
 							label="Keluar"
 							variant="destructive"
 							onPress={handleLogout}
+						/>
+						<Button
+							isDisabled={isLoggingOut}
+							label="Batalkan"
+							variant="secondary"
+							onPress={() => setShowLogoutModal(false)}
 						/>
 					</>
 				}

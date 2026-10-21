@@ -1,19 +1,14 @@
-import { AlertCircle, Check } from "lucide-react-native";
+import { AlertCircle } from "lucide-react-native";
 import { useState } from "react";
 import {
 	Button,
+	Checkbox,
 	GradientHeading,
 	Modal,
 	Screen,
 	ScreenHeader,
 	TextField,
 } from "@/components/primitives";
-import {
-	Checkbox,
-	CheckboxIcon,
-	CheckboxIndicator,
-	CheckboxLabel,
-} from "@/components/ui/checkbox";
 import {
 	FormControl,
 	FormControlError,
@@ -157,17 +152,11 @@ export default function LoginScreen() {
 							/>
 
 							<Checkbox
-								value="remember"
-								isChecked={rememberMe}
-								onChange={handleRememberMeChange}
 								className="ml-1"
-							>
-								<CheckboxIndicator>
-									<CheckboxIcon as={Check} />
-								</CheckboxIndicator>
-
-								<CheckboxLabel>Ingat Saya!</CheckboxLabel>
-							</Checkbox>
+								checked={rememberMe}
+								onCheckedChange={handleRememberMeChange}
+								label="Ingat Saya!"
+							/>
 
 							{error && (
 								<FormControlError>

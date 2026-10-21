@@ -8,7 +8,7 @@
 		"scheme": "green-action.percik",
 		"userInterfaceStyle": "automatic",
 		"platforms": ["android", "web"],
-		"version": "1.0.0",
+		"version": "1.0.1",
 		"runtimeVersion": "1.0.0",
 		"updates": {
 			"url": "https://green-action.percik.workers.dev/manifest",

@@ -130,10 +130,10 @@ export function ProfileHeader({
 		<>
 			<View
 				className={cn(
-					"shrink-0  items-center gap-2 h-fit",
+					"shrink-0 items-center h-fit",
 					layout === "centered"
-						? "justify-center p-7 pb-4"
-						: "flex-row py-4 gap-6",
+						? "justify-center py-6 gap-4"
+						: "flex-row pt-5 pb-4 gap-6",
 				)}
 			>
 				<Pressable ref={avatarRef} onPress={openPreview}>
@@ -145,9 +145,7 @@ export function ProfileHeader({
 					/>
 				</Pressable>
 
-				<VStack
-					className={layout === "centered" ? "items-center mt-2" : undefined}
-				>
+				<VStack className={layout === "centered" ? "items-center" : undefined}>
 					<Heading
 						className={cn(
 							layout === "centered" && "text-center",

@@ -6,14 +6,14 @@ import {
 	useRef,
 	useState,
 } from "react";
-import { useWindowDimensions, View } from "react-native";
+import { Pressable, useWindowDimensions, View } from "react-native";
 import { EaseView } from "react-native-ease";
 import {
 	Gesture,
 	GestureDetector,
 	ScrollView,
 } from "react-native-gesture-handler";
-import {
+import Animated, {
 	useAnimatedStyle,
 	useSharedValue,
 	withSpring,
@@ -22,7 +22,6 @@ import {
 import { scheduleOnRN } from "react-native-worklets";
 import { cnBase } from "tailwind-variants";
 
-import { AnimatedPressable } from "@/components/animation/animatedComponent";
 import { AnimationConfig } from "@/components/animation/presets";
 import { SelectContent, SelectPortal } from "@/components/ui/select";
 import {
@@ -159,32 +158,43 @@ export const SmoothActionSheet = ({
 				}}
 			/>
 
-			<AnimatedPressable
-				onPress={requestClose}
-				accessible={false}
-				accessibilityElementsHidden={!isOpen}
-				importantForAccessibility={isOpen ? "auto" : "no-hide-descendants"}
-				style={[sheetAnimatedStyle, pointerStyle]}
-				className="h-full items-center"
-			>
+			<Animated.View className="h-full items-center" style={sheetAnimatedStyle}>
+				<Pressable
+					className="absolute inset-0"
+					onPress={requestClose}
+					accessible={false}
+					accessibilityElementsHidden={!isOpen}
+					importantForAccessibility={isOpen ? "auto" : "no-hide-descendants"}
+					style={pointerStyle}
+				/>
+
 				<View
 					accessibilityViewIsModal={isOpen}
-					className="h-full w-full max-w-180 pointer-events-auto"
+					className="h-full w-full max-w-180"
 				>
+					<Pressable
+						className="absolute inset-0"
+						onPress={requestClose}
+						accessible={false}
+						accessibilityElementsHidden={!isOpen}
+						importantForAccessibility={isOpen ? "auto" : "no-hide-descendants"}
+						style={pointerStyle}
+					/>
+
 					<Content
 						className={cnBase(
-							"absolute bottom-0 left-0 right-0 p-3 bg-transparent",
+							"absolute bottom-0 left-0 right-0 p-3 bg-transparent max-h-[85%]",
 							fullHeight && "min-h-[85%]",
 						)}
 						initial={{ y: 0 }}
 						animate={{ y: 0 }}
 						exit={{ y: 0 }}
 					>
-						<View className="absolute inset-0 -bottom-70 rounded-xl bg-background" />
+						<View className="absolute inset-0 -bottom-70 rounded-xl bg-background -z-10" />
 
 						<GestureDetector gesture={panGesture}>
 							<View
-								className="w-full p-2 items-center justify-center z-20"
+								className="w-full p-2 items-center justify-center z-20 web:outline-none web:focus-visible:scale-120"
 								accessible={isOpen}
 								accessibilityRole="button"
 								accessibilityLabel="Close sheet"
@@ -198,10 +208,7 @@ export const SmoothActionSheet = ({
 						</GestureDetector>
 
 						{scrollable ? (
-							<ScrollView
-								className="w-full mt-2"
-								style={{ maxHeight: height - 200 }}
-							>
+							<ScrollView className="flex-1 w-full mt-2">
 								<VStack space="sm">{children}</VStack>
 							</ScrollView>
 						) : (
@@ -211,7 +218,7 @@ export const SmoothActionSheet = ({
 						)}
 					</Content>
 				</View>
-			</AnimatedPressable>
+			</Animated.View>
 		</Portal>
 	);
 };

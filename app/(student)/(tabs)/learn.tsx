@@ -133,7 +133,7 @@ export default function LearningScreen() {
 						}
 						data={results}
 						showsVerticalScrollIndicator={false}
-						className="overflow-visible"
+						className="native:overflow-visible"
 						renderItem={renderItem}
 						keyExtractor={(lesson) => String(lesson.id)}
 					/>

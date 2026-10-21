@@ -342,7 +342,7 @@ export default function DownloadScreen() {
 							initialAnimate={{ scale: 0.9, translateY: 100 }}
 							animate={{ scale: 1, translateY: 0 }}
 							transition={{ type: "spring" }}
-							style={{ width: "100%" }}
+							style={{ width: "100%", alignItems: "center" }}
 						>
 							<Calendar
 								mode="range"

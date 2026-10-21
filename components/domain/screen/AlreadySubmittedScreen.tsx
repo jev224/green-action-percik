@@ -41,16 +41,15 @@ export const ActivitySubmittedScreen = ({
 						contentComponent={
 							<>
 								<Button
-									label="Batal"
-									variant="outline"
-									onPress={() => setShowDeleteModal(false)}
-								/>
-
-								<Button
 									isLoading={isLoading}
 									label="Ya, Hapus"
 									variant="destructive"
 									onPress={onDelete}
+								/>
+								<Button
+									label="Batal"
+									variant="outline"
+									onPress={() => setShowDeleteModal(false)}
 								/>
 							</>
 						}

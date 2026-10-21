@@ -36,7 +36,7 @@ import { useUserProfile } from "@/hooks/useUser";
 import { fetchMotiovations } from "@/services/fetcher/others/motivations";
 import { fetchOrganizationPhotoURLs } from "@/services/fetcher/others/organizationPhotos";
 import { fetchStudentStatistics } from "@/services/fetcher/student/studentDashboard";
-import { parseProfileInfo } from "@/utils";
+import { limitDecimalInput, parseProfileInfo } from "@/utils";
 
 export default function HomeScreen() {
 	const [passwordDialogShown, setPasswordDialogShown] = useState(false);
@@ -127,7 +127,7 @@ export default function HomeScreen() {
 						<HStack space="md">
 							<StatCard
 								title="Sampah"
-								stats={`${wasteWeightTotal} kg`}
+								stats={`${limitDecimalInput(wasteWeightTotal)} kg`}
 								icon={Bubbles}
 								variant="outline"
 								fill
@@ -292,7 +292,6 @@ export default function HomeScreen() {
 			}
 			overlayComponent={
 				<Modal
-					vertical
 					icon={ShieldAlert}
 					title="Perbarui Kata Sandi"
 					description="Kata sandi Anda masih menggunakan NIS. Demi keamanan akun, silakan perbarui kata sandi Anda dengan kata sandi baru. Jika Anda lupa kata sandi, Anda dapat menghubungi admin kapan saja untuk mendapatkan bantuan."

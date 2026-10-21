@@ -1,6 +1,8 @@
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
 import { Search } from "lucide-react-native";
+import { useEffect, useState } from "react";
 import { Input, InputField, InputIcon, InputSlot } from "@/components/ui/input";
+import { useDebouncedCallback } from "@/hooks/useDebounced";
 import { useThemeColors } from "@/hooks/useThemeColors";
 
 interface SearchFieldProps {
@@ -8,6 +10,7 @@ interface SearchFieldProps {
 	onChangeText: (text: string) => void;
 	placeholder?: string;
 	className?: string;
+	debounceMs?: number;
 }
 
 export function SearchField({
@@ -15,8 +18,22 @@ export function SearchField({
 	onChangeText,
 	placeholder = "Cari...",
 	className,
+	debounceMs = 300,
 }: SearchFieldProps) {
 	const { colors } = useThemeColors();
+	const [localValue, setLocalValue] = useState(value);
+
+	const debouncedChange = useDebouncedCallback(onChangeText, debounceMs);
+
+	// Sync local state if the parent changes `value` externally (e.g. a reset)
+	useEffect(() => {
+		setLocalValue(value);
+	}, [value]);
+
+	const handleChange = (text: string) => {
+		setLocalValue(text);
+		debouncedChange(text);
+	};
 
 	return (
 		<Input
@@ -32,8 +49,8 @@ export function SearchField({
 			<InputField
 				className="font-medium"
 				placeholder={placeholder}
-				value={value}
-				onChangeText={onChangeText}
+				value={localValue}
+				onChangeText={handleChange}
 				placeholderTextColor={colors.mutedForeground}
 			/>
 		</Input>

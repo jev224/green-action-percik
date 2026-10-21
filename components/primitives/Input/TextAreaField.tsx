@@ -1,8 +1,6 @@
 import type { ComponentProps } from "react";
 import { StyleSheet } from "react-native";
 
-import Animated from "react-native-reanimated";
-
 // import { Textarea, TextareaInput } from "@/components/ui/textarea";
 import { Input, InputField } from "@/components/ui/input";
 import { useThemeColors } from "@/hooks/useThemeColors";
@@ -19,27 +17,25 @@ export function TextAreaField({
 	const { colors } = useThemeColors();
 
 	return (
-		<Animated.View className="min-h-32 max-h-52 flex-none">
-			<Input
-				className="h-full rounded-md p-2 border-2 font-medium web:outline-none"
-				isDisabled={isDisabled}
-			>
-				<InputField
-					{...props}
-					className="text-lg min-h-32 max-h-64"
-					multiline
-					style={globalStyles.textInput}
-					textAlignVertical="top"
-					placeholderTextColor={colors.mutedForeground}
-				/>
-			</Input>
-		</Animated.View>
+		<Input
+			className="min-h-64 native:max-h-64 rounded-md p-0 border-2 font-medium web:outline-none"
+			isDisabled={isDisabled}
+		>
+			<InputField
+				{...props}
+				className="text-lg web:min-h-full"
+				style={globalStyles.textInput}
+				multiline
+				textAlignVertical="top"
+				placeholderTextColor={colors.mutedForeground}
+			/>
+		</Input>
 	);
 }
 
 const globalStyles = StyleSheet.create({
 	textInput: {
-		paddingHorizontal: 12,
-		paddingVertical: 6,
+		paddingHorizontal: 16,
+		paddingVertical: 12,
 	},
 });

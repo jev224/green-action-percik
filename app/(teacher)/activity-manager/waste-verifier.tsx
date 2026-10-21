@@ -1,11 +1,12 @@
 import { Image } from "expo-image";
-import { Check, Coins, Info } from "lucide-react-native";
+import { Coins, Info } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { BackButton } from "@/components/domain";
 import {
 	BottomPanel,
 	Button,
+	Checkbox,
 	ListSection,
 	Modal,
 	Screen,
@@ -16,12 +17,6 @@ import {
 	TextField,
 } from "@/components/primitives";
 import { Center } from "@/components/ui/center";
-import {
-	Checkbox,
-	CheckboxIcon,
-	CheckboxIndicator,
-	CheckboxLabel,
-} from "@/components/ui/checkbox";
 import { HStack } from "@/components/ui/hstack";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
@@ -155,16 +150,15 @@ export default function WasteVerifierScreen() {
 						contentComponent={
 							<>
 								<Button
+									isLoading={isSubmitting}
+									label={isEditing ? "Ubah" : "Verifikasi"}
+									onPress={handleVerify}
+								/>
+								<Button
 									isDisabled={isSubmitting}
 									label="Batalkan"
 									variant="outline"
 									onPress={() => setVerifyDialogOpen(false)}
-								/>
-
-								<Button
-									isLoading={isSubmitting}
-									label={isEditing ? "Ubah" : "Verifikasi"}
-									onPress={handleVerify}
 								/>
 							</>
 						}
@@ -178,17 +172,16 @@ export default function WasteVerifierScreen() {
 						contentComponent={
 							<>
 								<Button
-									isDisabled={isSubmitting}
-									label="Batalkan"
-									variant="outline"
-									onPress={() => setRejectDialogOpen(false)}
-								/>
-
-								<Button
 									isLoading={isSubmitting}
 									label="Tolak"
 									variant="destructive"
 									onPress={handleReject}
+								/>
+								<Button
+									isDisabled={isSubmitting}
+									label="Batalkan"
+									variant="outline"
+									onPress={() => setRejectDialogOpen(false)}
 								/>
 							</>
 						}
@@ -276,17 +269,11 @@ export default function WasteVerifierScreen() {
 						)}
 
 						<Checkbox
-							value="custom-price"
-							isChecked={customPriceEnabled}
-							onChange={setCustomPriceEnabled}
 							className="ml-1"
-						>
-							<CheckboxIndicator>
-								<CheckboxIcon as={Check} />
-							</CheckboxIndicator>
-
-							<CheckboxLabel>Harga kustom</CheckboxLabel>
-						</Checkbox>
+							checked={customPriceEnabled}
+							onCheckedChange={setCustomPriceEnabled}
+							label="Harga kustom"
+						/>
 					</ListSection>
 
 					<ListSection title="Berat sampah (kg)">

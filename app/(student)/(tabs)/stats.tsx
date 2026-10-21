@@ -33,7 +33,7 @@ import {
 	fetchStudentStatistics,
 	fetchStudentTargets,
 } from "@/services/fetcher/student/studentDashboard";
-import { calculatePercentage, formatPrice } from "@/utils";
+import { calculatePercentage, formatPrice, limitDecimalInput } from "@/utils";
 
 export default function StatsiticScreen() {
 	const userProfile = useUserProfile("student");
@@ -124,7 +124,7 @@ export default function StatsiticScreen() {
 					<HStack space="md">
 						<StatCard
 							title="Sampah"
-							stats={`${wasteWeightTotal} kg`}
+							stats={`${limitDecimalInput(wasteWeightTotal)} kg`}
 							icon={Bubbles}
 							variant="outline"
 							fill
@@ -179,11 +179,13 @@ export default function StatsiticScreen() {
 							icon={Trash2}
 							variant="ghost"
 							headerRightComponent={
-								<Heading size="md">{wasteWeightTarget} kg</Heading>
+								<Heading size="md">
+									{limitDecimalInput(wasteWeightTarget)} kg
+								</Heading>
 							}
 							bottomComponent={
 								<ProgressBar
-									text={`${wasteWeightTotal} dari ${wasteWeightTarget} kg terkumpul`}
+									text={`${wasteWeightTotal} dari ${limitDecimalInput(wasteWeightTarget)} kg terkumpul`}
 									value={calculatePercentage(
 										wasteWeightTotal,
 										wasteWeightTarget,

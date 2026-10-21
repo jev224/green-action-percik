@@ -50,6 +50,7 @@ import {
 	TextField,
 	UserAvatar,
 } from "@/components/primitives";
+import { Checkbox } from "@/components/primitives/Input/Checkbox";
 import { SortSelect } from "@/components/primitives/Input/SortSelect";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
@@ -423,6 +424,8 @@ export default function ComponentCatalogScreen() {
 						}}
 						studentsRes={[]}
 					/>
+
+					<Checkbox checked={true} onCheckedChange={() => {}} />
 				</VStack>
 			}
 		/>

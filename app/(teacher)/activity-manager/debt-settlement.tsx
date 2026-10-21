@@ -86,15 +86,15 @@ export default function DebtSettlementScreen() {
 					contentComponent={
 						<>
 							<Button
+								isLoading={isSubmitting}
+								label="Ya, sudah"
+								onPress={handleSubmit}
+							/>
+							<Button
 								isDisabled={isSubmitting}
 								label="Batalkan"
 								variant="outline"
 								onPress={() => setConfirmDialogShown(false)}
-							/>
-							<Button
-								isLoading={isSubmitting}
-								label="Ya, sudah"
-								onPress={handleSubmit}
 							/>
 						</>
 					}

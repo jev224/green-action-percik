@@ -1,10 +1,4 @@
 import { FlatList, type FlatListProps } from "react-native";
-import Animated from "react-native-reanimated";
-import {
-	contentEnterTransition,
-	contentExitTransition,
-	contentLayoutTransition,
-} from "@/components/animation/presets";
 import { StudentListItem } from "./StudentListItem";
 import type { StudentData } from "./types";
 
@@ -14,21 +8,20 @@ interface StudentListProps {
 	onPressStudent?: (student: StudentData) => void;
 }
 
-export function StudentList({ data, onPressStudent }: StudentListProps) {
+export function StudentList({
+	data,
+	onPressStudent,
+	refreshControl,
+}: StudentListProps) {
 	return (
 		<FlatList
+			className="native:overflow-visible"
 			data={data}
+			refreshControl={refreshControl}
 			showsVerticalScrollIndicator={false}
-			style={{ overflow: "visible" }}
 			removeClippedSubviews={false}
 			renderItem={({ item }) => (
-				<Animated.View
-					layout={contentLayoutTransition}
-					entering={contentEnterTransition}
-					exiting={contentExitTransition}
-				>
-					<StudentListItem student={item} onPress={onPressStudent} />
-				</Animated.View>
+				<StudentListItem student={item} onPress={onPressStudent} />
 			)}
 			keyExtractor={(student) => student.user_id}
 		/>

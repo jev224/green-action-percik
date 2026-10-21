@@ -24,7 +24,7 @@ import { useNavigation } from "@/hooks/useNavigation";
 import { useUserProfile } from "@/hooks/useUser";
 import { fetchTeacherDashboardStats } from "@/services/fetcher/teacher/teacherDashboard";
 import { useActivityManagerStore } from "@/stores/activityManager";
-import { parseProfileInfo } from "@/utils";
+import { limitDecimalInput, parseProfileInfo } from "@/utils";
 
 export default function HomeScreen() {
 	const setActivityType = useActivityManagerStore((s) => s.setActivityType);
@@ -96,7 +96,7 @@ export default function HomeScreen() {
 						<HStack space="md">
 							<StatCard
 								title="Sampah"
-								stats={`${wasteWeightTotal} kg`}
+								stats={`${limitDecimalInput(wasteWeightTotal)} kg`}
 								icon={Bubbles}
 								variant="outline"
 								fill
