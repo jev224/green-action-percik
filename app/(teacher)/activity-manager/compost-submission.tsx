@@ -14,6 +14,7 @@ import { useActivityInfo } from "@/hooks/useActivityInfo";
 import { useActivitySubmission } from "@/hooks/useActivitySubmission";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useNavigation } from "@/hooks/useNavigation";
+import { refreshOnNextNavigate } from "@/hooks/useRefreshOnNavigate";
 import { useUserProfile } from "@/hooks/useUser";
 import {
 	deleteSubmittedCompostActivity,
@@ -22,7 +23,6 @@ import {
 } from "@/services/fetcher/activity/compostActivity";
 import { fetchStudentsByClass } from "@/services/fetcher/student/studentQuery";
 import { useActivityManagerStore } from "@/stores/activityManager";
-import { refreshOnNextNavigate } from "@/hooks/useRefreshOnNavigate";
 
 type Student = { user_id: string };
 

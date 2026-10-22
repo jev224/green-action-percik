@@ -17,6 +17,7 @@ import { VStack } from "@/components/ui/vstack";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useFuzzySearch } from "@/hooks/useFuzzySearch";
 import { useNavigation } from "@/hooks/useNavigation";
+import { refreshOnNextNavigate } from "@/hooks/useRefreshOnNavigate";
 import { useShowToast } from "@/hooks/useShowToast";
 import {
 	fetchAllUnpaidStudentsWaste,
@@ -31,7 +32,6 @@ import {
 	type WasteBankData,
 } from "@/stores/activityManager";
 import { formatDate, parseClassName } from "@/utils";
-import { refreshOnNextNavigate } from "@/hooks/useRefreshOnNavigate";
 
 type CompostCardData = {
 	type: "compost-activity";

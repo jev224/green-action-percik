@@ -15,19 +15,19 @@ import {
 	Pressable,
 	View,
 } from "react-native";
+import { EaseView } from "react-native-ease";
 import { tv } from "tailwind-variants";
+import { EaseTranstionConfig } from "@/components/animation/presets";
 import { Center } from "@/components/ui/center";
 import { HStack } from "@/components/ui/hstack";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { usePressFeedback } from "@/hooks/usePressFeedback";
 import { getPhotoSize } from "@/utils/photoTools";
 import { Button } from "../Button/Button";
 import { Spinner } from "../Feedback/Spinner";
 import { Modal } from "../Layout/Modal";
-import { usePressFeedback } from "@/hooks/usePressFeedback";
-import { EaseView } from "react-native-ease";
-import { EaseTranstionConfig } from "@/components/animation/presets";
 
 // Target upper bound for the final compressed photo.
 // NOTE: 5kb is very aggressive — expect roughly thumbnail-level detail.
