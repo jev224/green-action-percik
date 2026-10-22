@@ -173,6 +173,7 @@ export const submitWasteActivity = (
 	fullName: string,
 	classData: ClassData,
 	category: string,
+	weight: number,
 	photoUri: string,
 ) =>
 	submitActivity(
@@ -183,7 +184,7 @@ export const submitWasteActivity = (
 		fullName,
 		classData,
 		photoUri,
-		{ category, weight: 0, price: 0 },
+		{ category, weight, price: 0 },
 	);
 
 export const isWasteActivitySubmitted = (studentId: string) =>

@@ -4,7 +4,8 @@ import { create } from "zustand";
 import type { Database } from "@/lib/supabase/database.types";
 
 export type ActivityType =
-	| "waste-bank"
+	| "waste-bank-students"
+	| "waste-bank-classes"
 	| "compost-activity"
 	| "debt-settlement";
 

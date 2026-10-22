@@ -6,6 +6,7 @@ import {
 	PhotoPicker,
 	SegmentedControl,
 	Spacer,
+	TextField,
 } from "@/components/primitives";
 import { useActivitySubmission } from "@/hooks/useActivitySubmission";
 import { useUserProfile } from "@/hooks/useUser";
@@ -19,6 +20,7 @@ export default function WasteSubmissionScreen() {
 	const { profile } = useUserProfile("student");
 
 	const [wasteType, setWasteType] = useState("organic");
+	const [wasteWeight, setWasteWeight] = useState("0");
 	const [activityPhotoUri, setActivityPhotoUri] = useState<string | null>(null);
 
 	const {
@@ -51,6 +53,7 @@ export default function WasteSubmissionScreen() {
 					profile.name,
 					profile.class,
 					wasteType,
+					parseInt(wasteWeight, 10),
 					activityPhotoUri,
 				);
 			},
@@ -96,6 +99,17 @@ export default function WasteSubmissionScreen() {
 					]}
 					value={wasteType}
 					onChange={setWasteType}
+				/>
+			</ListSection>
+
+			<ListSection title="Berat sampah (kg)">
+				<TextField
+					placeholder="Masukan berat sampah"
+					isDecimal
+					min={0}
+					unit="kg"
+					value={wasteWeight}
+					onChangeText={setWasteWeight}
 				/>
 			</ListSection>
 

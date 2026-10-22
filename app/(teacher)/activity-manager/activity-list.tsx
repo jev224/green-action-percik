@@ -24,6 +24,7 @@ import {
 	fetchCompostActivities,
 	fetchWasteBanks,
 } from "@/services/fetcher/activity/teacherActivityManager";
+import { fetchAllStudentClasses } from "@/services/fetcher/student/studentClass";
 import {
 	type ClassData,
 	type FilterSection,
@@ -42,14 +43,22 @@ type CompostCardData = {
 	data: ClassData;
 };
 
-type WasteCardData = {
-	type: "waste-bank";
+type WasteCardStudentsData = {
+	type: "waste-bank-students";
 	id: number;
 	title: string;
 	description: string;
 	createdAt: string;
 	completed: boolean;
 	data: WasteBankData;
+};
+
+type WasteCardClassesData = {
+	type: "waste-bank-classes";
+	id: number;
+	title: string;
+	description: string;
+	data: ClassData;
 };
 
 type DebtSettlementCardData = {
@@ -64,7 +73,8 @@ type DebtSettlementCardData = {
 
 type ActivityCardData =
 	| CompostCardData
-	| WasteCardData
+	| WasteCardStudentsData
+	| WasteCardClassesData
 	| DebtSettlementCardData;
 
 const FILTER_OPTIONS: SegmentedControlOption<FilterSection>[] = [
@@ -72,9 +82,15 @@ const FILTER_OPTIONS: SegmentedControlOption<FilterSection>[] = [
 	{ label: "Selesai", value: "completed" },
 ];
 
+const EXCLUDED_FILTER: Set<ActivityCardData["type"] | string> = new Set([
+	"waste-bank-classes",
+	"debt-settlement",
+]);
+
 const CARD_ICONS: Record<ActivityCardData["type"], typeof GraduationCap> = {
 	"compost-activity": GraduationCap,
-	"waste-bank": Recycle,
+	"waste-bank-students": Recycle,
+	"waste-bank-classes": GraduationCap,
 	"debt-settlement": PiggyBank,
 };
 
@@ -94,17 +110,37 @@ async function toCompostCards(): Promise<CompostCardData[]> {
 	}));
 }
 
-async function toWasteCards(): Promise<WasteCardData[]> {
-	const wasteBanks = await fetchWasteBanks();
+async function toWasteStudentsCards(
+	classId: number | null | undefined,
+	onInvalid: () => void,
+): Promise<WasteCardStudentsData[]> {
+	if (!classId) {
+		onInvalid();
+		throw new Error("Invalid class");
+	}
 
-	return wasteBanks.map((wasteBank) => ({
-		type: "waste-bank",
+	const wasteBanksStudents = await fetchWasteBanks(classId);
+
+	return wasteBanksStudents.map((wasteBank) => ({
+		type: "waste-bank-students",
 		id: wasteBank.id,
 		title: wasteBank.student.name,
 		description: `${wasteBank.category} • ${formatDate(wasteBank.created_at)}`,
 		createdAt: wasteBank.created_at,
-		completed: wasteBank.weight !== 0,
+		completed: Number(wasteBank.weight ?? 0) > 0,
 		data: wasteBank,
+	}));
+}
+
+async function toWasteClassessCards(): Promise<WasteCardClassesData[]> {
+	const wasteBanksClasses = await fetchAllStudentClasses();
+
+	return wasteBanksClasses.map((classData) => ({
+		type: "waste-bank-classes",
+		id: classData.id,
+		title: parseClassName(classData),
+		description: "",
+		data: classData,
 	}));
 }
 
@@ -130,6 +166,8 @@ export default function ActivityListScreen() {
 		useState<FilterSection>("incompleted");
 
 	const activityType = useActivityManagerStore((s) => s.activityType);
+	const selectedClass = useActivityManagerStore((s) => s.selectedClass);
+	const setActivityType = useActivityManagerStore((s) => s.setActivityType);
 	const setSelectedClass = useActivityManagerStore((s) => s.setSelectedClass);
 	const setSelectedWaste = useActivityManagerStore((s) => s.setSelectedWaste);
 	const setSelectedStudent = useActivityManagerStore(
@@ -140,7 +178,8 @@ export default function ActivityListScreen() {
 	const { goBack, navigateTo } = useNavigation();
 	const showToast = useShowToast();
 
-	const goBackAndRefresh = () => {
+	const onInvalid = () => {
+		showToast({ title: "Data tidak valid" });
 		goBack();
 		refreshOnNextNavigate();
 	};
@@ -151,8 +190,10 @@ export default function ActivityListScreen() {
 				switch (activityType) {
 					case "compost-activity":
 						return toCompostCards();
-					case "waste-bank":
-						return toWasteCards();
+					case "waste-bank-students":
+						return toWasteStudentsCards(selectedClass?.id, onInvalid);
+					case "waste-bank-classes":
+						return toWasteClassessCards();
 					case "debt-settlement":
 						return toDebtSettlementCards();
 					default:
@@ -160,7 +201,7 @@ export default function ActivityListScreen() {
 				}
 			},
 			undefined,
-			[activityType],
+			[activityType, selectedClass?.id],
 		);
 
 	const searchResults = useFuzzySearch(
@@ -170,8 +211,12 @@ export default function ActivityListScreen() {
 	);
 
 	const finalResults = useMemo(() => {
-		const filtered = searchResults.filter(({ completed }) =>
-			filterStatus === "completed" ? completed : !completed,
+		const filtered = searchResults.filter((data) =>
+			"completed" in data
+				? filterStatus === "completed"
+					? data.completed
+					: !data.completed
+				: true,
 		);
 
 		const sorted = filtered.sort((a, b) => {
@@ -186,20 +231,25 @@ export default function ActivityListScreen() {
 		});
 
 		return sorted;
-	}, [searchResults, filterStatus]);
+	}, [searchResults, filterStatus, selectedClass?.id]);
 
 	const handleCardPress = useCallback(
 		(card: ActivityCardData) => {
 			setSourceSection(filterStatus);
+			setSearchQuery("");
 
 			switch (card.type) {
 				case "compost-activity":
 					setSelectedClass(card.data);
 					navigateTo("/(teacher)/activity-manager/compost-submission");
 					break;
-				case "waste-bank":
+				case "waste-bank-students":
 					setSelectedWaste(card.data);
 					navigateTo("/(teacher)/activity-manager/waste-verifier");
+					break;
+				case "waste-bank-classes":
+					setSelectedClass(card.data);
+					setActivityType("waste-bank-students");
 					break;
 				case "debt-settlement":
 					setSelectedStudent(card.data);
@@ -210,6 +260,7 @@ export default function ActivityListScreen() {
 		[
 			filterStatus,
 			navigateTo,
+			setActivityType,
 			setSelectedClass,
 			setSelectedStudent,
 			setSelectedWaste,
@@ -231,11 +282,8 @@ export default function ActivityListScreen() {
 	);
 
 	useEffect(() => {
-		if (!activityType) {
-			showToast({ title: "Data tidak valid" });
-			goBackAndRefresh();
-		}
-	}, [activityType, goBack, showToast]);
+		if (!activityType) onInvalid();
+	}, [activityType, goBack, showToast, selectedClass?.id]);
 
 	return (
 		<Screen
@@ -257,7 +305,7 @@ export default function ActivityListScreen() {
 						className="flex-none"
 					/>
 
-					{activityType !== "debt-settlement" && (
+					{!EXCLUDED_FILTER.has(activityType || "") && (
 						<SegmentedControl
 							options={FILTER_OPTIONS}
 							value={filterStatus}
@@ -275,7 +323,7 @@ export default function ActivityListScreen() {
 					showsVerticalScrollIndicator={false}
 					className="overflow-visible"
 					renderItem={renderCard}
-					keyExtractor={(item) => String(item.id)}
+					keyExtractor={(item) => `${item.type}-${item.id}`}
 					ListEmptyComponent={<EmptyState message="Tidak ada data." />}
 				/>
 			}
