@@ -164,8 +164,8 @@ export function TextField({
 		}
 	}, [keyboard.height, isFocused]);
 
-	// const inputFieldType = isPassword && !showPassword ? "password" : "text";
-	const inputFieldType = isPassword ? "password" : "text";
+	const inputFieldType = isPassword && !showPassword ? "password" : "text";
+	// const inputFieldType = isPassword ? "password" : "text";
 
 	const resolvedKeyboardType =
 		keyboardType ??
