@@ -5,13 +5,15 @@ import type { StudentData } from "./types";
 interface StudentListProps {
 	data: StudentData[];
 	refreshControl?: FlatListProps<StudentData>["refreshControl"];
+	ListEmptyComponent?: FlatListProps<StudentData>["ListEmptyComponent"];
 	onPressStudent?: (student: StudentData) => void;
 }
 
 export function StudentList({
 	data,
-	onPressStudent,
 	refreshControl,
+	ListEmptyComponent,
+	onPressStudent,
 }: StudentListProps) {
 	return (
 		<FlatList
@@ -24,6 +26,7 @@ export function StudentList({
 				<StudentListItem student={item} onPress={onPressStudent} />
 			)}
 			keyExtractor={(student) => student.user_id}
+			ListEmptyComponent={ListEmptyComponent}
 		/>
 	);
 }

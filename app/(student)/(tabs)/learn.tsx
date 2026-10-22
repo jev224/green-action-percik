@@ -126,20 +126,21 @@ export default function LearningScreen() {
 				</>
 			}
 			contentComponent={
-				results.length > 0 ? (
-					<FlatList
-						refreshControl={
-							<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />
-						}
-						data={results}
-						showsVerticalScrollIndicator={false}
-						className="native:overflow-visible"
-						renderItem={renderItem}
-						keyExtractor={(lesson) => String(lesson.id)}
-					/>
-				) : emptyState ? (
-					<LessonEmpty key={emptyState} type={emptyState} />
-				) : null
+				<FlatList
+					refreshControl={
+						<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />
+					}
+					data={results}
+					showsVerticalScrollIndicator={false}
+					className="native:overflow-visible"
+					renderItem={renderItem}
+					keyExtractor={(lesson) => String(lesson.id)}
+					ListEmptyComponent={
+						emptyState ? (
+							<LessonEmpty key={emptyState} type={emptyState} />
+						) : null
+					}
+				/>
 			}
 			loadingComponent={
 				<ScrollView

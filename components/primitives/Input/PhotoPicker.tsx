@@ -1,7 +1,12 @@
 import { Image } from "expo-image";
 import * as ImageManipulator from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
-import { CameraIcon, RotateCcwIcon, XIcon } from "lucide-react-native";
+import {
+	CameraIcon,
+	ImageUpIcon,
+	RotateCcwIcon,
+	XIcon,
+} from "lucide-react-native";
 import React, { useCallback, useState } from "react";
 import {
 	type GestureResponderEvent,
@@ -20,6 +25,9 @@ import { getPhotoSize } from "@/utils/photoTools";
 import { Button } from "../Button/Button";
 import { Spinner } from "../Feedback/Spinner";
 import { Modal } from "../Layout/Modal";
+import { usePressFeedback } from "@/hooks/usePressFeedback";
+import { EaseView } from "react-native-ease";
+import { EaseTranstionConfig } from "@/components/animation/presets";
 
 // Target upper bound for the final compressed photo.
 // NOTE: 5kb is very aggressive — expect roughly thumbnail-level detail.
@@ -82,17 +90,19 @@ type PhotoPickerProps = Omit<
 	/** Called with the compressed photo uri, or null if cleared. */
 	onChange?: (uri: string | null) => void;
 	className?: string;
+	canUploadFile?: boolean;
 };
 
 export const PhotoPicker = React.forwardRef<
 	React.ComponentRef<typeof View>,
 	PhotoPickerProps
->(({ value, onChange, className, ...props }, ref) => {
+>(({ value, onChange, className, canUploadFile, ...props }, ref) => {
 	const [internalUri, setInternalUri] = useState<string | null>(null);
 	const [isProcessing, setIsProcessing] = useState(false);
 	const [deniedDialogShown, setDeniedDialogShown] = useState(false);
 
-	const [isPressed, setIsPressed] = useState(false);
+	const pressedCameraBox = usePressFeedback(0.95);
+	const pressedGalleryBox = usePressFeedback(0.95);
 
 	const isControlled = value !== undefined;
 	const uri = isControlled ? value : internalUri;
@@ -103,6 +113,19 @@ export const PhotoPicker = React.forwardRef<
 			onChange?.(next);
 		},
 		[isControlled, onChange],
+	);
+
+	const processAsset = useCallback(
+		async (assetUri: string) => {
+			setIsProcessing(true);
+			try {
+				const compressedUri = await compressToTargetSize(assetUri);
+				setUri(compressedUri);
+			} finally {
+				setIsProcessing(false);
+			}
+		},
+		[setUri],
 	);
 
 	const openCamera = useCallback(async () => {
@@ -122,14 +145,21 @@ export const PhotoPicker = React.forwardRef<
 
 		if (result.canceled || !result.assets?.[0]) return;
 
-		setIsProcessing(true);
-		try {
-			const compressedUri = await compressToTargetSize(result.assets[0].uri);
-			setUri(compressedUri);
-		} finally {
-			setIsProcessing(false);
-		}
-	}, [isProcessing, setUri]);
+		await processAsset(result.assets[0].uri);
+	}, [isProcessing, processAsset]);
+
+	const openGallery = useCallback(async () => {
+		if (isProcessing || !canUploadFile) return;
+
+		const result = await ImagePicker.launchImageLibraryAsync({
+			mediaTypes: ["images"],
+			quality: 1,
+			allowsMultipleSelection: false,
+		});
+		if (result.canceled || !result.assets?.[0]) return;
+
+		await processAsset(result.assets[0].uri);
+	}, [isProcessing, processAsset]);
 
 	const handleRemove = useCallback(
 		(e: GestureResponderEvent) => {
@@ -141,87 +171,132 @@ export const PhotoPicker = React.forwardRef<
 
 	return (
 		<>
-			<Pressable
-				onPress={openCamera}
-				onPressIn={() => setIsPressed(true)}
-				onPressOut={() => setIsPressed(false)}
-				disabled={isProcessing}
-			>
-				<View
-					ref={ref}
-					className={photoPickerStyle({
-						hasPhoto: !!uri,
-						pressed: isPressed && !uri,
-						class: className,
-					})}
-					{...props}
+			<VStack space="md">
+				<Pressable
+					onPress={openCamera}
+					disabled={isProcessing}
+					{...pressedCameraBox.bind}
 				>
-					{uri ? (
-						<>
-							<Image
-								source={uri}
-								alt="Foto yang diambil"
-								style={{ position: "absolute", inset: 0 }}
-								contentFit="cover"
-							/>
+					<EaseView
+						animate={{ scale: pressedCameraBox.scaleAnimation.scale }}
+						transition={{
+							type: "spring",
+							...EaseTranstionConfig.spring.snappy,
+						}}
+					>
+						<View
+							ref={ref}
+							className={photoPickerStyle({
+								hasPhoto: !!uri,
+								pressed: pressedCameraBox.isPressing && !uri,
+								class: className,
+							})}
+							{...props}
+						>
+							{uri ? (
+								<>
+									<Image
+										source={uri}
+										alt="Foto yang diambil"
+										style={{ position: "absolute", inset: 0 }}
+										contentFit="cover"
+									/>
 
-							{/* bottom action bar: retake / remove */}
-							<HStack
-								className="absolute bottom-2 left-2 right-2 bg-card rounded-md p-2"
-								space="sm"
-							>
-								<Button
-									fill
-									label="Ulang"
-									size="lg"
-									icon={RotateCcwIcon}
-									variant="secondary"
-									onPress={openCamera}
-									className="rounded-xs"
-								/>
+									{/* bottom action bar: retake / remove */}
+									<HStack
+										className="absolute bottom-2 left-2 right-2 bg-card rounded-md p-2"
+										space="sm"
+									>
+										{!canUploadFile && (
+											<Button
+												fill
+												label="Ulang"
+												size="lg"
+												icon={RotateCcwIcon}
+												variant="secondary"
+												onPress={openCamera}
+												className="rounded-xs"
+											/>
+										)}
 
-								<Button
-									fill
-									label="Hapus"
-									size="lg"
-									icon={XIcon}
-									variant="destructive"
-									onPress={handleRemove}
-									className="rounded-xs"
-								/>
-							</HStack>
-						</>
-					) : (
-						<Center
-							className="flex-1 h-full"
-							style={{
-								opacity: isProcessing ? 0 : 1,
+										<Button
+											fill
+											label="Hapus"
+											size="lg"
+											icon={XIcon}
+											variant="destructive"
+											onPress={handleRemove}
+											className="rounded-xs"
+										/>
+									</HStack>
+								</>
+							) : (
+								<Center
+									className="flex-1 h-full"
+									style={{
+										opacity: isProcessing ? 0 : 1,
+									}}
+								>
+									<VStack space="md" className="items-center">
+										<Center className="w-14 h-14 rounded-full bg-background-100">
+											<Icon
+												as={CameraIcon}
+												className="text-foreground/70 w-16 h-16"
+											/>
+										</Center>
+										<Text className="font-medium" size="xl">
+											Ambil Foto
+										</Text>
+									</VStack>
+								</Center>
+							)}
+
+							{isProcessing && (
+								<Center className="absolute inset-0 bg-background-950/40">
+									<VStack space="sm" className="items-center">
+										<Spinner />
+										<Text className="font-medium">Memproses...</Text>
+									</VStack>
+								</Center>
+							)}
+						</View>
+					</EaseView>
+				</Pressable>
+
+				{!isProcessing && !uri && canUploadFile && (
+					<Pressable
+						onPress={openGallery}
+						disabled={isProcessing}
+						{...pressedGalleryBox.bind}
+					>
+						<EaseView
+							animate={{ scale: pressedGalleryBox.scaleAnimation.scale }}
+							transition={{
+								type: "spring",
+								...EaseTranstionConfig.spring.snappy,
 							}}
 						>
-							<VStack space="md" className="items-center">
-								<Center className="w-14 h-14 rounded-full bg-background-100">
+							<View
+								className={photoPickerStyle({
+									pressed: pressedGalleryBox.isPressing && !uri,
+									className: "flex-row items-center gap-6 h-auto p-6 pr-12",
+								})}
+							>
+								<View className="w-18 h-18 rounded-sm bg-muted justify-center items-center">
 									<Icon
-										as={CameraIcon}
-										className="text-foreground/70 w-16 h-16"
+										className="w-[60%] h-[60%] text-foreground/70"
+										as={ImageUpIcon}
 									/>
-								</Center>
-								<Text className="font-medium" size="xl">
-									Ambil Foto
-								</Text>
-							</VStack>
-						</Center>
-					)}
+								</View>
 
-					{isProcessing && (
-						<Center className="absolute inset-0 bg-background-950/40">
-							<VStack space="sm" className="items-center">
-								<Spinner />
-								<Text className="font-medium">Memproses...</Text>
-							</VStack>
-						</Center>
-					)}
-				</View>
-			</Pressable>
+								<Text className="font-medium" size="xl">
+									Upload foto dari galary
+								</Text>
+							</View>
+						</EaseView>
+					</Pressable>
+				)}
+			</VStack>
 
 			<Modal
 				isOpen={deniedDialogShown}

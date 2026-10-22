@@ -44,6 +44,11 @@ export default function WasteVerifierScreen() {
 	const { goBack } = useNavigation();
 	const showToast = useShowToast();
 
+	const goBackAndRefresh = () => {
+		goBack();
+		refreshOnNextNavigate();
+	};
+
 	const [isSubmitting, setSubmitting] = useState(false);
 	const [isImageLoading, setImageLoading] = useState(true);
 	const [isVerifyDialogOpen, setVerifyDialogOpen] = useState(false);
@@ -65,6 +70,17 @@ export default function WasteVerifierScreen() {
 			fetchWastePriceMultiplier(),
 		]);
 
+		const multiplier =
+			Number(priceMultiplier) || WASTE_PRICE_MULTIPLIER_FALLBACK;
+
+		const weight = selectedWaste?.weight ?? 0;
+		const price = selectedWaste?.price ?? 0;
+
+		if (isEditing && multiplier * weight !== price) {
+			setCustomPriceEnabled(true);
+			setCustomPrice(String(price));
+		}
+
 		return { wastePhoto, priceMultiplier };
 	});
 
@@ -82,7 +98,7 @@ export default function WasteVerifierScreen() {
 	const finalPrice = customPriceEnabled ? parsedCustomPrice : calculatedPrice;
 
 	useEffect(() => {
-		if (!selectedWaste) goBack();
+		if (!selectedWaste) goBackAndRefresh();
 	}, [selectedWaste, goBack]);
 
 	if (!selectedWaste) return null;
@@ -100,8 +116,8 @@ export default function WasteVerifierScreen() {
 					? "Data sampah berhasil diubah"
 					: "Bank sampah berhasil diverifikasi",
 			});
-			goBack();
-			refreshOnNextNavigate();
+
+			goBackAndRefresh();
 		} catch (e) {
 			const { uiMessage } = normalizeError(e, "Waste Bank Verify");
 			showToast({ title: uiMessage });
@@ -116,7 +132,7 @@ export default function WasteVerifierScreen() {
 			await deleteWasteBank(selectedWaste.id);
 			setRejectDialogOpen(false);
 			showToast({ title: "Bank sampah ditolak" });
-			goBack();
+			goBackAndRefresh();
 		} catch (e) {
 			const { uiMessage } = normalizeError(e, "Waste Bank Reject");
 			showToast({ title: uiMessage });

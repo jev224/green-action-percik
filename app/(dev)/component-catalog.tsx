@@ -316,7 +316,7 @@ export default function ComponentCatalogScreen() {
 					</DemoSection>
 
 					<DemoSection title="PhotoPicker">
-						<PhotoPicker value={photo} onChange={setPhoto} />
+						<PhotoPicker value={photo} onChange={setPhoto} canUploadFile />
 					</DemoSection>
 
 					{/* ------------------------------------------------------------- */}
@@ -325,7 +325,7 @@ export default function ComponentCatalogScreen() {
 					<DemoSection title="ProgressBar / EmptyState">
 						<VStack space="md">
 							<ProgressBar text="Module completed" value={65} />
-							<View className="border border-dashed border-border rounded-lg">
+							<View className="border border-dashed border-border rounded-sm">
 								<EmptyState message="No data to display." />
 							</View>
 						</VStack>

@@ -400,7 +400,11 @@ export default function EditLessonScreen() {
 								control={control}
 								name="photoUri"
 								render={({ field }) => (
-									<PhotoPicker value={field.value} onChange={field.onChange} />
+									<PhotoPicker
+										value={field.value}
+										onChange={field.onChange}
+										canUploadFile
+									/>
 								)}
 							/>
 						</ListSection>

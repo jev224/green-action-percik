@@ -94,20 +94,19 @@ export default function LessonsScreen() {
 				</>
 			}
 			contentComponent={
-				results.length > 0 ? (
-					<FlatList
-						data={results}
-						showsVerticalScrollIndicator={false}
-						className="native:overflow-visible"
-						renderItem={renderItem}
-						keyExtractor={(lesson) => String(lesson.id)}
-						refreshControl={
-							<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />
-						}
-					/>
-				) : (
-					<EmptyState message="Tidak ada materi pembalajaran." />
-				)
+				<FlatList
+					data={results}
+					showsVerticalScrollIndicator={false}
+					className="native:overflow-visible"
+					renderItem={renderItem}
+					keyExtractor={(lesson) => String(lesson.id)}
+					refreshControl={
+						<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />
+					}
+					ListEmptyComponent={
+						<EmptyState message="Tidak ada materi pembalajaran." />
+					}
+				/>
 			}
 			overlayComponent={
 				<View

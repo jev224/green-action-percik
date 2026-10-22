@@ -18,6 +18,11 @@ export default function DebtSettlementScreen() {
 	const { goBack } = useNavigation();
 	const showToast = useShowToast();
 
+	const goBackAndRefresh = () => {
+		goBack();
+		refreshOnNextNavigate();
+	};
+
 	const selectedStudent = useActivityManagerStore((s) => s.selectedStudent);
 
 	const [isSubmitting, setSubmitting] = useState(false);
@@ -35,7 +40,7 @@ export default function DebtSettlementScreen() {
 	useEffect(() => {
 		if (!selectedStudent) {
 			showToast({ title: "Data siswa tidak ditemukan" });
-			goBack();
+			goBackAndRefresh();
 		}
 	}, [selectedStudent, showToast, goBack]);
 
@@ -47,7 +52,7 @@ export default function DebtSettlementScreen() {
 			await payAllUnpaidStudentWaste(selectedStudent.user_id);
 			setConfirmDialogShown(false);
 			showToast({ title: "Uang berhasil dicatat sebagai sudah diberikan" });
-			goBack();
+			goBackAndRefresh();
 		} catch (e) {
 			const { uiMessage } = normalizeError(e, "Pay unpaid student waste");
 			showToast({ title: uiMessage });

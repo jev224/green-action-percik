@@ -52,7 +52,7 @@ export const Modal = ({
 				)}
 
 				{description && (
-					<ModalBody className="max-w-[90%]">
+					<ModalBody className="max-w-[80%]">
 						<Heading size="2xl" className="mb-3">
 							{title}
 						</Heading>

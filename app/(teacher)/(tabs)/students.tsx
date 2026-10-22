@@ -72,17 +72,14 @@ export default function StudentsScreen() {
 				</>
 			}
 			contentComponent={
-				results.length > 0 ? (
-					<StudentList
-						refreshControl={
-							<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />
-						}
-						data={results}
-						onPressStudent={handlePressStudent}
-					/>
-				) : (
-					<EmptyState message="Tidak ada siswa" />
-				)
+				<StudentList
+					refreshControl={
+						<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />
+					}
+					data={results}
+					onPressStudent={handlePressStudent}
+					ListEmptyComponent={<EmptyState message="Tidak ada siswa" />}
+				/>
 			}
 			loadingComponent={
 				<ScrollView

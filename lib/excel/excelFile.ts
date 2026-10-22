@@ -49,7 +49,7 @@ export const createExcelFile = async (
 	const totalClasses = classes.length;
 
 	for (const [classIndex, classData] of classes.entries()) {
-		const data: XLSLSheetFormat[] = [];
+		const data: Omit<XLSLSheetFormat, "No.">[] = [];
 
 		const className = parseClassName(classData);
 
@@ -70,7 +70,7 @@ export const createExcelFile = async (
 
 		const classCompostActivitiesCount = classCompostActivities.length;
 
-		for (const [index, student] of students.entries()) {
+		for (const student of students.values()) {
 			const gardenActivitiesTotal = gardenActivities.filter(
 				({ student_id }) => student_id === student.user_id,
 			).length;
@@ -99,7 +99,6 @@ export const createExcelFile = async (
 			);
 
 			data.push({
-				"No.": index + 1,
 				"Nama Siswa": student.name,
 				NIS: student.nis,
 
@@ -121,7 +120,14 @@ export const createExcelFile = async (
 			`Membuat sheet ${className}...`,
 		);
 
-		const worksheet = XLSX.utils.json_to_sheet(data);
+		const sortedData: XLSLSheetFormat[] = data
+			.sort((a, b) => a["Nama Siswa"].localeCompare(b["Nama Siswa"], "id"))
+			.map((item, index) => ({
+				...item,
+				"No.": index + 1,
+			}));
+
+		const worksheet = XLSX.utils.json_to_sheet(sortedData);
 
 		XLSX.utils.book_append_sheet(workbook, worksheet, className);
 	}

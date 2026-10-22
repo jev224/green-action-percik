@@ -57,9 +57,8 @@ export function useActivitySubmission<T extends BaseSubmittedInfo>(
 
 		try {
 			await submit();
-			showResult({ type: "success", ...successMessage });
-
 			refreshOnNextNavigate();
+			showResult({ type: "success", ...successMessage });
 		} catch (e) {
 			reportError(e, "Submission");
 		} finally {

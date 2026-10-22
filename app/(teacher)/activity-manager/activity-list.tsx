@@ -31,6 +31,7 @@ import {
 	type WasteBankData,
 } from "@/stores/activityManager";
 import { formatDate, parseClassName } from "@/utils";
+import { refreshOnNextNavigate } from "@/hooks/useRefreshOnNavigate";
 
 type CompostCardData = {
 	type: "compost-activity";
@@ -139,6 +140,11 @@ export default function ActivityListScreen() {
 	const { goBack, navigateTo } = useNavigation();
 	const showToast = useShowToast();
 
+	const goBackAndRefresh = () => {
+		goBack();
+		refreshOnNextNavigate();
+	};
+
 	const { data, isLoading, isError, refresh, errorMessage, isRefreshing } =
 		useAsyncData<ActivityCardData[] | null>(
 			async () => {
@@ -227,7 +233,7 @@ export default function ActivityListScreen() {
 	useEffect(() => {
 		if (!activityType) {
 			showToast({ title: "Data tidak valid" });
-			goBack();
+			goBackAndRefresh();
 		}
 	}, [activityType, goBack, showToast]);
 
@@ -261,20 +267,17 @@ export default function ActivityListScreen() {
 				</>
 			}
 			contentComponent={
-				finalResults.length > 0 ? (
-					<FlatList
-						refreshControl={
-							<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />
-						}
-						data={finalResults}
-						showsVerticalScrollIndicator={false}
-						className="overflow-visible"
-						renderItem={renderCard}
-						keyExtractor={(item) => String(item.id)}
-					/>
-				) : (
-					<EmptyState message="Tidak ada data." />
-				)
+				<FlatList
+					refreshControl={
+						<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />
+					}
+					data={finalResults}
+					showsVerticalScrollIndicator={false}
+					className="overflow-visible"
+					renderItem={renderCard}
+					keyExtractor={(item) => String(item.id)}
+					ListEmptyComponent={<EmptyState message="Tidak ada data." />}
+				/>
 			}
 			loadingComponent={
 				<ScrollView

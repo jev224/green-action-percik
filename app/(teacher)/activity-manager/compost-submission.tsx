@@ -22,6 +22,7 @@ import {
 } from "@/services/fetcher/activity/compostActivity";
 import { fetchStudentsByClass } from "@/services/fetcher/student/studentQuery";
 import { useActivityManagerStore } from "@/stores/activityManager";
+import { refreshOnNextNavigate } from "@/hooks/useRefreshOnNavigate";
 
 type Student = { user_id: string };
 
@@ -29,6 +30,11 @@ export default function CompostSubmissionScreen() {
 	const { profile } = useUserProfile("teacher");
 	const selectedClass = useActivityManagerStore((s) => s.selectedClass);
 	const { goBack } = useNavigation();
+
+	const goBackAndRefresh = () => {
+		goBack();
+		refreshOnNextNavigate();
+	};
 
 	const { isLoading: activityInfoLoading, locations } =
 		useActivityInfo("locations");
@@ -105,7 +111,7 @@ export default function CompostSubmissionScreen() {
 	const isByTeacher = submittedInfo?.submittedByRole === "teacher";
 
 	useEffect(() => {
-		if (!selectedClass) goBack();
+		if (!selectedClass) goBackAndRefresh();
 	}, [selectedClass]);
 
 	if (!selectedClass) return null;
