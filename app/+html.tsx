@@ -11,6 +11,11 @@ export default function Root({ children }: PropsWithChildren) {
 			<head>
 				<meta name="mobile-web-app-capable" content="yes" />
 
+				<meta
+					name="viewport"
+					content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+				/>
+
 				<meta name="apple-mobile-web-app-title" content="Green Action" />
 				<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 				<meta
@@ -36,7 +41,14 @@ export default function Root({ children }: PropsWithChildren) {
 
 				{/* Add any additional <head> elements that you want globally available on web... */}
 			</head>
-			<body>{children}</body>
+			<body
+				style={{
+					width: "100%",
+					height: "100dvh",
+				}}
+			>
+				{children}
+			</body>
 		</html>
 	);
 }
