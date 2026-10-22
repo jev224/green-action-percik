@@ -164,7 +164,8 @@ export function TextField({
 		}
 	}, [keyboard.height, isFocused]);
 
-	const inputFieldType = isPassword && !showPassword ? "password" : "text";
+	// const inputFieldType = isPassword && !showPassword ? "password" : "text";
+	const inputFieldType = isPassword ? "password" : "text";
 
 	const resolvedKeyboardType =
 		keyboardType ??
@@ -206,7 +207,7 @@ export function TextField({
 				)}
 
 				{isPassword && (
-					<InputSlot onPress={handleState}>
+					<InputSlot onPress={handleState} className="-m-4 p-4">
 						<InputIcon as={showPassword ? Eye : EyeOff} />
 					</InputSlot>
 				)}
