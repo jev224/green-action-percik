@@ -21,11 +21,14 @@ import {
 import { Uniwind } from "uniwind";
 import { UpdateBanner } from "@/components/domain/layout/UpdateBanner";
 import { ToastHost } from "@/components/primitives/Feedback/Toast/ToastHost";
+import { patchFlatListProps } from "@/components/primitives/NativeRefreshConrol/patchFlatListProps";
 import { useThemeColors } from "@/hooks/useThemeColors";
 
 export { ErrorBoundary } from "expo-router";
 
 SplashScreen.preventAutoHideAsync();
+
+patchFlatListProps();
 
 export default function RootLayout() {
 	useEffect(() => {

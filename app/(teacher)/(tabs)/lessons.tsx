@@ -1,6 +1,6 @@
 import { BookImage, Plus } from "lucide-react-native";
 import { memo, useCallback } from "react";
-import { FlatList, RefreshControl, ScrollView, View } from "react-native";
+import { FlatList, ScrollView, View } from "react-native";
 
 import Animated from "react-native-reanimated";
 import {
@@ -12,6 +12,7 @@ import {
 	ActionTile,
 	Button,
 	EmptyState,
+	NativeRefreshControl,
 	Screen,
 	ScreenHeader,
 	SearchField,
@@ -101,7 +102,10 @@ export default function LessonsScreen() {
 					renderItem={renderItem}
 					keyExtractor={(lesson) => String(lesson.id)}
 					refreshControl={
-						<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />
+						<NativeRefreshControl
+							refreshing={isRefreshing}
+							onRefresh={refresh}
+						/>
 					}
 					ListEmptyComponent={
 						<EmptyState message="Tidak ada materi pembalajaran." />

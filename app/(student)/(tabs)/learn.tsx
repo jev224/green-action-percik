@@ -1,6 +1,6 @@
 import { LeafyGreen } from "lucide-react-native";
 import { memo, useCallback } from "react";
-import { FlatList, RefreshControl } from "react-native";
+import { FlatList } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
 import {
@@ -13,6 +13,7 @@ import { GlowDecoration } from "@/components/decoration";
 import {
 	ActionTile,
 	EmptyState,
+	NativeRefreshControl,
 	Screen,
 	ScreenHeader,
 	SearchField,
@@ -128,7 +129,10 @@ export default function LearningScreen() {
 			contentComponent={
 				<FlatList
 					refreshControl={
-						<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />
+						<NativeRefreshControl
+							refreshing={isRefreshing}
+							onRefresh={refresh}
+						/>
 					}
 					data={results}
 					showsVerticalScrollIndicator={false}

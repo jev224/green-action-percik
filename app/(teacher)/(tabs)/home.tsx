@@ -8,11 +8,11 @@ import {
 	Recycle,
 	Trash2,
 } from "lucide-react-native";
-import { RefreshControl } from "react-native";
 import { Greeting } from "@/components/domain";
 import {
 	ActionTile,
 	ListSection,
+	NativeRefreshControl,
 	Screen,
 	StatCard,
 } from "@/components/primitives";
@@ -51,7 +51,7 @@ export default function HomeScreen() {
 			requiredInternet
 			tabBarPadding
 			refreshControl={
-				<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />
+				<NativeRefreshControl refreshing={isRefreshing} onRefresh={refresh} />
 			}
 			contentComponent={({
 				stats: {

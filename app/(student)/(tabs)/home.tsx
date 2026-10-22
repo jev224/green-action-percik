@@ -9,7 +9,6 @@ import {
 	Trash2,
 } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { RefreshControl } from "react-native";
 import {
 	GlowDecoration,
 	GlowOrb,
@@ -22,6 +21,7 @@ import {
 	HomeCarousel,
 	ListSection,
 	Modal,
+	NativeRefreshControl,
 	Screen,
 	StatCard,
 } from "@/components/primitives";
@@ -77,7 +77,7 @@ export default function HomeScreen() {
 			requiredInternet
 			tabBarPadding
 			refreshControl={
-				<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />
+				<NativeRefreshControl refreshing={isRefreshing} onRefresh={refresh} />
 			}
 			contentComponent={({
 				organizationPhotos,

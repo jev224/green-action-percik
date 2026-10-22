@@ -1,10 +1,10 @@
 import { useCallback } from "react";
-import { RefreshControl } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { type StudentData, StudentList } from "@/components/domain";
 import {
 	EmptyState,
 	FilterChips,
+	NativeRefreshControl,
 	Screen,
 	ScreenHeader,
 	SearchField,
@@ -74,7 +74,10 @@ export default function StudentsScreen() {
 			contentComponent={
 				<StudentList
 					refreshControl={
-						<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />
+						<NativeRefreshControl
+							refreshing={isRefreshing}
+							onRefresh={refresh}
+						/>
 					}
 					data={results}
 					onPressStudent={handlePressStudent}

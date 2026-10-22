@@ -8,7 +8,6 @@ import {
 	Sprout,
 	Trash2,
 } from "lucide-react-native";
-import { RefreshControl } from "react-native";
 import {
 	GlowDecoration,
 	GlowOrb,
@@ -17,6 +16,7 @@ import {
 import {
 	ActionTile,
 	ListSection,
+	NativeRefreshControl,
 	ProgressBar,
 	Screen,
 	ScreenHeader,
@@ -66,7 +66,7 @@ export default function StatsiticScreen() {
 			requiredInternet
 			tabBarPadding
 			refreshControl={
-				<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />
+				<NativeRefreshControl refreshing={isRefreshing} onRefresh={refresh} />
 			}
 			contentComponent={({
 				stats: {

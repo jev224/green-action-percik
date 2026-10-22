@@ -1,12 +1,13 @@
 import { GraduationCap, PiggyBank, Recycle } from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { FlatList, RefreshControl } from "react-native";
+import { FlatList } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { BackButton } from "@/components/domain";
 import {
 	ActionTile,
 	EmptyState,
 	ListSection,
+	NativeRefreshControl,
 	Screen,
 	ScreenHeader,
 	SearchField,
@@ -359,7 +360,10 @@ export default function ActivityListScreen() {
 
 					<FlatList
 						refreshControl={
-							<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />
+							<NativeRefreshControl
+								refreshing={isRefreshing}
+								onRefresh={refresh}
+							/>
 						}
 						data={finalResults}
 						showsVerticalScrollIndicator={false}
