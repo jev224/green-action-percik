@@ -134,7 +134,7 @@ export default function HomeScreen() {
 								variant="solid"
 								thumbnailPosition="right"
 								onPress={() => {
-									setActivityType("waste-bank-classes");
+									setActivityType("waste-banks");
 									navigateTo("/(teacher)/activity-manager/activity-list");
 								}}
 							/>

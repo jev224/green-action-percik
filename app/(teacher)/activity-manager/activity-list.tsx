@@ -6,11 +6,13 @@ import { BackButton } from "@/components/domain";
 import {
 	ActionTile,
 	EmptyState,
+	ListSection,
 	Screen,
 	ScreenHeader,
 	SearchField,
 	SegmentedControl,
 	type SegmentedControlOption,
+	SelectField,
 } from "@/components/primitives";
 import { Skeleton } from "@/components/ui/skeleton";
 import { VStack } from "@/components/ui/vstack";
@@ -26,7 +28,7 @@ import {
 } from "@/services/fetcher/activity/teacherActivityManager";
 import { fetchAllStudentClasses } from "@/services/fetcher/student/studentClass";
 import {
-	type ClassData,
+	type CompostData,
 	type FilterSection,
 	type StudentData,
 	useActivityManagerStore,
@@ -40,11 +42,16 @@ type CompostCardData = {
 	title: string;
 	description: string;
 	completed: boolean;
-	data: ClassData;
+	data: CompostData;
 };
 
-type WasteCardStudentsData = {
-	type: "waste-bank-students";
+type CompostActivityData = {
+	type: "compost-activity";
+	cardsData: CompostCardData[];
+};
+
+type WasteCardsData = {
+	type: "waste-banks";
 	id: number;
 	title: string;
 	description: string;
@@ -53,12 +60,10 @@ type WasteCardStudentsData = {
 	data: WasteBankData;
 };
 
-type WasteCardClassesData = {
-	type: "waste-bank-classes";
-	id: number;
-	title: string;
-	description: string;
-	data: ClassData;
+type WasteActivityData = {
+	type: "waste-banks";
+	cardsData: WasteCardsData[];
+	classes: Awaited<ReturnType<typeof fetchAllStudentClasses>>;
 };
 
 type DebtSettlementCardData = {
@@ -67,107 +72,132 @@ type DebtSettlementCardData = {
 	title: string;
 	description: string;
 	createdAt: string;
-	completed: boolean;
 	data: StudentData;
 };
 
-type ActivityCardData =
+type DebtSettlementActivityData = {
+	type: "debt-settlement";
+	cardsData: DebtSettlementCardData[];
+};
+
+export type ActivityCardData =
 	| CompostCardData
-	| WasteCardStudentsData
-	| WasteCardClassesData
+	| WasteCardsData
 	| DebtSettlementCardData;
+
+export type ActivityData =
+	| CompostActivityData
+	| WasteActivityData
+	| DebtSettlementActivityData;
+
+const SEARCH_KEYS = ["title", "description"];
+
+const EMPTY: ActivityCardData[] = [];
 
 const FILTER_OPTIONS: SegmentedControlOption<FilterSection>[] = [
 	{ label: "Belum Selesai", value: "incompleted" },
 	{ label: "Selesai", value: "completed" },
 ];
 
-const EXCLUDED_FILTER: Set<ActivityCardData["type"] | string> = new Set([
-	"waste-bank-classes",
+const EXCLUDED_FILTER: Set<ActivityCardData["type"] | null> = new Set([
 	"debt-settlement",
 ]);
 
 const CARD_ICONS: Record<ActivityCardData["type"], typeof GraduationCap> = {
 	"compost-activity": GraduationCap,
-	"waste-bank-students": Recycle,
-	"waste-bank-classes": GraduationCap,
+	"waste-banks": Recycle,
 	"debt-settlement": PiggyBank,
 };
 
 const SKELETON_PLACEHOLDERS = Array.from({ length: 10 }, (_, index) => index);
 
-async function toCompostCards(): Promise<CompostCardData[]> {
+async function toCompostCards(): Promise<CompostActivityData> {
 	const activities = await fetchCompostActivities();
 
-	return activities.map((classData) => ({
+	return {
 		type: "compost-activity",
-		id: classData.id,
-		title: parseClassName(classData),
-		description:
-			classData.compost.length !== 0 ? "Sudah selesai" : "Belum selesai",
-		completed: classData.compost.length !== 0,
-		data: classData,
-	}));
+		cardsData: activities.map((classData) => ({
+			type: "compost-activity",
+			id: classData.id,
+			title: parseClassName(classData),
+			description:
+				classData.compost.length !== 0 ? "Sudah selesai" : "Belum selesai",
+			completed: classData.compost.length !== 0,
+			data: classData,
+		})),
+	};
 }
 
-async function toWasteStudentsCards(
-	classId: number | null | undefined,
-	onInvalid: () => void,
-): Promise<WasteCardStudentsData[]> {
-	if (!classId) {
-		onInvalid();
-		throw new Error("Invalid class");
+async function toWasteCards(): Promise<WasteActivityData> {
+	const [wasteBanks, classes] = await Promise.all([
+		fetchWasteBanks(),
+		fetchAllStudentClasses(),
+	]);
+
+	return {
+		type: "waste-banks",
+		cardsData: wasteBanks.map((wasteBank) => ({
+			type: "waste-banks",
+			id: wasteBank.id,
+			title: wasteBank.student.name,
+			description: `${wasteBank.category} • ${formatDate(wasteBank.created_at)}`,
+			createdAt: wasteBank.created_at,
+			completed: Number(wasteBank.price ?? 0) > 0,
+			data: wasteBank,
+		})),
+		classes,
+	};
+}
+
+function wasteBankMatchesFilter(item: ActivityCardData, filter: string) {
+	if (item.type !== "waste-banks" || filter === "all") {
+		return true;
 	}
 
-	const wasteBanksStudents = await fetchWasteBanks(classId);
-
-	return wasteBanksStudents.map((wasteBank) => ({
-		type: "waste-bank-students",
-		id: wasteBank.id,
-		title: wasteBank.student.name,
-		description: `${wasteBank.category} • ${formatDate(wasteBank.created_at)}`,
-		createdAt: wasteBank.created_at,
-		completed: Number(wasteBank.weight ?? 0) > 0,
-		data: wasteBank,
-	}));
+	return String(item.data.student.class_id) === filter;
 }
 
-async function toWasteClassessCards(): Promise<WasteCardClassesData[]> {
-	const wasteBanksClasses = await fetchAllStudentClasses();
-
-	return wasteBanksClasses.map((classData) => ({
-		type: "waste-bank-classes",
-		id: classData.id,
-		title: parseClassName(classData),
-		description: "",
-		data: classData,
-	}));
-}
-
-// NOTE: field names below (debtAmount / isSettled) are guesses — adjust to
-// whatever StudentData actually exposes.
-async function toDebtSettlementCards(): Promise<DebtSettlementCardData[]> {
+async function toDebtSettlementCards(): Promise<DebtSettlementActivityData> {
 	const students = await fetchAllUnpaidStudentsWaste();
 
-	return students.map((student) => ({
+	return {
 		type: "debt-settlement",
-		id: student.id,
-		title: student.name,
-		description: "Belum lunas",
-		createdAt: student.created_at,
-		completed: false,
-		data: student,
-	}));
+		cardsData: students.map((student) => ({
+			type: "debt-settlement",
+			id: student.id,
+			title: student.name,
+			description: "Belum lunas",
+			createdAt: student.created_at,
+			data: student,
+		})),
+	};
 }
+
+const createDefaultAdditionalData = () => ({
+	wasteBankClassFilter: "all",
+});
+
+type AdditionalData = ReturnType<typeof createDefaultAdditionalData>;
+
+type SetAdditionalData = <K extends keyof AdditionalData>(
+	key: K,
+	value: AdditionalData[K],
+) => void;
 
 export default function ActivityListScreen() {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [filterStatus, setFilterStatus] =
 		useState<FilterSection>("incompleted");
 
+	const [additionalData, setAdditionalDataState] = useState(
+		createDefaultAdditionalData(),
+	);
+
+	const setAdditionalData: SetAdditionalData = (key, value) => {
+		setAdditionalDataState((prev) => ({ ...prev, [key]: value }));
+	};
+
 	const activityType = useActivityManagerStore((s) => s.activityType);
-	const selectedClass = useActivityManagerStore((s) => s.selectedClass);
-	const setActivityType = useActivityManagerStore((s) => s.setActivityType);
 	const setSelectedClass = useActivityManagerStore((s) => s.setSelectedClass);
 	const setSelectedWaste = useActivityManagerStore((s) => s.setSelectedWaste);
 	const setSelectedStudent = useActivityManagerStore(
@@ -185,15 +215,13 @@ export default function ActivityListScreen() {
 	};
 
 	const { data, isLoading, isError, refresh, errorMessage, isRefreshing } =
-		useAsyncData<ActivityCardData[] | null>(
+		useAsyncData<ActivityData | null>(
 			async () => {
 				switch (activityType) {
 					case "compost-activity":
 						return toCompostCards();
-					case "waste-bank-students":
-						return toWasteStudentsCards(selectedClass?.id, onInvalid);
-					case "waste-bank-classes":
-						return toWasteClassessCards();
+					case "waste-banks":
+						return toWasteCards();
 					case "debt-settlement":
 						return toDebtSettlementCards();
 					default:
@@ -201,23 +229,33 @@ export default function ActivityListScreen() {
 				}
 			},
 			undefined,
-			[activityType, selectedClass?.id],
+			[activityType],
 		);
 
 	const searchResults = useFuzzySearch(
-		data ?? [],
-		["title", "description"],
+		data?.cardsData ?? EMPTY,
+		SEARCH_KEYS,
 		searchQuery,
 	);
 
 	const finalResults = useMemo(() => {
-		const filtered = searchResults.filter((data) =>
-			"completed" in data
-				? filterStatus === "completed"
-					? data.completed
-					: !data.completed
-				: true,
-		);
+		const wantsCompleted = filterStatus === "completed";
+
+		const filtered = searchResults.filter((item) => {
+			if ("completed" in item && wantsCompleted !== item.completed) {
+				return false;
+			}
+
+			switch (item.type) {
+				case "waste-banks":
+					return wasteBankMatchesFilter(
+						item,
+						additionalData.wasteBankClassFilter,
+					);
+				default:
+					return true;
+			}
+		});
 
 		const sorted = filtered.sort((a, b) => {
 			if ("createdAt" in a && "createdAt" in b) {
@@ -231,7 +269,7 @@ export default function ActivityListScreen() {
 		});
 
 		return sorted;
-	}, [searchResults, filterStatus, selectedClass?.id]);
+	}, [searchResults, filterStatus, additionalData.wasteBankClassFilter]);
 
 	const handleCardPress = useCallback(
 		(card: ActivityCardData) => {
@@ -243,13 +281,9 @@ export default function ActivityListScreen() {
 					setSelectedClass(card.data);
 					navigateTo("/(teacher)/activity-manager/compost-submission");
 					break;
-				case "waste-bank-students":
+				case "waste-banks":
 					setSelectedWaste(card.data);
 					navigateTo("/(teacher)/activity-manager/waste-verifier");
-					break;
-				case "waste-bank-classes":
-					setSelectedClass(card.data);
-					setActivityType("waste-bank-students");
 					break;
 				case "debt-settlement":
 					setSelectedStudent(card.data);
@@ -260,7 +294,6 @@ export default function ActivityListScreen() {
 		[
 			filterStatus,
 			navigateTo,
-			setActivityType,
 			setSelectedClass,
 			setSelectedStudent,
 			setSelectedWaste,
@@ -283,7 +316,7 @@ export default function ActivityListScreen() {
 
 	useEffect(() => {
 		if (!activityType) onInvalid();
-	}, [activityType, goBack, showToast, selectedClass?.id]);
+	}, [activityType, goBack, showToast]);
 
 	return (
 		<Screen
@@ -305,7 +338,7 @@ export default function ActivityListScreen() {
 						className="flex-none"
 					/>
 
-					{!EXCLUDED_FILTER.has(activityType || "") && (
+					{!EXCLUDED_FILTER.has(activityType) && (
 						<SegmentedControl
 							options={FILTER_OPTIONS}
 							value={filterStatus}
@@ -315,17 +348,27 @@ export default function ActivityListScreen() {
 				</>
 			}
 			contentComponent={
-				<FlatList
-					refreshControl={
-						<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />
-					}
-					data={finalResults}
-					showsVerticalScrollIndicator={false}
-					className="overflow-visible"
-					renderItem={renderCard}
-					keyExtractor={(item) => `${item.type}-${item.id}`}
-					ListEmptyComponent={<EmptyState message="Tidak ada data." />}
-				/>
+				<>
+					{data?.type === "waste-banks" && (
+						<AdditionalWasteBankComponent
+							data={data}
+							additionalData={additionalData}
+							setAdditionalData={setAdditionalData}
+						/>
+					)}
+
+					<FlatList
+						refreshControl={
+							<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />
+						}
+						data={finalResults}
+						showsVerticalScrollIndicator={false}
+						className="overflow-visible"
+						renderItem={renderCard}
+						keyExtractor={(item) => `${item.type}-${item.id}`}
+						ListEmptyComponent={<EmptyState message="Tidak ada data." />}
+					/>
+				</>
 			}
 			loadingComponent={
 				<ScrollView
@@ -340,5 +383,36 @@ export default function ActivityListScreen() {
 				</ScrollView>
 			}
 		/>
+	);
+}
+
+function AdditionalWasteBankComponent({
+	data,
+	additionalData,
+	setAdditionalData,
+}: {
+	data: WasteActivityData;
+	additionalData: AdditionalData;
+	setAdditionalData: SetAdditionalData;
+}) {
+	return (
+		<ListSection title="Filter berdasarkan kelas">
+			<SelectField
+				value={additionalData.wasteBankClassFilter}
+				onValueChange={(value) =>
+					setAdditionalData("wasteBankClassFilter", value)
+				}
+				options={[
+					{
+						label: "Semua",
+						value: "all",
+					},
+					...data.classes.map((classData) => ({
+						label: parseClassName(classData),
+						value: classData.id.toString(),
+					})),
+				]}
+			/>
+		</ListSection>
 	);
 }

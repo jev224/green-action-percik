@@ -24,11 +24,10 @@ export async function fetchCompostActivities() {
 	return data ?? [];
 }
 
-export async function fetchWasteBanks(classId: number) {
+export async function fetchWasteBanks() {
 	const { error, data } = await supabase
 		.from("waste_banks")
-		.select("*, student:students!inner(name, class_id)")
-		.eq("student.class_id", classId);
+		.select("*, student:students!inner(name, class_id)");
 
 	if (error) {
 		throw new ServerError({
