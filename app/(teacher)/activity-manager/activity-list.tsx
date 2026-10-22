@@ -363,7 +363,7 @@ export default function ActivityListScreen() {
 						}
 						data={finalResults}
 						showsVerticalScrollIndicator={false}
-						className="overflow-visible"
+						className="-mx-6 px-6"
 						renderItem={renderCard}
 						keyExtractor={(item) => `${item.type}-${item.id}`}
 						ListEmptyComponent={<EmptyState message="Tidak ada data." />}

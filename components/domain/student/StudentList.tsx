@@ -17,11 +17,10 @@ export function StudentList({
 }: StudentListProps) {
 	return (
 		<FlatList
-			className="native:overflow-visible"
+			className="-mx-6 px-6"
 			data={data}
 			refreshControl={refreshControl}
 			showsVerticalScrollIndicator={false}
-			removeClippedSubviews={false}
 			renderItem={({ item }) => (
 				<StudentListItem student={item} onPress={onPressStudent} />
 			)}

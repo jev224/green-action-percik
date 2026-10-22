@@ -97,7 +97,7 @@ export default function LessonsScreen() {
 				<FlatList
 					data={results}
 					showsVerticalScrollIndicator={false}
-					className="native:overflow-visible"
+					className="-mx-6 px-6"
 					renderItem={renderItem}
 					keyExtractor={(lesson) => String(lesson.id)}
 					refreshControl={

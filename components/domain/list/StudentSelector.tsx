@@ -223,7 +223,7 @@ export function StudentMultiSelect({
 								opacity: isLoading || errorMessage ? 0 : 255,
 								zIndex: isLoading || errorMessage ? 0 : 100,
 							}}
-							className="native:overflow-visible"
+							className="-mx-6 px-6"
 							keyExtractor={(student) => student.user_id}
 							renderItem={({ item }) => (
 								<StudentListItem
