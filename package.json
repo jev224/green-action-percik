@@ -12,7 +12,7 @@
 		"lint": "biome check .",
 		"lint:fix": "biome check --write .",
 		"format": "biome format --write .",
-		"gen:types": "dotenv -e .env.private -- sh -c 'npx supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > lib/supabase/database.types.ts'",
+		"gen:types": "dotenv -e .env.local -- sh -c 'npx supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > lib/supabase/database.types.ts'",
 		"ota": "expo export --platform android --output-dir dist-ota && node scripts/make-update.mjs",
 		"build:web": "expo export -p web",
 		"build": "npm run ota && npm run build:web"
