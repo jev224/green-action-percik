@@ -21,7 +21,7 @@ export default function Index() {
 	const [errorMessage, setErrorMessage] = useState("");
 	const [showNetworkDialog, setShowNetworkDialog] = useState(false);
 
-	const { navigateToHome, resetTo } = useNavigation();
+	const { resetToHome, resetTo } = useNavigation();
 
 	const loadRole = useCallback(async () => {
 		const isOnline = await checkConnection();
@@ -45,12 +45,12 @@ export default function Index() {
 			setUserStore(profile);
 			setRoleStore(role);
 
-			navigateToHome();
+			resetToHome();
 		} catch (e) {
 			const { uiMessage } = normalizeError(e, "Initial Screen");
 			setErrorMessage(uiMessage);
 		}
-	}, [navigateToHome, resetTo, setRoleStore, setUserStore]);
+	}, [resetToHome, resetTo, setRoleStore, setUserStore]);
 
 	const initialize = useCallback(async () => {
 		if (initializingRef.current) return;

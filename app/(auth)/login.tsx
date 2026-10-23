@@ -30,7 +30,7 @@ import { checkConnection, normalizeError, sleepAsync } from "@/utils";
 export default function LoginScreen() {
 	const { setUserStore, setRoleStore } = useUserStore();
 	const { set, update, settings } = useSettings();
-	const { navigateToHome } = useNavigation();
+	const { resetToHome } = useNavigation();
 
 	const {
 		rememberMe: rememberedFlag,
@@ -90,7 +90,7 @@ export default function LoginScreen() {
 				});
 			}
 
-			navigateToHome();
+			resetToHome();
 		} catch (e) {
 			const { uiMessage } = normalizeError(e, "Login");
 			setError(uiMessage);

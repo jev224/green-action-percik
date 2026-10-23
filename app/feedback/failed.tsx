@@ -12,7 +12,7 @@ import { useNavigation } from "@/hooks/useNavigation";
 import { useResultStore } from "@/stores/result";
 
 export default function FailedScreen() {
-	const { navigateToHome } = useNavigation();
+	const { resetToHome } = useNavigation();
 
 	const [transitionFinished, setTransitionFinished] = useState(false);
 
@@ -142,7 +142,7 @@ export default function FailedScreen() {
 						size="cta"
 						variant="outline"
 						className="bg-accent"
-						onPress={() => navigateToHome()}
+						onPress={() => resetToHome()}
 					/>
 				</>
 			}

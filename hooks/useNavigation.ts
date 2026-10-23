@@ -34,7 +34,7 @@ export function useNavigation() {
 			router.dismissAll();
 		}
 
-		router.push(href);
+		router.replace(href);
 	};
 
 	const resetTo = throttleNav(resetToUnthrottled);
@@ -56,7 +56,7 @@ export function useNavigation() {
 		}
 	};
 
-	const navigateToHome = throttleNav(() => resetToUnthrottled(getHomeRoute()));
+	const resetToHome = throttleNav(() => resetToUnthrottled(getHomeRoute()));
 
 	// Guards screen removal (back gesture, hardware back, header back
 	// button — they all funnel through this one listener). When blocked,
@@ -89,7 +89,7 @@ export function useNavigation() {
 		goBack,
 		navigateTo,
 		resetTo,
-		navigateToHome,
+		resetToHome,
 		getHomeRoute,
 		navigateToFeedback,
 		useBackGuard,

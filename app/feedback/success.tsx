@@ -23,7 +23,7 @@ import { useResultStore } from "@/stores/result";
 import { calculatePercentage, randomBetween } from "@/utils";
 
 export default function SuccessScreen() {
-	const { navigateToHome } = useNavigation();
+	const { resetToHome } = useNavigation();
 
 	const [transitionFinished, setTransitionFinished] = useState(false);
 
@@ -201,7 +201,7 @@ export default function SuccessScreen() {
 					<Button
 						label="Kembail ke halaman utama"
 						size="cta"
-						onPress={() => navigateToHome()}
+						onPress={() => resetToHome()}
 					/>
 				</>
 			}
