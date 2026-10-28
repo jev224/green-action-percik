@@ -349,30 +349,28 @@ export default function ActivityListScreen() {
 				</>
 			}
 			contentComponent={
-				<>
-					{data?.type === "waste-banks" && (
-						<AdditionalWasteBankComponent
-							data={data}
-							additionalData={additionalData}
-							setAdditionalData={setAdditionalData}
+				<FlatList
+					refreshControl={
+						<NativeRefreshControl
+							refreshing={isRefreshing}
+							onRefresh={refresh}
 						/>
-					)}
-
-					<FlatList
-						refreshControl={
-							<NativeRefreshControl
-								refreshing={isRefreshing}
-								onRefresh={refresh}
+					}
+					data={finalResults}
+					showsVerticalScrollIndicator={false}
+					className="-mx-6 px-6"
+					renderItem={renderCard}
+					ListHeaderComponent={
+						data?.type === "waste-banks" ? (
+							<AdditionalWasteBankComponent
+								data={data}
+								additionalData={additionalData}
+								setAdditionalData={setAdditionalData}
 							/>
-						}
-						data={finalResults}
-						showsVerticalScrollIndicator={false}
-						className="-mx-6 px-6"
-						renderItem={renderCard}
-						keyExtractor={(item) => `${item.type}-${item.id}`}
-						ListEmptyComponent={<EmptyState message="Tidak ada data." />}
-					/>
-				</>
+						) : null
+					}
+					ListEmptyComponent={<EmptyState message="Tidak ada data." />}
+				/>
 			}
 			loadingComponent={
 				<ScrollView
