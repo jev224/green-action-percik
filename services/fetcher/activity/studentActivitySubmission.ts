@@ -73,7 +73,7 @@ async function isActivitySubmitted(
 
 	const { error, data } = await supabase
 		.from(table)
-		.select("*", { count: "exact", head: true })
+		.select("*")
 		.eq("student_id", studentId)
 		.gte("created_at", startOfDay.toISOString())
 		.lt("created_at", endOfDay.toISOString())
