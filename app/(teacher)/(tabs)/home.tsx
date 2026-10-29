@@ -69,7 +69,7 @@ export default function HomeScreen() {
 						info={parseProfileInfo({ role: "teacher", major })}
 					/>
 
-					<HStack space="md">
+					<ListSection title="Statistik Total">
 						<StatCard
 							title="Siswa"
 							stats={studentCount}
@@ -90,7 +90,7 @@ export default function HomeScreen() {
 							animation="fun"
 							size="md"
 						/>
-					</HStack>
+					</ListSection>
 
 					<ListSection title="Statistik saat ini">
 						<HStack space="md">
