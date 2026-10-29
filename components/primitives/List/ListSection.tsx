@@ -27,7 +27,7 @@ export function ListSection({
 			<HStack space="sm">
 				<Heading
 					size={size}
-					className="web:truncate"
+					className="web:truncate ml-0.5"
 					{...nativeOnlyProps({ numberOfLines: 1 })}
 				>
 					{title}

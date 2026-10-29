@@ -1,6 +1,6 @@
 import { GraduationCap, PiggyBank, Recycle } from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { FlatList, View } from "react-native";
+import { FlatList } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { BackButton } from "@/components/domain";
 import {
@@ -363,14 +363,6 @@ export default function ActivityListScreen() {
 						onChangeText={setSearchQuery}
 						className="flex-none"
 					/>
-
-					{!EXCLUDED_FILTER.has(activityType) && (
-						<SegmentedControl
-							options={FILTER_OPTIONS}
-							value={filterStatus}
-							onChange={setFilterStatus}
-						/>
-					)}
 				</>
 			}
 			contentComponent={
@@ -386,14 +378,26 @@ export default function ActivityListScreen() {
 					className="-mx-6 px-6"
 					renderItem={renderCard}
 					ListHeaderComponent={
-						data?.type === "waste-banks" ? (
-							<AdditionalWasteBankComponent
-								className="mb-4"
-								data={data}
-								additionalData={additionalData}
-								setAdditionalData={setAdditionalData}
-							/>
-						) : null
+						<>
+							{!EXCLUDED_FILTER.has(activityType) && (
+								<SegmentedControl
+									className="mb-4"
+									options={FILTER_OPTIONS}
+									value={filterStatus}
+									onChange={setFilterStatus}
+								/>
+							)}
+
+							{data?.type === "waste-banks" ? (
+								<VStack className="mb-4" space="md">
+									<AdditionalWasteBankComponent
+										data={data}
+										additionalData={additionalData}
+										setAdditionalData={setAdditionalData}
+									/>
+								</VStack>
+							) : null}
+						</>
 					}
 					ListEmptyComponent={<EmptyState message="Tidak ada data." />}
 				/>
@@ -415,36 +419,32 @@ export default function ActivityListScreen() {
 }
 
 function AdditionalWasteBankComponent({
-	className,
 	data,
 	additionalData,
 	setAdditionalData,
 }: {
-	className: string;
 	data: WasteActivityData;
 	additionalData: AdditionalData;
 	setAdditionalData: SetAdditionalData;
 }) {
 	return (
-		<View className={className}>
-			<ListSection title="Filter berdasarkan kelas">
-				<SelectField
-					value={additionalData.wasteBankClassFilter}
-					onValueChange={(value) =>
-						setAdditionalData("wasteBankClassFilter", value)
-					}
-					options={[
-						{
-							label: "Semua",
-							value: "all",
-						},
-						...data.classes.map((classData) => ({
-							label: parseClassName(classData),
-							value: classData.id.toString(),
-						})),
-					]}
-				/>
-			</ListSection>
-		</View>
+		<ListSection title="Filter berdasarkan kelas" space="md">
+			<SelectField
+				value={additionalData.wasteBankClassFilter}
+				onValueChange={(value) =>
+					setAdditionalData("wasteBankClassFilter", value)
+				}
+				options={[
+					{
+						label: "Semua",
+						value: "all",
+					},
+					...data.classes.map((classData) => ({
+						label: parseClassName(classData),
+						value: classData.id.toString(),
+					})),
+				]}
+			/>
+		</ListSection>
 	);
 }
