@@ -25,7 +25,7 @@ export const PhotoLightbox = ({
 	expandable,
 }: PhotoLightboxProps) => {
 	const insets = useSafeAreaInsets();
-	const closeIconOffset = Math.max(12, insets.top);
+	const closeIconOffset = Math.max(16, insets.top);
 
 	// Starts closed; `expandable` only controls whether the user can open it.
 	const [expanded, setExpanded] = useState(false);
@@ -98,10 +98,9 @@ export const PhotoLightbox = ({
 					</Pressable>
 
 					<View
-						className="absolute"
+						className="absolute right-3"
 						style={{
 							top: closeIconOffset,
-							right: closeIconOffset,
 						}}
 					>
 						<IconButton
