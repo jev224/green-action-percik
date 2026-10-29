@@ -35,8 +35,10 @@ export function TabBar({
 	const insets = useSafeAreaInsets();
 	const setTabBarHeight = useTabBarHeightStore((s) => s.setTabBarHeight);
 
+	const offsetBottom = Math.max(insets.bottom, 16) + 8;
+
 	useEffect(() => {
-		setTabBarHeight(Math.max(insets.bottom, 24) + TAB_HEIGHT + 24);
+		setTabBarHeight(offsetBottom + TAB_HEIGHT + 24);
 	}, [insets.bottom]);
 
 	return (
@@ -44,7 +46,7 @@ export function TabBar({
 			pointerEvents="box-none"
 			className="absolute left-0 right-0 bottom-0 z-20 items-center"
 			style={{
-				paddingBottom: Math.max(insets.bottom, 24),
+				paddingBottom: offsetBottom,
 			}}
 		>
 			<EaseView
