@@ -95,7 +95,7 @@ const actionTileStyle = tv({
 
 type ActionTileStyleProps = VariantProps<typeof actionTileStyle>;
 
-interface ActionTileProps {
+export interface ActionTileProps {
 	title: string;
 	description?: string;
 	imageSource?: ImageSourcePropType;

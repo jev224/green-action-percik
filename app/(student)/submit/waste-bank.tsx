@@ -82,6 +82,7 @@ export default function WasteSubmissionScreen() {
 			onSubmit={handleSubmit}
 			onDelete={handleDelete}
 			submittedMessage="Kamu sudah mengirim kegiatan pengumpulan sampah hari ini. Hapus pengiriman jika ingin mengubahnya, atau kembali ke halaman utama."
+			submittedPhoto={submittedInfo?.photo}
 		>
 			<ListSection title="Jenis sampah">
 				<SegmentedControl

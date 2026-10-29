@@ -1,7 +1,5 @@
-import { Image } from "expo-image";
-import { Coins, Info } from "lucide-react-native";
+import { Coins } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { View } from "react-native";
 import { BackButton } from "@/components/domain";
 import {
 	BottomPanel,
@@ -9,16 +7,14 @@ import {
 	Checkbox,
 	ListSection,
 	Modal,
+	PhotoLightbox,
 	Screen,
 	ScreenHeader,
 	Spacer,
-	Spinner,
 	StatCard,
 	TextField,
 } from "@/components/primitives";
-import { Center } from "@/components/ui/center";
 import { HStack } from "@/components/ui/hstack";
-import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { useAsyncData } from "@/hooks/useAsyncData";
@@ -61,7 +57,6 @@ export default function WasteVerifierScreen() {
 		data,
 		errorMessage,
 		isLoading: isFetchLoading,
-		isError,
 	} = useAsyncData(async () => {
 		const [wastePhoto, priceMultiplier] = await Promise.all([
 			selectedWaste?.photo
@@ -86,7 +81,6 @@ export default function WasteVerifierScreen() {
 
 	const photoUri = data?.wastePhoto;
 	const isPhotoLoading = isFetchLoading || isImageLoading;
-	const showPhotoError = isError && !isFetchLoading;
 
 	const priceMultiplier =
 		Number(data?.priceMultiplier) || WASTE_PRICE_MULTIPLIER_FALLBACK;
@@ -228,31 +222,13 @@ export default function WasteVerifierScreen() {
 			contentComponent={
 				<>
 					{selectedWaste.photo && (
-						<View className="w-full h-64 bg-accent-foreground/20 rounded-md overflow-hidden">
-							{isPhotoLoading && (
-								<Center className="absolute w-full h-full">
-									<Spinner />
-								</Center>
-							)}
-
-							{showPhotoError && (
-								<Center className="absolute w-full h-full gap-4">
-									<Icon as={Info} className="size-16" />
-									<Text size="lg" className="max-w-[60%] text-center">
-										{errorMessage}
-									</Text>
-								</Center>
-							)}
-
-							{photoUri && (
-								<Image
-									onLoadEnd={() => setImageLoading(false)}
-									contentFit="cover"
-									style={{ position: "absolute", inset: 0 }}
-									source={photoUri}
-								/>
-							)}
-						</View>
+						<PhotoLightbox
+							photoUri={photoUri}
+							isLoading={isPhotoLoading}
+							errorMessage={errorMessage}
+							onLoadEnd={() => setImageLoading(false)}
+							expandable
+						/>
 					)}
 
 					<ListSection title="Harga sampah">

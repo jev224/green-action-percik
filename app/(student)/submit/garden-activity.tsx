@@ -88,6 +88,7 @@ export default function CompostSubmissionScreen() {
 			onSubmit={handleSubmit}
 			onDelete={handleDelete}
 			submittedMessage="Kamu sudah mengirim kegiatan perawatan Tanaman hari ini. Hapus pengiriman jika ingin mengubahnya, atau kembali ke halaman utama."
+			submittedPhoto={submittedInfo?.photo}
 		>
 			<ListSection title="Jenis Kegiatan">
 				<SelectField

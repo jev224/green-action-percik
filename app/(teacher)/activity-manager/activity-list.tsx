@@ -1,10 +1,11 @@
 import { GraduationCap, PiggyBank, Recycle } from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { FlatList } from "react-native";
+import { FlatList, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { BackButton } from "@/components/domain";
 import {
 	ActionTile,
+	type ActionTileProps,
 	EmptyState,
 	ListSection,
 	NativeRefreshControl,
@@ -26,6 +27,7 @@ import {
 	fetchAllUnpaidStudentsWaste,
 	fetchCompostActivities,
 	fetchWasteBanks,
+	fetchWastePhotoURL,
 } from "@/services/fetcher/activity/teacherActivityManager";
 import { fetchAllStudentClasses } from "@/services/fetcher/student/studentClass";
 import {
@@ -35,7 +37,7 @@ import {
 	useActivityManagerStore,
 	type WasteBankData,
 } from "@/stores/activityManager";
-import { formatDate, parseClassName } from "@/utils";
+import { formatDate, getWeekRange, parseClassName } from "@/utils";
 
 type CompostCardData = {
 	type: "compost-activity";
@@ -49,6 +51,7 @@ type CompostCardData = {
 type CompostActivityData = {
 	type: "compost-activity";
 	cardsData: CompostCardData[];
+	cardProps: Partial<ActionTileProps>;
 };
 
 type WasteCardsData = {
@@ -58,12 +61,14 @@ type WasteCardsData = {
 	description: string;
 	createdAt: string;
 	completed: boolean;
+	photoUrl?: string;
 	data: WasteBankData;
 };
 
 type WasteActivityData = {
 	type: "waste-banks";
 	cardsData: WasteCardsData[];
+	cardProps: Partial<ActionTileProps>;
 	classes: Awaited<ReturnType<typeof fetchAllStudentClasses>>;
 };
 
@@ -79,6 +84,7 @@ type DebtSettlementCardData = {
 type DebtSettlementActivityData = {
 	type: "debt-settlement";
 	cardsData: DebtSettlementCardData[];
+	cardProps: Partial<ActionTileProps>;
 };
 
 export type ActivityCardData =
@@ -117,15 +123,25 @@ async function toCompostCards(): Promise<CompostActivityData> {
 
 	return {
 		type: "compost-activity",
-		cardsData: activities.map((classData) => ({
-			type: "compost-activity",
-			id: classData.id,
-			title: parseClassName(classData),
-			description:
-				classData.compost.length !== 0 ? "Sudah selesai" : "Belum selesai",
-			completed: classData.compost.length !== 0,
-			data: classData,
-		})),
+		cardsData: activities.map((classData) => {
+			const { startOfWeek, endOfWeek } = getWeekRange();
+
+			const completed = classData.composts.some(
+				(c) =>
+					c.created_at >= startOfWeek.toISOString() &&
+					c.created_at <= endOfWeek.toISOString(),
+			);
+
+			return {
+				type: "compost-activity",
+				id: classData.id,
+				title: parseClassName(classData),
+				description: completed ? "Sudah selesai" : "Belum selesai",
+				completed,
+				data: classData,
+			};
+		}),
+		cardProps: {},
 	};
 }
 
@@ -137,15 +153,21 @@ async function toWasteCards(): Promise<WasteActivityData> {
 
 	return {
 		type: "waste-banks",
-		cardsData: wasteBanks.map((wasteBank) => ({
-			type: "waste-banks",
-			id: wasteBank.id,
-			title: wasteBank.student.name,
-			description: `${wasteBank.category} • ${formatDate(wasteBank.created_at)}`,
-			createdAt: wasteBank.created_at,
-			completed: Number(wasteBank.price ?? 0) > 0,
-			data: wasteBank,
-		})),
+		cardsData: await Promise.all(
+			wasteBanks.map(async (wasteBank) => ({
+				type: "waste-banks",
+				id: wasteBank.id,
+				title: wasteBank.student.name,
+				description: `${wasteBank.category} • ${formatDate(wasteBank.created_at)}`,
+				createdAt: wasteBank.created_at,
+				completed: Number(wasteBank.price ?? 0) > 0,
+				data: wasteBank,
+				photoUrl: wasteBank.photo
+					? await fetchWastePhotoURL(wasteBank.photo)
+					: undefined,
+			})),
+		),
+		cardProps: { thumbnailPosition: "top", size: "lg" },
 		classes,
 	};
 }
@@ -171,6 +193,7 @@ async function toDebtSettlementCards(): Promise<DebtSettlementActivityData> {
 			createdAt: student.created_at,
 			data: student,
 		})),
+		cardProps: {},
 	};
 }
 
@@ -308,8 +331,10 @@ export default function ActivityListScreen() {
 				className="mb-4 shadow-none"
 				icon={CARD_ICONS[item.type]}
 				title={item.title}
+				imageSource={"photoUrl" in item ? { uri: item.photoUrl } : undefined}
 				description={item.description}
 				onPress={() => handleCardPress(item)}
+				{...(data?.cardProps || {})}
 			/>
 		),
 		[handleCardPress],
@@ -363,6 +388,7 @@ export default function ActivityListScreen() {
 					ListHeaderComponent={
 						data?.type === "waste-banks" ? (
 							<AdditionalWasteBankComponent
+								className="mb-4"
 								data={data}
 								additionalData={additionalData}
 								setAdditionalData={setAdditionalData}
@@ -389,32 +415,36 @@ export default function ActivityListScreen() {
 }
 
 function AdditionalWasteBankComponent({
+	className,
 	data,
 	additionalData,
 	setAdditionalData,
 }: {
+	className: string;
 	data: WasteActivityData;
 	additionalData: AdditionalData;
 	setAdditionalData: SetAdditionalData;
 }) {
 	return (
-		<ListSection title="Filter berdasarkan kelas">
-			<SelectField
-				value={additionalData.wasteBankClassFilter}
-				onValueChange={(value) =>
-					setAdditionalData("wasteBankClassFilter", value)
-				}
-				options={[
-					{
-						label: "Semua",
-						value: "all",
-					},
-					...data.classes.map((classData) => ({
-						label: parseClassName(classData),
-						value: classData.id.toString(),
-					})),
-				]}
-			/>
-		</ListSection>
+		<View className={className}>
+			<ListSection title="Filter berdasarkan kelas">
+				<SelectField
+					value={additionalData.wasteBankClassFilter}
+					onValueChange={(value) =>
+						setAdditionalData("wasteBankClassFilter", value)
+					}
+					options={[
+						{
+							label: "Semua",
+							value: "all",
+						},
+						...data.classes.map((classData) => ({
+							label: parseClassName(classData),
+							value: classData.id.toString(),
+						})),
+					]}
+				/>
+			</ListSection>
+		</View>
 	);
 }

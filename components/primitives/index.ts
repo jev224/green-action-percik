@@ -8,7 +8,7 @@
 export { UserAvatar } from "./Avatar/UserAvatar";
 export { Button } from "./Button/Button";
 export { IconButton } from "./Button/IconButton";
-export { ActionTile } from "./Card/ActionTile";
+export { ActionTile, type ActionTileProps } from "./Card/ActionTile";
 export { SortableCard } from "./Card/SortableCard";
 export { StatCard } from "./Card/StatCard";
 export { SurfaceCard } from "./Card/SurfaceCard";
@@ -34,6 +34,7 @@ export { BottomPanel } from "./Layout/BottomPanel";
 export { Drawer } from "./Layout/Drawer";
 export { HomeCarousel } from "./Layout/HomeCarousel";
 export { Modal } from "./Layout/Modal";
+export { PhotoLightbox } from "./Layout/PhotoLightbox";
 export { Screen } from "./Layout/Screen";
 export { ScreenHeader } from "./Layout/ScreenHeader";
 export { SmoothActionSheet } from "./Layout/SmoothActionSheet";

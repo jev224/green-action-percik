@@ -129,6 +129,7 @@ export default function CompostSubmissionScreen() {
 					? "Anda sudah mengirim kegiatan kompos bulan ini. Hapus pengiriman jika ingin mengubahnya, atau kembali ke halaman utama."
 					: `Kegiatan kompos sudah kirim oleh ${submittedInfo?.submittedAuthor ?? (isByTeacher ? "guru lain" : "siswa")} pada bulan ini. Hapus pengiriman jika ingin mengubahnya, atau kembali ke halaman utama.`
 			}
+			submittedPhoto={submittedInfo?.photo}
 		>
 			<ListSection title="Lokasi Kegiatan">
 				<SelectField

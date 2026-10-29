@@ -89,6 +89,10 @@ export async function isCompostActivitySubmitted(classId: number) {
 		});
 	}
 
+	const photo = data?.photo
+		? await compostPhotos.getPrivateUrl(data.photo)
+		: undefined;
+
 	try {
 		if (data?.submitted_by) {
 			const profile = await getProfileByRole(
@@ -102,6 +106,7 @@ export async function isCompostActivitySubmitted(classId: number) {
 				submittedBy: data.submitted_by,
 				submittedByRole: data.submitted_by_role as UserRole,
 				submittedAuthor: profile.name,
+				photo,
 			};
 		}
 	} catch (_e) {}
@@ -111,11 +116,13 @@ export async function isCompostActivitySubmitted(classId: number) {
 			activityId: data?.id,
 			submitted: true as true,
 			submittedByRole: data.submitted_by_role as UserRole,
+			photo,
 		};
 	}
 
 	return {
 		submitted: false as false,
+		photo,
 	};
 }
 

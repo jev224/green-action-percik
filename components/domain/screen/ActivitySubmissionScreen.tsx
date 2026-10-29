@@ -12,6 +12,7 @@ type Props = {
 	title: string;
 	submitted: boolean;
 	submittedMessage: string;
+	submittedPhoto?: string;
 	onDelete?: () => void;
 	isLoading: boolean;
 	initialLoading: boolean;
@@ -23,6 +24,7 @@ export function ActivitySubmissionScreen({
 	title,
 	submitted,
 	submittedMessage,
+	submittedPhoto,
 	onDelete,
 	isLoading,
 	initialLoading,
@@ -36,6 +38,7 @@ export function ActivitySubmissionScreen({
 				isLoading={isLoading}
 				onDelete={onDelete}
 				message={submittedMessage}
+				photo={submittedPhoto}
 			/>
 		);
 	}

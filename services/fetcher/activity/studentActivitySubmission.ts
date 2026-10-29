@@ -71,12 +71,13 @@ async function isActivitySubmitted(
 ) {
 	const { startOfDay, endOfDay } = getDayRange();
 
-	const { error, count } = await supabase
+	const { error, data } = await supabase
 		.from(table)
 		.select("*", { count: "exact", head: true })
 		.eq("student_id", studentId)
 		.gte("created_at", startOfDay.toISOString())
-		.lt("created_at", endOfDay.toISOString());
+		.lt("created_at", endOfDay.toISOString())
+		.maybeSingle();
 
 	if (error) {
 		throw new ServerError({
@@ -86,7 +87,11 @@ async function isActivitySubmitted(
 		});
 	}
 
-	return { submitted: count !== 0 };
+	const photo = data?.photo
+		? await activityPhotos.getPrivateUrl(data.photo)
+		: undefined;
+
+	return { submitted: !!data, photo };
 }
 
 async function deleteSubmittedActivity(

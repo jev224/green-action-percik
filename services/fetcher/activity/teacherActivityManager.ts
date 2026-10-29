@@ -11,7 +11,7 @@ export type WasteBankPatch =
 export async function fetchCompostActivities() {
 	const { error, data } = await supabase
 		.from("classes")
-		.select("*,  compost:compost_activities(*)");
+		.select("*,  composts:compost_activities(*)");
 
 	if (error) {
 		throw new ServerError({
