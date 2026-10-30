@@ -124,7 +124,7 @@ export function ProfileHeader({
 		);
 	};
 
-	const id = role.type === "student" ? role.nis : undefined;
+	const nis = role.type === "student" ? role.nis : undefined;
 
 	return (
 		<>
@@ -163,7 +163,11 @@ export function ProfileHeader({
 					<Text className="font-medium opacity-80" size="lg">
 						{role.info}
 					</Text>
-					{id && <Text className="opacity-60">{id}</Text>}
+					{nis && (
+						<Text className="opacity-60" selectable>
+							{nis}
+						</Text>
+					)}
 				</VStack>
 			</View>
 
