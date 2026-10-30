@@ -37,7 +37,7 @@ import {
 	useActivityManagerStore,
 	type WasteBankData,
 } from "@/stores/activityManager";
-import { formatDate, getWeekRange, parseClassName } from "@/utils";
+import { formatDate, formatTime, getWeekRange, parseClassName } from "@/utils";
 
 type CompostCardData = {
 	type: "compost-activity";
@@ -97,7 +97,7 @@ export type ActivityData =
 	| WasteActivityData
 	| DebtSettlementActivityData;
 
-const SEARCH_KEYS = ["title", "description"];
+const SEARCH_KEYS = ["title"];
 
 const EMPTY: ActivityCardData[] = [];
 
@@ -158,7 +158,7 @@ async function toWasteCards(): Promise<WasteActivityData> {
 				type: "waste-banks",
 				id: wasteBank.id,
 				title: wasteBank.student.name,
-				description: `${wasteBank.category} • ${formatDate(wasteBank.created_at)}`,
+				description: `${wasteBank.category} • ${formatDate(wasteBank.created_at)}  ${formatTime(wasteBank.created_at)}`,
 				createdAt: wasteBank.created_at,
 				completed: Number(wasteBank.price ?? 0) > 0,
 				data: wasteBank,

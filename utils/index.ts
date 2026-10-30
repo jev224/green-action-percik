@@ -63,15 +63,25 @@ const compactFormatter = new Intl.NumberFormat("id-ID", {
 	roundingMode: "trunc",
 });
 
+const dateFormatter = new Intl.DateTimeFormat("id-ID", {
+	day: "numeric",
+	month: "long",
+	year: "numeric",
+});
+
+const timeFormatter = new Intl.DateTimeFormat("en-GB", {
+	hour: "2-digit",
+	minute: "2-digit",
+	hourCycle: "h23",
+});
+
 export const formatCompactNumber = (n: number) => compactFormatter.format(n);
 
-export const formatDate = (date: string | Date) => {
-	return new Intl.DateTimeFormat("id-ID", {
-		day: "numeric",
-		month: "long",
-		year: "numeric",
-	}).format(new Date(date));
-};
+export const formatDate = (date: string | Date) =>
+	dateFormatter.format(new Date(date));
+
+export const formatTime = (date: string | Date) =>
+	timeFormatter.format(new Date(date));
 
 export const truncateText = (text: string, maxLength: number) => {
 	if (text.length <= maxLength) return text;

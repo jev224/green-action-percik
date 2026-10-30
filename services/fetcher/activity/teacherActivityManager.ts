@@ -40,6 +40,23 @@ export async function fetchWasteBanks() {
 	return data ?? [];
 }
 
+export async function fetchWasteBanksByStudentId(studentId: string) {
+	const { error, data } = await supabase
+		.from("waste_banks")
+		.select("*, student:students!inner(name, class_id)")
+		.eq("student_id", studentId);
+
+	if (error) {
+		throw new ServerError({
+			status: 500,
+			message: `Failed to fetch waste banks activity: ${error.message}`,
+			ui_message: "Daftar bank sampah belum bisa dimuat. Coba lagi ya",
+		});
+	}
+
+	return data ?? [];
+}
+
 export async function updateWasteBank(id: number, patch: WasteBankPatch) {
 	const { error } = await supabase
 		.from("waste_banks")
