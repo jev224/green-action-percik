@@ -33,7 +33,7 @@ import {
 	fetchStudentStatistics,
 	fetchStudentTargets,
 } from "@/services/fetcher/student/studentDashboard";
-import { calculatePercentage, formatPrice, limitDecimalInput } from "@/utils";
+import { calculatePercentage, formatCompactNumber, formatPrice } from "@/utils";
 
 export default function StatsiticScreen() {
 	const userProfile = useUserProfile("student");
@@ -86,7 +86,7 @@ export default function StatsiticScreen() {
 					<ScreenHeader title="Statistik kamu" />
 
 					<StatCard
-						stats={studentPoints}
+						stats={formatCompactNumber(studentPoints)}
 						title={"Poin"}
 						size="lg"
 						color="warning"
@@ -124,7 +124,7 @@ export default function StatsiticScreen() {
 					<HStack space="md">
 						<StatCard
 							title="Sampah"
-							stats={`${limitDecimalInput(wasteWeightTotal)} kg`}
+							stats={`${formatCompactNumber(wasteWeightTotal)} kg`}
 							icon={Bubbles}
 							variant="outline"
 							fill
@@ -180,12 +180,12 @@ export default function StatsiticScreen() {
 							variant="ghost"
 							headerRightComponent={
 								<Heading size="md">
-									{limitDecimalInput(wasteWeightTarget)} kg
+									{formatCompactNumber(wasteWeightTarget)} kg
 								</Heading>
 							}
 							bottomComponent={
 								<ProgressBar
-									text={`${wasteWeightTotal} dari ${limitDecimalInput(wasteWeightTarget)} kg terkumpul`}
+									text={`${formatCompactNumber(wasteWeightTotal)} dari ${formatCompactNumber(wasteWeightTarget)} kg terkumpul`}
 									value={calculatePercentage(
 										wasteWeightTotal,
 										wasteWeightTarget,

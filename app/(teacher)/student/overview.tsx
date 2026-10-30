@@ -15,7 +15,7 @@ import { useShowToast } from "@/hooks/useShowToast";
 import { fetchStudentStatistics } from "@/services/fetcher/student/studentDashboard";
 import { fetchStudentProfile } from "@/services/fetcher/student/studentQuery";
 import { useStudentActionStore } from "@/stores/studentOverview";
-import { parseProfileInfo } from "@/utils";
+import { formatCompactNumber, parseProfileInfo } from "@/utils";
 
 export default function StudentOverviewScreen() {
 	const showToast = useShowToast();
@@ -63,13 +63,6 @@ export default function StudentOverviewScreen() {
 			headerComponent={
 				<ScreenHeader title="Detail Siswa" leftComponent={<BackButton />} />
 			}
-			// overlayComponent={
-			//   <BottomPanel variant="ghost">
-			//     <HStack space="md">
-			//       <Button label="Edit" fill size="cta" />
-			//     </HStack>
-			//   </BottomPanel>
-			// }
 			contentComponent={({
 				stats: {
 					wasteWeightTotal,
@@ -106,7 +99,7 @@ export default function StudentOverviewScreen() {
 						<HStack space="md">
 							<StatCard
 								title="Sampah"
-								stats={`${wasteWeightTotal} kg`}
+								stats={`${formatCompactNumber(wasteWeightTotal)} kg`}
 								icon={Bubbles}
 								variant="outline"
 								fill

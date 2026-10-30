@@ -57,6 +57,14 @@ export const toLocalDecimal = (value: string | number): string => {
 	return String(value).replace(".", ",");
 };
 
+const compactFormatter = new Intl.NumberFormat("id-ID", {
+	notation: "compact",
+	maximumFractionDigits: 1,
+	roundingMode: "trunc",
+});
+
+export const formatCompactNumber = (n: number) => compactFormatter.format(n);
+
 export const formatDate = (date: string | Date) => {
 	return new Intl.DateTimeFormat("id-ID", {
 		day: "numeric",

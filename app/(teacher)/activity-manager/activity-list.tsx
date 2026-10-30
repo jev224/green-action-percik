@@ -298,7 +298,6 @@ export default function ActivityListScreen() {
 	const handleCardPress = useCallback(
 		(card: ActivityCardData) => {
 			setSourceSection(filterStatus);
-			setSearchQuery("");
 
 			switch (card.type) {
 				case "compost-activity":

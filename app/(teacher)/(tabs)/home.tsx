@@ -24,7 +24,7 @@ import { useNavigation } from "@/hooks/useNavigation";
 import { useUserProfile } from "@/hooks/useUser";
 import { fetchTeacherDashboardStats } from "@/services/fetcher/teacher/teacherDashboard";
 import { useActivityManagerStore } from "@/stores/activityManager";
-import { limitDecimalInput, parseProfileInfo } from "@/utils";
+import { formatCompactNumber, parseProfileInfo } from "@/utils";
 
 export default function HomeScreen() {
 	const setActivityType = useActivityManagerStore((s) => s.setActivityType);
@@ -69,10 +69,10 @@ export default function HomeScreen() {
 						info={parseProfileInfo({ role: "teacher", major })}
 					/>
 
-					<ListSection title="Statistik Total">
+					<HStack space="md">
 						<StatCard
 							title="Siswa"
-							stats={studentCount}
+							stats={formatCompactNumber(studentCount)}
 							icon={GraduationCap}
 							thumbnailRotation={-12}
 							animation="fun"
@@ -84,19 +84,19 @@ export default function HomeScreen() {
 
 						<StatCard
 							title="Poin"
-							stats={studentPoinTotal}
+							stats={formatCompactNumber(studentPoinTotal)}
 							icon={Coins}
 							fill
 							animation="fun"
 							size="md"
 						/>
-					</ListSection>
+					</HStack>
 
 					<ListSection title="Statistik saat ini">
 						<HStack space="md">
 							<StatCard
 								title="Sampah"
-								stats={`${limitDecimalInput(wasteWeightTotal)} kg`}
+								stats={`${formatCompactNumber(wasteWeightTotal)} kg`}
 								icon={Bubbles}
 								variant="outline"
 								fill

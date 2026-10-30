@@ -10,7 +10,7 @@ import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { usePressFeedback } from "@/hooks/usePressFeedback";
 import { useThemeColors } from "@/hooks/useThemeColors";
-import { nativeOnlyProps } from "@/utils";
+import { formatCompactNumber, nativeOnlyProps } from "@/utils";
 import type { StudentData } from "./types";
 
 interface StudentListItemProps {
@@ -165,7 +165,7 @@ export const StudentListItem = memo(function StudentListItem({
 							{grade && <Text className="web:truncate">{grade}</Text>}
 						</View>
 
-						{point !== null && (
+						{typeof point === "number" && (
 							<Heading
 								className="text-primary font-semibold web:truncate"
 								size="lg"
@@ -173,7 +173,7 @@ export const StudentListItem = memo(function StudentListItem({
 									numberOfLines: 1,
 								})}
 							>
-								{point} Poin
+								{formatCompactNumber(point)} Poin
 							</Heading>
 						)}
 					</View>

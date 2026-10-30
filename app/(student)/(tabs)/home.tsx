@@ -36,7 +36,7 @@ import { useUserProfile } from "@/hooks/useUser";
 import { fetchMotiovations } from "@/services/fetcher/others/motivations";
 import { fetchOrganizationPhotoURLs } from "@/services/fetcher/others/organizationPhotos";
 import { fetchStudentStatistics } from "@/services/fetcher/student/studentDashboard";
-import { limitDecimalInput, parseProfileInfo } from "@/utils";
+import { formatCompactNumber, parseProfileInfo } from "@/utils";
 
 export default function HomeScreen() {
 	const [passwordDialogShown, setPasswordDialogShown] = useState(false);
@@ -127,7 +127,7 @@ export default function HomeScreen() {
 						<HStack space="md">
 							<StatCard
 								title="Sampah"
-								stats={`${limitDecimalInput(wasteWeightTotal)} kg`}
+								stats={`${formatCompactNumber(wasteWeightTotal)} kg`}
 								icon={Bubbles}
 								variant="outline"
 								fill
